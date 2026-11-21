@@ -493,15 +493,46 @@ function qLedger(q){
 /* Merge only exact schedule duplicates, without losing achievements.
    Archived source records remain in the user's regular JSON backup. */
 function qDuplicateName(q){
- return String(q.title||'').normalize('NFKC').replace(/^[^\\p{L}\\p{N}]+/u,'').replace(/[\\s　・｜|]/g,'').toLowerCase();
+ const name=String(q.title||'').normalize('NFKC').toLowerCase()
+   .replace(/[^\p{L}\p{N}]+/gu,'');
+ return name;
+}
+function qSemanticName(q){
+ const name=qDuplicateName(q);
+ // Recognize the app's original short 11/21 seed labels and their Google equivalents.
+ // Never fold unrelated categories together.
+ const mappings=[
+  [/^チャイハナ.*マーケ/,'チャイハナマーケ'],
+  [/^ジム.*(プール|筋トレ)/,'ジム筋トレプール'],
+  [/^ジムへ移動/,'ジム移動準備'],
+  [/^ボイトレ復習/,'ボイトレ復習歌詞'],
+  [/^ラジオ収録/,'ラジオ収録'],
+  [/^心理学/,'心理学の勉強'],
+  [/^読書/,'読書'],
+  [/^セルフイメージ|^魂と向き合う/,'セルフイメージ'],
+  [/^夕食.*休憩/,'夕食移動休憩'],
+  [/^lifeos開発/,'lifeos開発'],
+  [/^照り焼き丼/,'照り焼き丼']
+ ];
+ const found=mappings.find(([test])=>test.test(name));
+ return found?found[1]:name;
 }
 function qSameAppointment(a,b){
+ if(a.id===b.id)return true;
+ // Two different Google IDs are two events even if the title looks identical.
  if(a.gcalKey&&b.gcalKey&&a.gcalKey!==b.gcalKey)return false;
- const timeA=String(a.start||''),timeB=String(b.start||'');
- const identical=timeA===timeB&&(timeA!=='自由'||a.end===b.end);
- if(!identical)return false;
- if(Math.abs(Number(a.minutes||0)-Number(b.minutes||0))>5)return false;
- return (a.gcalKey&&a.gcalKey===b.gcalKey)||qDuplicateName(a)===qDuplicateName(b);
+ if(a.gcalKey&&a.gcalKey===b.gcalKey)return true;
+ const startA=String(a.start||''),startB=String(b.start||'');
+ const timeA=/^\d{1,2}:\d{2}$/.test(startA),timeB=/^\d{1,2}:\d{2}$/.test(startB);
+ if(timeA&&timeB){
+  const m=x=>Number(x.slice(0,2))*60+Number(x.slice(3));
+  if(Math.abs(m(startA)-m(startB))>10)return false;
+ }else if(startA!==startB)return false;
+ const durationGap=Math.abs(Number(a.minutes||25)-Number(b.minutes||25));
+ if(durationGap>20)return false;
+ const sameTitle=qDuplicateName(a)===qDuplicateName(b);
+ const sameKind=qSemanticName(a)===qSemanticName(b);
+ return sameTitle||sameKind;
 }
 function qMergeDuplicate(keep,extra,day){
  if(extra.status==='done'&&keep.status!=='done'){
@@ -691,8 +722,18 @@ function gcalImportEvent(event){
  }
  const items=s.quests[day]??=[];
  // Attach the Google event ID to an existing matching local quest instead of creating duplicates.
- const already=items.find(q=>q.title===title&&q.start===startClock&&Math.abs(Number(q.minutes||0)-minutes)<=5&&!q.gcalKey);
- if(already){already.gcalKey=key;already.gcalSnapshot=gcalRemoteSignature(event);already.calendarUnavailable=false;already.gcalPendingCreate=false;return {added:0,updated:1};}
+ const already=items.find(q=>!q.gcalKey&&qSameAppointment(q,{title,start:startClock,end:endClock,minutes}));
+ if(already){
+ qEnsure(already,day);
+ already.gcalKey=key;already.gcalSnapshot=gcalRemoteSignature(event);
+ already.calendarUnavailable=false;already.gcalPendingCreate=false;
+ // Preserve any deliberate local edits, but refresh original seed shorthand with Google metadata.
+ if(!already.editedLocally){
+  qPlanRevision(already,day,{title,start:startClock,end:endClock,minutes},'Google Calendar');
+  already.title=title;already.start=startClock;already.end=endClock;already.minutes=minutes;
+ }
+ return {added:0,updated:1};
+}
  if(items.some(q=>q.gcalKey===key))return {added:0,updated:0};
  items.push({id:'gcal-'+day+'-'+Math.random().toString(36).slice(2,10),gcalKey:key,gcalSnapshot:gcalRemoteSignature(event),coaching:(()=>{const v=coachRead(coachPart(event.description||''));delete v['ai-summary'];return v})(),aiCoachingSummary:coachRead(coachPart(event.description||''))['ai-summary']||'',coachRemoteBlock:coachPart(event.description||''),title,start:startClock,end:endClock,minutes,originalPlan:{title,start:startClock,end:endClock,minutes,date:day},planHistory:[],status:'pending',completedAt:null,calendarUnavailable:false});
  s.quests[day]=items;return {added:1,updated:0};

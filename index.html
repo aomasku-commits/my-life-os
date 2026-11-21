@@ -1234,6 +1234,38 @@ if(!s.nutrition || !Array.isArray(s.nutrition.meals)){
  s.nutrition={meals:[{id:'starter-veloce-a-20261121',date:'2026-11-21',name:'ベローチェ モーニングA（ホットサンドのみ）',kcal:383,p:14.2,f:21.3,c:35.1}]};save();
 }
 if(!Array.isArray(s.nutrition.favorites)){s.nutrition.favorites=[];save();}
+
+/* User-confirmed 2026-11-21 meal and completed cooking quest.
+   Add a single estimated meal only if a matching entry does not already exist.
+   Does not overwrite nutrition entries or change the user's previous records. */
+function importNov21TeriyakiMeal(){
+ const day='2026-11-21',id='meal-1121-teriyaki-photo-v1';
+ if(today()!==day)return;
+ let changed=false;
+ const existing=s.nutrition.meals.find(m=>m.id===id||m.date===day&&/照り焼き丼/.test(String(m.name||'')));
+ if(!existing){
+  s.nutrition.meals.push({
+   id,date:day,
+   name:'🍗 手作り照り焼き丼（玄米160g・鶏もも220g・目玉焼き・アボカド1/2・キムチ・汁物／写真からの概算）',
+   kcal:950,p:55,f:40,c:88,estimated:true
+  });
+  changed=true;
+ }
+ const qs=Array.isArray(s.quests?.[day])?s.quests[day]:[];
+ const meal=qs.find(q=>/照り焼き丼/.test(String(q.title||'')));
+ if(meal&&meal.status!=='done'){
+  meal.status='done';
+  meal.completedAt=new Date().toISOString();
+  meal.editedLocally=true;
+  if(s.questSessions?.[meal.id]){
+   s.questSessions[meal.id].at=null;
+  }
+  changed=true;
+ }
+ if(changed)save();
+}
+importNov21TeriyakiMeal();
+
 let nutritionDate=today(),pfcCelebrationTimer=null;
 const nutritionMeals=day=>s.nutrition.meals.filter(m=>m.date===day);
 const nutritionTotals=day=>nutritionMeals(day).reduce((a,m)=>{for(const k of ['kcal','p','f','c'])a[k]+=Number(m[k])||0;return a},{kcal:0,p:0,f:0,c:0});

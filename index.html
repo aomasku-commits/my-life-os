@@ -448,6 +448,8 @@ function copyWeeklyPlansToQuests(){
 
 if(!s.quests['2026-11-21']){s.quests['2026-11-21']=questSeed.map((a,i)=>({id:'1121-'+i,start:a[0],end:a[1],title:a[2],minutes:(+a[1].slice(0,2)*60 + +a[1].slice(3))-(+a[0].slice(0,2)*60 + +a[0].slice(3)),status:'pending',completedAt:null}));save();}
 let selectedQuestId=localStorage.getItem('lifeos_selected_quest')||null;
+// Keep the future planner date defined before the first paint().
+let questPreviewDay=today();
 const todaysQuests=()=>s.quests[today()]||[];
 
 const questClockNumber=x=>/^\d{1,2}:\d{2}$/.test(String(x||''))?Number(x.slice(0,2))*60+Number(x.slice(3)):9999;

@@ -229,7 +229,10 @@ body{overflow-x:clip}
 button:focus-visible,summary:focus-visible{outline:3px solid #cbff9c;outline-offset:2px}
 @media(max-width:360px){.tab{font-size:9px}.tab span{font-size:17px}.quest-dock{gap:5px;padding:7px}.quest-dock button{padding:6px 8px}}
 @media(prefers-reduced-motion:reduce){.qfill{transition:none}}
-.qdetails#qdetails{border-color:#8dbf7f}.qdetails#qdetails>summary{background:#214b35;color:#edffe7;font-size:15px}.qdetails#qdetails .qitem{min-height:58px}.qdetails#qdetails .qitem button:first-child{font-size:14px;line-height:1.4;text-align:left}.qdetails#qdetails .qitem small{margin-top:3px}</style></head><body><main class="app"><div class="top"><div class="logo">🍏 LIFE OS <span class="logo-mini">BLOOM</span></div><div class="date" id="headerDate"></div></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="questDock" class="quest-dock" hidden aria-label="クエスト操作">
+.qdetails#qdetails{border-color:#8dbf7f}.qdetails#qdetails>summary{background:#214b35;color:#edffe7;font-size:15px}.qdetails#qdetails .qitem{min-height:58px}.qdetails#qdetails .qitem button:first-child{font-size:14px;line-height:1.4;text-align:left}.qdetails#qdetails .qitem small{margin-top:3px}
+.lifeos-diagnostic{display:flex;flex-direction:column;gap:2px;margin:10px 0 0;padding:8px 11px;border:1px solid #56775c;background:#1a382b;border-radius:10px;color:#e8ffe5;font-size:11px;line-height:1.45}
+.lifeos-diagnostic strong{color:#d1ff9a;font-size:11px}.lifeos-diagnostic span{color:#b6d7bf}
+</style></head><body><main class="app"><div class="top"><div class="logo">🍏 LIFE OS <span class="logo-mini">BLOOM</span></div><div class="date" id="headerDate"></div></div><div id="lifeos-diagnostic" class="lifeos-diagnostic" role="status" aria-live="polite"><strong>🍏 LIFE OS build 2026.11.21-D2</strong><span>画面を読み込み中。予定が表示されない場合は、この表示を確認してね。</span></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="questDock" class="quest-dock" hidden aria-label="クエスト操作">
 <div class="quest-dock-main"><span class="quest-dock-name" id="questDockName"></span><span class="quest-dock-time" id="questDockTime"></span></div>
 <button type="button" id="questDockBack" aria-label="クエストに戻る">↑ 戻る</button>
 <button type="button" id="questDockDone" data-qact="complete">✓ 完了</button>
@@ -244,6 +247,13 @@ const KEY='arc_life_os_v1';const tz='Asia/Tokyo';const iso=(d)=>{const a=new Int
  section.innerHTML=({home:homeHTML,week:weekHTML,workout:workoutHTML,nutrition:nutritionHTML,journal:journalHTML,vision:visionHTML,settings:settingsHTML})[active]();
  if(active==='home')for(const id of openDetails){const target=document.getElementById(id);if(target&&target.tagName==='DETAILS')target.open=true;}
  if(typeof updateQuestDock==='function')updateQuestDock();
+ const diag=document.getElementById('lifeos-diagnostic');
+ if(diag){
+  const count=Array.isArray(s.quests?.[today()])?s.quests[today()].length:0;
+  const expected='2026-11-21'===today()?11:0;
+  const dateLabel=fmt(today());
+  diag.innerHTML='<strong>🍏 LIFE OS build 2026.11.21-D2</strong><span>'+esc(dateLabel)+' · この端末のクエスト '+count+'件'+(count===0?' · Google同期または保存データを確認':' · 読み込み済み')+'</span>';
+ }
 }
 
 

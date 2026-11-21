@@ -827,7 +827,7 @@ async function gcalAPI(path,opts={}){
 }
 function gcalFindLocal(id){for(const [day,qs] of Object.entries(s.quests||{})){const q=(qs||[]).find(x=>x.id===id);if(q)return {q,day};}return null;}
 function gcalEventPayload(q,day){
- if(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(q.start||''))throw Error('開始時刻を設定してください');
+ if(!/^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(q.start||''))throw Error('開始時刻を設定してください');
  if(!Number.isInteger(Number(q.minutes))||Number(q.minutes)<1||Number(q.minutes)>600)throw Error('所要時間は1〜600分にしてください');
  const start=new Date(day+'T'+q.start+':00+09:00'),end=new Date(start.getTime()+Number(q.minutes)*60000);
  if(!Number.isFinite(start.getTime()))throw Error('日付を確認してください');
@@ -872,7 +872,7 @@ async function gcalSyncBoth(){
   const base=today(),limit=add(base,14);
   const pending=Object.entries(s.quests||{}).flatMap(([day,qs])=>(day>=base&&day<limit)?(qs||[]).filter(q=>(q.editedLocally||q.coachDirty||q.gcalPendingCreate)&&!q.gcalConflict).map(q=>({q,day})) : []);
   for(const {q,day} of pending){
-   if(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(q.start||'')){skipped++;continue;}
+   if(!/^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(q.start||'')){skipped++;continue;}
    try{await gcalSafePush(q,day);pushed++;}catch(err){q.gcalConflict=true;skipped++;save();}
   }
   gcalStatus('Google→LIFE OS '+got.added+'件追加 / LIFE OS→Google '+pushed+'件反映'+(skipped?' / 要確認 '+skipped+'件':''));
@@ -882,7 +882,7 @@ function gcalEditToday(q){
  const title=prompt('予定名を編集',q.title);if(title===null)return;
  const name=title.trim().slice(0,90);if(!name){notify('名前を入力してね');return;}
  const start=prompt('開始時刻 HH:MM',q.start||'');if(start===null)return;
- if(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(start)){notify('時刻は HH:MM で入力してね');return;}
+ if(!/^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(start)){notify('時刻は HH:MM で入力してね');return;}
  const minutesText=prompt('所要時間（分）',String(q.minutes));if(minutesText===null)return;
  const minutes=Number(minutesText);if(!Number.isInteger(minutes)||minutes<1||minutes>600){notify('1〜600分で入力してね');return;}
  const total=Number(start.slice(0,2))*60+Number(start.slice(3))+minutes;
@@ -896,7 +896,7 @@ function gcalEditToday(q){
 async function gcalWriteback(q,day){
  if(!q?.gcalKey)return;
  if(!gcalToken||Date.now()>=gcalTokenExpiry){gcalStatus('先にGoogle予定を同期し、編集権限を許可してね');return;}
- if(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(q.start||'')){gcalStatus('開始時刻を設定してね');return;}
+ if(!/^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(q.start||'')){gcalStatus('開始時刻を設定してね');return;}
  const start=new Date(day+'T'+q.start+':00+09:00');
  const end=new Date(start.getTime()+q.minutes*60000);
  if(!Number.isFinite(start.getTime()))return;

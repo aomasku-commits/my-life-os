@@ -613,6 +613,30 @@ function applyNov21ActualPlan(){
 }
 applyNov21ActualPlan();
 
+/* 11/21: user rescheduled Chaihana marketing 14:00–16:00 to 15:00–17:00.
+   Preserves duration and other entries; idempotent on refresh. */
+function shiftNov21ChaihanaTo15(){
+ const day='2026-11-21';
+ if(today()!==day)return;
+ const items=s.quests?.[day];
+ if(!Array.isArray(items))return;
+ let updated=false;
+ for(const q of items){
+  if(q.status==='done')continue;
+  if(!/チャイハナ.*マーケ/.test(String(q.title||'')))continue;
+  // Only change the previously discussed slot, never override later edits.
+  if(q.start==='14:00'&&q.end==='16:00'){
+   q.start='15:00';q.end='17:00';q.minutes=120;
+   q.editedLocally=true;
+   if(s.questSessions?.[q.id]&&q.status!=='running')s.questSessions[q.id]={ms:120*60000,at:null};
+   updated=true;
+  }
+ }
+ if(updated)save();
+}
+shiftNov21ChaihanaTo15();
+
+
 // Keep the future planner date defined before the first paint().
 let questPreviewDay=today();
 const todaysQuests=()=>s.quests[today()]||[];

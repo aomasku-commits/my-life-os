@@ -403,12 +403,28 @@ body.coach-active{overflow:hidden}
 #coaching-inline-status{display:none;padding:9px 10px;background:#d0ff981e;border:1px solid #a2d289;border-radius:9px;color:#e5ffc6;font-size:12px;line-height:1.5;margin:8px 0}
 #home .qitem-controls .qitem-undo{background:#3c4732;color:#fae7b0;border-color:#bcaa78;font-weight:850}
 @media(max-width:375px){.coaching-times{grid-template-columns:minmax(0,1fr);gap:3px}.coaching-quick button{font-size:11px}}
+
+/* BLOOM motion language — tactile, quick, and respectful of reduced motion. */
+:root{--bloom-motion:180ms cubic-bezier(.22,1,.36,1)}
+button,.tab,[role="button"]{transition:transform var(--bloom-motion),box-shadow var(--bloom-motion),filter var(--bloom-motion),border-color var(--bloom-motion);-webkit-tap-highlight-color:transparent}
+button:not(:disabled):active,.tab:active,[role="button"]:active{transform:scale(.965);filter:brightness(1.1)}
+button:disabled{cursor:not-allowed}
+button.bloom-pressed,.tab.bloom-pressed{animation:bloom-press .26s cubic-bezier(.22,1,.36,1)}
+@keyframes bloom-press{0%{transform:scale(1)}36%{transform:scale(.945)}100%{transform:scale(1)}}
+.bloom-ripple{pointer-events:none;position:absolute;border-radius:50%;width:16px;height:16px;left:var(--ripple-x,50%);top:var(--ripple-y,50%);margin:-8px;transform:scale(0);opacity:.55;background:radial-gradient(circle,#e5ffbc 0%,#b6ff9890 40%,transparent 72%);animation:bloom-ripple .55s ease-out forwards;z-index:5}
+@keyframes bloom-ripple{0%{transform:scale(0);opacity:.6}100%{transform:scale(14);opacity:0}}
+.bloom-success{position:fixed;z-index:1450;right:17px;top:calc(66px + env(safe-area-inset-top));pointer-events:none;padding:10px 15px;border-radius:999px;background:#d0ffa1;color:#183a23;font-weight:900;font-size:13px;box-shadow:0 0 0 1px #e3ffbeaa,0 8px 35px #8aff7e55;animation:bloom-success .95s cubic-bezier(.2,.8,.2,1) both}
+@keyframes bloom-success{0%{opacity:0;transform:translateY(12px) scale(.78)}25%{opacity:1;transform:translateY(0) scale(1.08)}75%{opacity:1;transform:translateY(-5px) scale(1)}100%{opacity:0;transform:translateY(-18px) scale(.98)}}
+#home .qitem.is-done{transition:background .3s,border-color .3s}
+button.bloom-saved{box-shadow:0 0 0 3px #d5ff9766,0 0 25px #b2ff7550}
+@media(hover:hover) and (pointer:fine){button:not(:disabled):hover{filter:brightness(1.12);transform:translateY(-1px)}}
+@media(prefers-reduced-motion:reduce){button,.tab,[role="button"]{transition:none!important}button.bloom-pressed,.tab.bloom-pressed,.bloom-ripple,.bloom-success{animation:none!important}.bloom-ripple,.bloom-success{display:none!important}}
 </style></head><body><main class="app"><div class="top"><div class="logo">🍏 LIFE OS <span class="logo-mini">BLOOM</span></div><div class="date" id="headerDate"></div></div><div id="lifeos-diagnostic" class="lifeos-diagnostic" role="status" aria-live="polite"><strong>🍏 LIFE OS build 2026.11.21-D2</strong><span>画面を読み込み中。予定が表示されない場合は、この表示を確認してね。</span></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="questDock" class="quest-dock" hidden aria-label="クエスト操作">
 <div class="quest-dock-main"><span class="quest-dock-name" id="questDockName"></span><span class="quest-dock-time" id="questDockTime"></span></div>
 <button type="button" id="questDockBack" aria-label="クエストに戻る">↑ 戻る</button>
 <button type="button" id="questDockDone" data-qact="complete">✓ 完了</button>
 </div><div id="toast" class="toast" role="status" aria-live="polite"></div><div id="pfcCelebration" class="pfc-pop" role="status" aria-live="polite"></div><input type="file" id="importFile" accept=".json,application/json" class="hidden"><script src="https://accounts.google.com/gsi/client" async defer></script><script>
-const KEY='arc_life_os_v1';const tz='Asia/Tokyo';const iso=(d)=>{const a=new Intl.DateTimeFormat('sv-SE',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);return a};const today=()=>iso(new Date());const dayDate=x=>new Date(x+'T12:00:00+09:00');const add=(date,n)=>iso(new Date(dayDate(date).getTime()+n*864e5));const dow=['日','月','火','水','木','金','土'];const esc=s=>String(s??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));const HABITS=[{id:'sense',label:'五感・瞑想',min:'3分',max:'15分',emoji:'🌿'},{id:'learn',label:'心理学 / NLP / マーケ学習',min:'5分',max:'20分',emoji:'🧠'},{id:'create',label:'事業につながる小さな発信',min:'3分',max:'20分',emoji:'🚀'},{id:'reflect',label:'自己受容・振り返り',min:'3分',max:'10分',emoji:'♡'}];const TEMPLATE={0:[['20:00','20分','翌週の作戦会議','内面']],1:[['朝','3分','五感を感じる','内面'],['夜','10分','ダーリン練習（12/5まで）','音楽']],2:[['朝','3分','五感を感じる','内面'],['夜','60〜75分','筋トレ','身体']],3:[['夜','20分','事業：発信下書き','事業'],['夜','10分','ダーリン練習（12/5まで）','音楽']],4:[['夜','60〜75分','筋トレ','身体']],5:[['夜','15分','1週間の記録を振り返る','内面'],['夜','10分','ダーリン練習（12/5まで）','音楽']],6:[['午前 or 空き時間','45分','心理学・マーケ深掘りと発信','事業'],['午後 or 空き時間','60〜75分','筋トレ（調整可）','身体']]};const blank=()=>({habits:{},journal:{},plans:{},weekOverrides:{},focus:'',miniMode:true,workout:blankWorkout()});let s;try{s={...blank(),...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{s=blank()};let active='home',viewDate=today(),weekDate=today();const save=()=>localStorage.setItem(KEY,JSON.stringify(s));const notify=m=>{const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.style.display='none',2200)};const done=(day,id)=>!!s.habits[day]?.[id];const count=day=>HABITS.filter(h=>done(day,h.id)).length;const daysLeft=()=>Math.max(0,Math.ceil((dayDate('2027-01-01')-dayDate(today()))/864e5));const isPast=day=>day<=today();const total=()=>{let n=0;Object.entries(s.habits).forEach(([day,hs])=>{if(isPast(day))n+=HABITS.filter(h=>hs[h.id]).length});return n};const streak=()=>{let d=today(),n=0;if(count(d)===0)d=add(d,-1);for(let i=0;i<365;i++){if(count(d)===0)break;n++;d=add(d,-1)}return n};const level=()=>Math.floor(total()/20)+1;const fmt=day=>`${Number(day.slice(5,7))}/${Number(day.slice(8,10))} (${dow[dayDate(day).getDay()]})`;const dayPlan=day=>{let wd=dayDate(day).getDay();let defaults=(TEMPLATE[wd]||[]).map((a,i)=>({id:'base'+i,time:a[0],duration:a[1],title:a[2],category:a[3]}));if(day>'2026-12-05')defaults=defaults.filter(x=>!x.title.includes('ダーリン'));if(day==='2026-11-15')defaults=[{id:'beppu',time:'午後中心',duration:'遠征',title:'マッスルゲート別府を観戦（移動・回復優先）',category:'特別'}];if(day==='2026-12-05')defaults=[{id:'live',time:'本番',duration:'ライブ',title:'「ダーリン」ライブ出演。体調を整える',category:'特別'}];return [...defaults,...(s.plans[day]||[])].filter(x=>!(s.weekOverrides[day]||[]).includes(x.id))};function taskMarkup(day){return HABITS.map(h=>`<label class="task ${done(day,h.id)?'done':''}"><input type="checkbox" data-habit="${h.id}" data-day="${day}" ${done(day,h.id)?'checked':''}><div style="flex:1"><div class="name">${h.emoji} ${h.label}</div><div class="meta">${s.miniMode?'最低 '+h.min:'理想 '+h.max} · できたらチェック</div></div></label>`).join('')}function paint(){
+const KEY='arc_life_os_v1';const tz='Asia/Tokyo';const iso=(d)=>{const a=new Intl.DateTimeFormat('sv-SE',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);return a};const today=()=>iso(new Date());const dayDate=x=>new Date(x+'T12:00:00+09:00');const add=(date,n)=>iso(new Date(dayDate(date).getTime()+n*864e5));const dow=['日','月','火','水','木','金','土'];const esc=s=>String(s??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));const HABITS=[{id:'sense',label:'五感・瞑想',min:'3分',max:'15分',emoji:'🌿'},{id:'learn',label:'心理学 / NLP / マーケ学習',min:'5分',max:'20分',emoji:'🧠'},{id:'create',label:'事業につながる小さな発信',min:'3分',max:'20分',emoji:'🚀'},{id:'reflect',label:'自己受容・振り返り',min:'3分',max:'10分',emoji:'♡'}];const TEMPLATE={0:[['20:00','20分','翌週の作戦会議','内面']],1:[['朝','3分','五感を感じる','内面'],['夜','10分','ダーリン練習（12/5まで）','音楽']],2:[['朝','3分','五感を感じる','内面'],['夜','60〜75分','筋トレ','身体']],3:[['夜','20分','事業：発信下書き','事業'],['夜','10分','ダーリン練習（12/5まで）','音楽']],4:[['夜','60〜75分','筋トレ','身体']],5:[['夜','15分','1週間の記録を振り返る','内面'],['夜','10分','ダーリン練習（12/5まで）','音楽']],6:[['午前 or 空き時間','45分','心理学・マーケ深掘りと発信','事業'],['午後 or 空き時間','60〜75分','筋トレ（調整可）','身体']]};const blank=()=>({habits:{},journal:{},plans:{},weekOverrides:{},focus:'',miniMode:true,workout:blankWorkout()});let s;try{s={...blank(),...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{s=blank()};let active='home',viewDate=today(),weekDate=today();const save=()=>localStorage.setItem(KEY,JSON.stringify(s));const notify=m=>{const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.style.display='none',2200);if(/保存した|保存済み|記録した|反映した|同期した|追加した|取り消した|更新したよ|整理したよ/.test(String(m))&&!/失敗|エラー|できない|未実装/.test(String(m)))bloomSuccess(m)};const done=(day,id)=>!!s.habits[day]?.[id];const count=day=>HABITS.filter(h=>done(day,h.id)).length;const daysLeft=()=>Math.max(0,Math.ceil((dayDate('2027-01-01')-dayDate(today()))/864e5));const isPast=day=>day<=today();const total=()=>{let n=0;Object.entries(s.habits).forEach(([day,hs])=>{if(isPast(day))n+=HABITS.filter(h=>hs[h.id]).length});return n};const streak=()=>{let d=today(),n=0;if(count(d)===0)d=add(d,-1);for(let i=0;i<365;i++){if(count(d)===0)break;n++;d=add(d,-1)}return n};const level=()=>Math.floor(total()/20)+1;const fmt=day=>`${Number(day.slice(5,7))}/${Number(day.slice(8,10))} (${dow[dayDate(day).getDay()]})`;const dayPlan=day=>{let wd=dayDate(day).getDay();let defaults=(TEMPLATE[wd]||[]).map((a,i)=>({id:'base'+i,time:a[0],duration:a[1],title:a[2],category:a[3]}));if(day>'2026-12-05')defaults=defaults.filter(x=>!x.title.includes('ダーリン'));if(day==='2026-11-15')defaults=[{id:'beppu',time:'午後中心',duration:'遠征',title:'マッスルゲート別府を観戦（移動・回復優先）',category:'特別'}];if(day==='2026-12-05')defaults=[{id:'live',time:'本番',duration:'ライブ',title:'「ダーリン」ライブ出演。体調を整える',category:'特別'}];return [...defaults,...(s.plans[day]||[])].filter(x=>!(s.weekOverrides[day]||[]).includes(x.id))};function taskMarkup(day){return HABITS.map(h=>`<label class="task ${done(day,h.id)?'done':''}"><input type="checkbox" data-habit="${h.id}" data-day="${day}" ${done(day,h.id)?'checked':''}><div style="flex:1"><div class="name">${h.emoji} ${h.label}</div><div class="meta">${s.miniMode?'最低 '+h.min:'理想 '+h.max} · できたらチェック</div></div></label>`).join('')}function paint(){
  const section=document.getElementById(active);
  const openDetails=active==='home'?[...section.querySelectorAll('details[open]')].map(el=>el.id).filter(Boolean):[];
  document.getElementById('headerDate').textContent=fmt(today());
@@ -1898,6 +1914,42 @@ document.addEventListener('click',e=>{
  const v=vocalState();v.logs[today()]={practiced:!!document.getElementById('vocal-practiced')?.checked,notes:(document.getElementById('vocal-notes')?.value||'').trim().slice(0,1000)};
  save();paint();notify('今日のボイトレを記録したよ 🎤');
 });
+
+
+/* Event-delegated touch effects remain active when LIFE OS rerenders its views. */
+function bloomMotionEnabled(){return !window.matchMedia('(prefers-reduced-motion: reduce)').matches}
+function bloomPulse(el,x,y){
+ if(!el||el.disabled||!bloomMotionEnabled())return;
+ el.classList.remove('bloom-pressed');void el.offsetWidth;el.classList.add('bloom-pressed');
+ setTimeout(()=>el.classList.remove('bloom-pressed'),300);
+ if(el.matches('.tab')||el.closest('.coaching-sheet')||el.matches('button')){
+  const box=el.getBoundingClientRect();if(!box.width||!box.height)return;
+  const wave=document.createElement('span');wave.className='bloom-ripple';
+  wave.style.setProperty('--ripple-x',(x==null?box.width/2:x-box.left)+'px');
+  wave.style.setProperty('--ripple-y',(y==null?box.height/2:y-box.top)+'px');
+  const computed=getComputedStyle(el);
+  if(computed.position==='static')el.style.position='relative';
+  if(computed.overflow==='visible')el.style.overflow='hidden';
+  el.appendChild(wave);setTimeout(()=>wave.remove(),650);
+ }
+}
+document.addEventListener('pointerdown',e=>{
+ const el=e.target.closest('button,.tab,[role="button"]');
+ if(!el||e.button!==0)return;
+ bloomPulse(el,e.clientX,e.clientY);
+},{passive:true});
+document.addEventListener('keydown',e=>{
+ if((e.key==='Enter'||e.key===' ')&&e.target.matches('button,.tab,[role="button"]'))bloomPulse(e.target);
+});
+let bloomLastSuccessAt=0;
+function bloomSuccess(message){
+ if(!bloomMotionEnabled()||Date.now()-bloomLastSuccessAt<850)return;
+ bloomLastSuccessAt=Date.now();
+ const old=document.querySelector('.bloom-success');if(old)old.remove();
+ const chip=document.createElement('div');chip.className='bloom-success';chip.setAttribute('aria-hidden','true');
+ chip.textContent='✦ '+(String(message).includes('Google')?'SYNCED':String(message).includes('完了')?'QUEST UPDATED':'SAVED')+' 🍏';
+ document.body.appendChild(chip);setTimeout(()=>chip.remove(),1050);
+}
 
 paint();
 workoutHashImport();

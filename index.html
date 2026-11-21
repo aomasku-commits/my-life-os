@@ -457,7 +457,7 @@ function gcalStartAuth(){
  gcalBusy=true;gcalStatus('Googleの認証を開いています');
  try{
   gcalTokenClient=google.accounts.oauth2.initTokenClient({
-   client_id:clientId,scope:'https://www.googleapis.com/auth/calendar.readonly',
+   client_id:clientId,scope:'https://www.googleapis.com/auth/calendar.events',
    callback:async response=>{
     if(response.error){gcalBusy=false;gcalStatus('認証エラー：'+response.error);return;}
     gcalToken=response.access_token;gcalTokenExpiry=Date.now()+Number(response.expires_in||3600)*1000;
@@ -482,6 +482,41 @@ document.addEventListener('click',e=>{
   if(value!==String(s.googleClientId||'')){s.googleClientId=value;save();}
   gcalStartAuth();
  }
+});
+
+
+function gcalEditToday(q){
+ const title=prompt('予定名を編集',q.title);if(title===null)return;
+ const name=title.trim().slice(0,90);if(!name){notify('名前を入力してね');return;}
+ const start=prompt('開始時刻 HH:MM',q.start||'');if(start===null)return;
+ if(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(start)){notify('時刻は HH:MM で入力してね');return;}
+ const minutesText=prompt('所要時間（分）',String(q.minutes));if(minutesText===null)return;
+ const minutes=Number(minutesText);if(!Number.isInteger(minutes)||minutes<1||minutes>600){notify('1〜600分で入力してね');return;}
+ const total=Number(start.slice(0,2))*60+Number(start.slice(3))+minutes;
+ q.title=name;q.start=start;q.end=String(Math.floor(total/60)%24).padStart(2,'0')+':'+String(total%60).padStart(2,'0');q.minutes=minutes;q.editedLocally=true;
+ if(q.status==='running')q.status='paused';
+ s.questSessions[q.id]={ms:minutes*60000,at:null};save();paint();
+ notify('LIFE OSで保存したよ'+(q.gcalKey?'。Googleへ反映ボタンで書き戻せるよ':''));
+}
+async function gcalWriteback(q,day){
+ if(!q?.gcalKey)return;
+ if(!gcalToken||Date.now()>=gcalTokenExpiry){gcalStatus('先にGoogle予定を同期し、編集権限を許可してね');return;}
+ if(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(q.start||'')){gcalStatus('開始時刻を設定してね');return;}
+ const start=new Date(day+'T'+q.start+':00+09:00');
+ const end=new Date(start.getTime()+q.minutes*60000);
+ if(!Number.isFinite(start.getTime()))return;
+ if(!confirm('元のGoogle予定を変更しますか？\\n'+q.title+'\\n'+day+' '+q.start+'（'+q.minutes+'分）'))return;
+ try{
+  const url='https://www.googleapis.com/calendar/v3/calendars/primary/events/'+encodeURIComponent(q.gcalKey);
+  const response=await fetch(url,{method:'PATCH',headers:{Authorization:'Bearer '+gcalToken,'Content-Type':'application/json'},body:JSON.stringify({summary:q.title,start:{dateTime:start.toISOString(),timeZone:'Asia/Tokyo'},end:{dateTime:end.toISOString(),timeZone:'Asia/Tokyo'}})});
+  if(!response.ok){const err=await response.json().catch(()=>({}));throw Error(err.error?.message||'HTTP '+response.status);}
+  q.editedLocally=false;q.calendarUnavailable=false;save();paint();gcalStatus('Googleカレンダーにも反映したよ');
+ }catch(err){gcalStatus('Googleへの更新に失敗：'+err.message+'（LIFE OS側には保存済み）');}
+}
+document.addEventListener('click',event=>{
+ const edit=event.target.closest('[data-qedit-today]'),push=event.target.closest('[data-gcal-push]');
+ if(edit){const q=(s.quests[today()]||[]).find(x=>x.id===edit.dataset.qeditToday);if(q)gcalEditToday(q);return;}
+ if(push){const q=(s.quests[push.dataset.gcalDay]||[]).find(x=>x.id===push.dataset.gcalPush);if(q)gcalWriteback(q,push.dataset.gcalDay);}
 });
 
 /* Phase 2 step 1: locally import an iCalendar file. No Google credentials or network requests. */
@@ -707,12 +742,12 @@ function questHTML(){
  '<button type="button" data-qselect="'+esc(x.id)+'">'+(x.status==='done'?'✅':x.calendarUnavailable||questPossibleDuplicate(x,qs)?'⚠️':'◯')+' '+esc(x.title)+
  '<small>'+esc(x.start||'自由')+'–'+esc(x.end||'自由')+' · '+x.minutes+'分</small></button>'+
  '<span class="qhint qitem-status '+(x.status==='done'?'qitem-badge-done':x.status==='running'?'qitem-badge-now':questPossibleDuplicate(x,qs)?'qitem-badge-warn':'qitem-badge-next')+'">'+(x.status==='done'?'✓ CLEAR':questPossibleDuplicate(x,qs)?'要確認':x.status==='running'?'● NOW':'+10 XP')+'</span>'+
- '<button type="button" data-qremove="'+esc(x.id)+'" aria-label="'+esc(x.title)+'を削除">×</button></div>').join('')+'</div>'+
+ '<button type="button" data-qedit-today="'+esc(x.id)+'">編集</button>'+(x.editedLocally&&x.gcalKey?'<button type="button" data-gcal-push="'+esc(x.id)+'" data-gcal-day="'+today()+'">Googleへ反映</button>':'')+'<button type="button" data-qremove="'+esc(x.id)+'" aria-label="'+esc(x.title)+'を削除">×</button></div>').join('')+'</div>'+
  '<div class="qadd"><input class="field" id="qtitle" maxlength="90" placeholder="新しいクエスト"><input class="field" id="qminutes" type="number" value="25" min="1" max="600" aria-label="所要時間（分）"><button type="button" data-qact="add">＋追加</button></div></div></details>'+
  '<details class="qdetails qsync" id="qsync"><summary><span>📅 予定の取り込み・同期</span><span class="qsummary-arrow">⌄</span></summary>'+
  '<div class="qdetails-body"><div class="qactions"><button type="button" data-gcal-home-sync="1">🔄 Google予定を同期</button><button type="button" data-qact="import-week">週間予定を取り込む</button><button type="button" data-qact="import-ics">.icsを取り込む</button></div>'+
  '<p class="qhint">'+(s.lastGcalSyncAt?'最終同期：'+new Date(s.lastGcalSyncAt).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}):'Google連携は設定タブで初期設定')+'</p>'+
- '<p class="qhint">Google同期はボタンを押したときだけ読み取り専用で実行します。.icsは端末内で処理します。</p>'+
+ '<p class="qhint">Google予定は手動で読み込みます。Google由来の予定を編集した後は「Googleへ反映」で元の予定に書き戻せます。削除・完了状態はGoogleに反映しません。</p>'+
  '<input id="quest-ics-input" type="file" accept=".ics,text/calendar" class="hidden"></div></details>'+
  '<p class="qhome-affirmation">時間切れも、未完了も、あなたの価値とは関係ない。小さな前進を残そう。</p></div>';
  return content;
@@ -723,7 +758,7 @@ function questFutureHTML(){
  const qs=questSorted(s.quests[questPreviewDay]||[]);
  const dateMin=today(),dateMax=add(today(),30);
  const preview=questPreviewDay>=dateMin&&questPreviewDay<=dateMax?questPreviewDay:dateMin;
- const rows=qs.map(q=>'<div class="qitem"><div style="flex:1;min-width:0"><strong style="color:#eeffed">'+esc(q.title)+'</strong><small style="display:block;color:#bdd5c3">'+esc(q.start||'自由')+' · '+Number(q.minutes||25)+'分 · '+(q.status==='done'?'完了':q.calendarUnavailable?'Google側で見つからない・要確認':questPossibleDuplicate(q,qs)?'重複候補':'予定')+'</small></div><button type="button" data-qedit="'+esc(q.id)+'">編集</button><button type="button" data-qfuture-remove="'+esc(q.id)+'" aria-label="削除">×</button></div>').join('');
+ const rows=qs.map(q=>'<div class="qitem"><div style="flex:1;min-width:0"><strong style="color:#eeffed">'+esc(q.title)+'</strong><small style="display:block;color:#bdd5c3">'+esc(q.start||'自由')+' · '+Number(q.minutes||25)+'分 · '+(q.status==='done'?'完了':q.calendarUnavailable?'Google側で見つからない・要確認':questPossibleDuplicate(q,qs)?'重複候補':'予定')+'</small></div><button type="button" data-qedit="'+esc(q.id)+'">編集</button>'+(q.editedLocally&&q.gcalKey?'<button type="button" data-gcal-push="'+esc(q.id)+'" data-gcal-day="'+questPreviewDay+'">Googleへ反映</button>':'')<button type="button" data-qfuture-remove="'+esc(q.id)+'" aria-label="削除">×</button></div>').join('');
  return '<div class="qbox qfuture" id="qfuture"><div class="qhint">📅 UPCOMING QUESTS · 未来のクエスト</div><h2 style="font-size:18px">明日の自分も、少しずつ準備しよう。</h2>'+
  '<label class="qhint" for="qfuture-date">表示する日付（今後30日）</label><input class="field" type="date" id="qfuture-date" min="'+dateMin+'" max="'+dateMax+'" value="'+preview+'">'+
  '<p class="qhint">'+fmt(preview)+' · '+qs.length+'件の予定</p>'+(rows||'<p class="qhint">この日のクエストはまだないよ。</p>')+
@@ -978,7 +1013,7 @@ document.addEventListener('click',event=>{
  if(!next){notify('言葉を入力してね');return;}
  s.visionDraft[editor.dataset.key]=next;save();paint();notify('大切な言葉を保存したよ ✦');
 });
-function settingsHTML(){return `<h1>自分に合う道具に、<br>育てていこう。</h1><p class="lead">予定や記録はこの端末のブラウザに保存。定期的にバックアップしてね。</p><div class="card"><h2>📅 Googleカレンダー連携（読み取り専用）</h2><p class="tip">Google Cloudで作成したウェブアプリ用OAuthクライアントIDを設定すると、Googleアカウントのカレンダーから今後14日間の予定をクエストとして読み込めます。Google側の予定は変更しません。初回はGoogleでアクセスを許可してください。</p><label class="label" for="gcal-client-id">OAuth クライアントID</label><input class="field" id="gcal-client-id" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="123456789-xxxx.apps.googleusercontent.com" value="${esc(s.googleClientId||'')}"><div class="actionrow"><button class="button secondary" data-gcal-save="1">IDを保存</button><button class="button" data-gcal-sync="1">Googleに接続して同期</button></div><p class="tip" id="gcal-status">ステータス：${s.lastGcalSyncAt?'最終同期 '+new Date(s.lastGcalSyncAt).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}):'未同期'}。同期はボタンを押したときだけ実行します。</p><p class="tip">Google Cloud Console で「Google Calendar API」を有効化し、OAuth同意画面を設定。「承認済みJavaScript生成元」に <code>https://aomasku-commits.github.io</code> を追加してください。クライアントシークレットは入力しないでください。ブラウザに保存するのはクライアントIDだけで、アクセストークンは保存しません。</p></div><div class="card"><h2>データの管理</h2><p class="tip">別の端末やブラウザには自動同期されません。バックアップをダウンロードして移行できます。</p><div class="actionrow"><button class="button" data-export="1">記録をバックアップ</button><button class="button secondary" data-import="1">バックアップを復元</button></div></div><div class="card"><h2>リセット</h2><p class="tip">間違えてリセットしないよう、実行時に確認します。</p><button class="button danger" data-reset="1">全記録を初期化</button></div><div class="card"><h2>使い方</h2><div class="item">① 今日：最低14分の習慣をチェック</div><div class="item">② 週間：曜日別の予定を編集</div><div class="item">③ 筋トレ：保存済み履歴と身体の目標を確認<br>④ 記録：自分の言葉で事実と気持ちを書く</div><div class="item">④ 目標：年末までの方向を見失わない</div><div class="item">⑤ 設定：JSONでバックアップ</div></div><div class="tip">このアプリはローカル動作版です。Googleカレンダーは接続時のみ読み取り・取り込みが可能です。通知・Notion・常時自動同期は未実装です。</div>`}
+function settingsHTML(){return `<h1>自分に合う道具に、<br>育てていこう。</h1><p class="lead">予定や記録はこの端末のブラウザに保存。定期的にバックアップしてね。</p><div class="card"><h2>📅 Googleカレンダー連携（読み込み・書き戻し）</h2><p class="tip">Google Cloudで作成したウェブアプリ用OAuthクライアントIDを設定すると、Googleアカウントのカレンダーから今後14日間の予定をクエストとして読み込めます。Googleから取り込んだ予定の変更は「Googleへ反映」で元の予定に書き戻せます。初回はGoogleで編集権限を許可してください。</p><label class="label" for="gcal-client-id">OAuth クライアントID</label><input class="field" id="gcal-client-id" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="123456789-xxxx.apps.googleusercontent.com" value="${esc(s.googleClientId||'')}"><div class="actionrow"><button class="button secondary" data-gcal-save="1">IDを保存</button><button class="button" data-gcal-sync="1">Googleに接続して同期</button></div><p class="tip" id="gcal-status">ステータス：${s.lastGcalSyncAt?'最終同期 '+new Date(s.lastGcalSyncAt).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}):'未同期'}。同期はボタンを押したときだけ実行します。</p><p class="tip">Google Cloud Console で「Google Calendar API」を有効化し、OAuth同意画面を設定。「承認済みJavaScript生成元」に <code>https://aomasku-commits.github.io</code> を追加してください。クライアントシークレットは入力しないでください。ブラウザに保存するのはクライアントIDだけで、アクセストークンは保存しません。</p></div><div class="card"><h2>データの管理</h2><p class="tip">別の端末やブラウザには自動同期されません。バックアップをダウンロードして移行できます。</p><div class="actionrow"><button class="button" data-export="1">記録をバックアップ</button><button class="button secondary" data-import="1">バックアップを復元</button></div></div><div class="card"><h2>リセット</h2><p class="tip">間違えてリセットしないよう、実行時に確認します。</p><button class="button danger" data-reset="1">全記録を初期化</button></div><div class="card"><h2>使い方</h2><div class="item">① 今日：最低14分の習慣をチェック</div><div class="item">② 週間：曜日別の予定を編集</div><div class="item">③ 筋トレ：保存済み履歴と身体の目標を確認<br>④ 記録：自分の言葉で事実と気持ちを書く</div><div class="item">④ 目標：年末までの方向を見失わない</div><div class="item">⑤ 設定：JSONでバックアップ</div></div><div class="tip">このアプリはローカル動作版です。Google予定の取り込みと、明示的な変更反映に対応しています。常時自動同期・Google予定の削除・端末間データ同期は未実装です。</div>`}
 document.addEventListener('click',e=>{const el=e.target.closest('button');if(!el)return;if(el.dataset.tab){active=el.dataset.tab;paint();scrollTo(0,0)}else if(el.dataset.go){active=el.dataset.go;paint();scrollTo(0,0)}else if(el.dataset.shift){viewDate=add(viewDate,Number(el.dataset.shift));paint()}else if(el.dataset.today){viewDate=today();paint()}else if(el.dataset.mini){s.miniMode=!s.miniMode;save();paint()}else if(el.dataset.savefocus){s.focus=document.getElementById('focus').value;save();notify('今日の一件を保存したよ')}else if(el.dataset.weekshift){weekDate=add(weekDate,Number(el.dataset.weekshift));paint()}else if(el.dataset.weekday){weekDate=el.dataset.weekday;paint()}else if(el.dataset.addplan){const t=document.getElementById('planTitle').value.trim();if(!t){notify('予定名を入力してね');return}s.plans[weekDate]??=[];s.plans[weekDate].push({id:'custom-'+Date.now(),title:t,time:document.getElementById('planTime').value||'時間未定',duration:document.getElementById('planDuration').value||'自由',category:'追加'});save();paint();notify('予定を追加したよ')}else if(el.dataset.delplan){const id=el.dataset.delplan;if(id.startsWith('custom')){s.plans[weekDate]=(s.plans[weekDate]||[]).filter(p=>p.id!==id)}else{(s.weekOverrides[weekDate]??=[]).push(id)}save();paint();notify('この日の予定から外したよ')}else if(el.dataset.savejournal){s.journal[viewDate]={fact:document.getElementById('jfact').value,feeling:document.getElementById('jfeeling').value,honest:document.getElementById('jhonest').value,next:document.getElementById('jnext').value};save();notify('日記を保存したよ')}else if(el.dataset.export){const blob=new Blob([JSON.stringify({app:'ARC_LIFE_OS',version:1,exportedAt:new Date().toISOString(),data:s},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ARC_backup_'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000)}else if(el.dataset.import){document.getElementById('importFile').click()}else if(el.dataset.reset){if(confirm('本当にすべての記録を消去しますか？ バックアップをおすすめします。')){s=blank();save();paint();notify('初期化しました')}}});document.addEventListener('change',e=>{const t=e.target;if(t.dataset.habit){s.habits[t.dataset.day]??={};s.habits[t.dataset.day][t.dataset.habit]=t.checked;save();paint();if(t.checked)notify('約束をひとつ積み上げた ✦')}if(t.id==='viewDate'||t.id==='journalDate'){viewDate=t.value||today();paint()}});document.getElementById('importFile').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{const v=JSON.parse(await f.text());if(v.app!=='ARC_LIFE_OS'||!v.data||typeof v.data!=='object')throw Error('形式が違います');if(confirm('今の記録をバックアップの内容で置き換えますか？')){s={...blank(),...v.data};save();paint();notify('復元しました')}}catch(err){alert('バックアップを読み込めませんでした：'+err.message)}e.target.value=''});
 function blankWorkout() {
   return {sessions: [], draft: null};

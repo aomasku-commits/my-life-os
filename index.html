@@ -232,6 +232,60 @@ button:focus-visible,summary:focus-visible{outline:3px solid #cbff9c;outline-off
 .qdetails#qdetails{border-color:#8dbf7f}.qdetails#qdetails>summary{background:#214b35;color:#edffe7;font-size:15px}.qdetails#qdetails .qitem{min-height:58px}.qdetails#qdetails .qitem button:first-child{font-size:14px;line-height:1.4;text-align:left}.qdetails#qdetails .qitem small{margin-top:3px}
 .lifeos-diagnostic{display:flex;flex-direction:column;gap:2px;margin:10px 0 0;padding:8px 11px;border:1px solid #56775c;background:#1a382b;border-radius:10px;color:#e8ffe5;font-size:11px;line-height:1.45}
 .lifeos-diagnostic strong{color:#d1ff9a;font-size:11px}.lifeos-diagnostic span{color:#b6d7bf}
+
+/* BLOOM: polished home editorial design, accessibility & reading hierarchy */
+:root{--lime:#c9fb8d;--bg:#0b1420}
+body{background:radial-gradient(ellipse 110% 390px at 50% -110px,#2c5940 0,transparent 75%),radial-gradient(ellipse 70% 430px at 105% 30%,#19372e 0,transparent 80%),#0b1420}
+#home{isolation:isolate}
+#home .qhome{border:1px solid #619a72;border-radius:27px;padding:20px 17px 22px;background:radial-gradient(ellipse 80% 200px at 96% 2%,#91c87d2a 0,transparent 95%),linear-gradient(165deg,#133c30 0%,#0f3028 52%,#0b2625 100%);box-shadow:0 18px 48px #030d0d66, inset 0 1px #d4ffca20}
+#home .qhome-head{padding-bottom:9px;border-bottom:1px solid #a3d5a925}
+#home .qhome-head .qhint{letter-spacing:.12em;font-size:10px;font-weight:800;color:#b8dec0}
+#home .qlevel{letter-spacing:.05em;background:#d0f69c;color:#24422c;padding:6px 13px}
+#home .qhome-hello{font-size:clamp(26px,7.5vw,38px);line-height:1.26;letter-spacing:-.06em;margin:19px 0 21px;font-weight:900}
+#home .qhome-hello em{color:#ceff9c;font-style:normal}
+#home .qhome-greeting{display:block;font-size:10px;font-weight:850;letter-spacing:.2em;color:#b7d9ba;margin-bottom:9px}
+#home .qhome-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#home .qhome-stats>div{background:#e4ffd00c;border:1px solid #c3efb62c;border-radius:15px;padding:12px 15px;min-width:0}
+#home .qhome-stats strong{font-size:26px;letter-spacing:-.04em}
+#home .qhome-stats span{font-size:11px;color:#c5ddc9}
+#home .qhome>.qtrack{height:7px;background:#b0d8a727;margin-top:15px;margin-bottom:20px}
+#home .qhero{position:relative;overflow:hidden;background:linear-gradient(150deg,#20543c 0%,#153b30 56%,#102e29 100%);border:1px solid #82c08c;border-radius:23px;padding:21px 17px 17px;margin:12px 0 16px;box-shadow:0 12px 30px #04190f55,inset 0 1px #ffffff1c}
+#home .qhero::after{content:"";position:absolute;right:-45px;top:-48px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,#b8f39824,transparent 70%);pointer-events:none}
+#home .qhero-eyebrow{font-size:10px;letter-spacing:.2em;color:#dcffab}
+#home .qhero h2{font-size:clamp(23px,6.2vw,31px);line-height:1.35;letter-spacing:-.035em;margin:14px 0 9px;text-wrap:pretty}
+#home .qhero>.qhint{font-size:12px;color:#d3e8d5}
+#home .qclock{font-weight:850;font-size:clamp(59px,16vw,81px);letter-spacing:-.055em;margin:24px 0 4px;text-shadow:0 2px 25px #b4ed9a24}
+#home .qclock-status{color:#cee1d1;font-size:12px}
+#home .qtimer-track{height:9px;margin:19px 0 17px;background:#092d24}
+#home .qclear{background:linear-gradient(180deg,#dcffa4,#bdf783);color:#153723;box-shadow:0 6px 0 #76b65b2e,0 10px 26px #88e36b29;min-height:72px;border-radius:17px;letter-spacing:.005em}
+#home .qclear:active{transform:translateY(2px);box-shadow:0 3px 0 #76b65b2e}
+#home .qclear:disabled{background:#3f654e;box-shadow:none}
+#home .qhero-actions{gap:9px;margin-top:15px}
+#home .qhero-actions button{background:#f5fff00e;border:1px solid #b9e2bb50;color:#f4fff0;border-radius:13px;min-height:48px}
+#home .qdetails{background:#112d29;border:1px solid #3c6857;border-radius:19px;margin-top:12px}
+#home .qdetails summary{min-height:60px;font-size:14px;letter-spacing:-.025em;padding:16px;gap:12px}
+#home .qdetails#qdetails{border-color:#80aa79;box-shadow:0 9px 20px #020b0826}
+#home .qdetails#qdetails>summary{background:linear-gradient(90deg,#2b593d,#234934);font-size:15px}
+#home .qdetails .qdetails-body{padding:4px 11px 16px}
+#home .qitems{position:relative}
+#home .qitem{position:relative;display:flex;gap:7px;align-items:center;background:#173b2e;border:1px solid #355e4b;border-radius:14px;margin:8px 0;padding:7px;min-height:65px;transition:background .15s,border-color .15s}
+#home .qitem.current{border-color:#d2fa93;background:#285540;box-shadow:inset 3px 0 #c5fc88}
+#home .qitem.is-done{background:#153329aa;opacity:.84}
+#home .qitem.is-running{border-color:#a2e389;background:#24513b}
+#home .qitem button:first-child{line-height:1.45;font-size:13px;font-weight:750;padding:8px 7px;overflow-wrap:anywhere}
+#home .qitem small{margin-top:3px;font-size:11px;color:#b4d5be;font-weight:500}
+#home .qitem-status{font-size:10px;color:#d4f7c4;text-align:center;min-width:43px}
+#home .qitem.is-done .qitem-status{color:#b8d0bc}
+#home .qitem button:last-child{background:#ffffff0c;border:1px solid #ffffff21;min-width:35px;min-height:40px;padding:6px;border-radius:11px;color:#e2eedf;font-size:17px}
+#home .qadd{margin-top:16px}
+#home .qadd .field{min-height:47px}
+#home .qhome-affirmation{line-height:1.65;color:#bdd6c5;font-size:11px;margin-top:19px}
+#home .qbelow{margin-top:13px}
+#home .qlegacy>summary{color:#b9d9c2}
+.lifeos-diagnostic{margin-top:7px;opacity:.8;padding:6px 9px;border-radius:9px;font-size:10px}
+.lifeos-diagnostic strong,.lifeos-diagnostic span{font-size:10px}
+@media(max-width:390px){#home .qhome{padding:17px 12px 18px}#home .qhero{padding:18px 12px 14px}#home .qhome-stats>div{padding:11px 10px}#home .qitem{gap:3px}#home .qitem-status{font-size:9px;min-width:36px}}
+@media(prefers-reduced-motion:reduce){#home .qitem{transition:none}#home .qclear:active{transform:none}}
 </style></head><body><main class="app"><div class="top"><div class="logo">🍏 LIFE OS <span class="logo-mini">BLOOM</span></div><div class="date" id="headerDate"></div></div><div id="lifeos-diagnostic" class="lifeos-diagnostic" role="status" aria-live="polite"><strong>🍏 LIFE OS build 2026.11.21-D2</strong><span>画面を読み込み中。予定が表示されない場合は、この表示を確認してね。</span></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="questDock" class="quest-dock" hidden aria-label="クエスト操作">
 <div class="quest-dock-main"><span class="quest-dock-name" id="questDockName"></span><span class="quest-dock-time" id="questDockTime"></span></div>
 <button type="button" id="questDockBack" aria-label="クエストに戻る">↑ 戻る</button>
@@ -505,7 +559,7 @@ function questHTML(){
  const remaining=q?remainingQuest(q):0,percent=q?Math.max(0,Math.min(100,remaining/(Math.max(1,q.minutes)*60)*100)):0;
  const running=q?.status==='running',completed=q?.status==='done';
  let content='<div class="qbox qhome" id="qbox"><div class="qhome-head"><span class="qhint">🍏 LIFE OS / QUEST MODE</span><span class="qlevel">LV.'+questRank()+'</span></div>'+
- '<div class="qhome-hello">今日の一歩を、楽しもう。</div>'+
+ '<div class="qhome-hello"><span class="qhome-greeting">GROW AT YOUR PACE</span>今日の一歩を、<br><em>楽しもう。</em></div>'+
  '<div class="qhome-stats"><div><strong>'+wins+'<small> / '+qs.length+'</small></strong><span>今日のクリア</span></div><div><strong>'+questLifetimeXP()+' <small>XP</small></strong><span>累計経験値</span></div></div>'+
  '<div class="qtrack" role="progressbar" aria-label="今日の達成率" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+(qs.length?Math.round(wins/qs.length*100):0)+'"><div class="qfill" style="width:'+(qs.length?wins/qs.length*100:0)+'%"></div></div>';
  if(q){
@@ -524,10 +578,10 @@ function questHTML(){
  if(allDone)content+='<p class="qallclear">🏆 今日のクエストをすべてクリア！</p>';
  content+='<details class="qdetails" id="qdetails" open><summary><span>📅 今日の予定・クエスト <small>'+qs.length+'件</small></span><span class="qsummary-arrow">⌄</span></summary>'+
  '<div class="qdetails-body">'+(duplicates?'<p class="qduplicate">⚠️ 重複候補 '+duplicates+' 件。達成記録を確認してから整理してね。</p>':'')+
- '<div class="qitems">'+qs.map(x=>'<div class="qitem '+(q&&q.id===x.id?'current':'')+'">'+
+ '<div class="qitems">'+qs.map(x=>'<div class="qitem '+(q&&q.id===x.id?'current ':'')+(x.status==='done'?'is-done ':x.status==='running'?'is-running ':'')+'">'+
  '<button type="button" data-qselect="'+esc(x.id)+'">'+(x.status==='done'?'✅':x.calendarUnavailable||questPossibleDuplicate(x,qs)?'⚠️':'◯')+' '+esc(x.title)+
  '<small>'+esc(x.start||'自由')+'–'+esc(x.end||'自由')+' · '+x.minutes+'分</small></button>'+
- '<span class="qhint">'+(x.status==='done'?'CLEAR':questPossibleDuplicate(x,qs)?'重複候補':x.status==='running'?'NOW':'+10 XP')+'</span>'+
+ '<span class="qhint qitem-status">'+(x.status==='done'?'CLEAR':questPossibleDuplicate(x,qs)?'重複候補':x.status==='running'?'NOW':'+10 XP')+'</span>'+
  '<button type="button" data-qremove="'+esc(x.id)+'" aria-label="'+esc(x.title)+'を削除">×</button></div>').join('')+'</div>'+
  '<div class="qadd"><input class="field" id="qtitle" maxlength="90" placeholder="新しいクエスト"><input class="field" id="qminutes" type="number" value="25" min="1" max="600" aria-label="所要時間（分）"><button type="button" data-qact="add">＋追加</button></div></div></details>'+
  '<details class="qdetails qsync" id="qsync"><summary><span>📅 予定の取り込み・同期</span><span class="qsummary-arrow">⌄</span></summary>'+

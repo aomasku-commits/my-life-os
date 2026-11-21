@@ -452,6 +452,7 @@ function visionHTML(){
  '<p class="vision-quote">'+id.map(visionLines).join('<br>')+'</p><details><summary>理想のセルフイメージをすべて読む</summary><div class="vision-prose">'+visionLines(visionValue('identity'))+'</div></details>'+
  '<button type="button" class="button ghost" data-vision-edit="identity">セルフイメージを編集</button></div>'+
  '<div class="card vision-timeline-intro"><div class="head"><h2>🎯 目標の3つの時間軸</h2><span class="pill">人生 → 今年 → 来年</span></div><p class="tip">目標は人としての価値を決める採点表じゃない。心が向かう方向を思い出すための道しるべ。</p></div>'+
+ vocalGoalHTML()+
  visionPanel('life','🌏 人生で本当に成し遂げたいこと','人生のWHY',true)+
  visionPanel('year','🔥 2026年末までに成し遂げたいこと','近い未来の目標')+
  visionPanel('next','🚀 2027年末までに実現したいこと','独立と理想の暮らし')+
@@ -945,6 +946,49 @@ function workoutHashImport(){
  finally{history.replaceState(null,'',window.location.pathname+window.location.search);}
 }
 window.addEventListener('hashchange',workoutHashImport);
+
+
+/* Vocal competition quest — additive, saved with existing LIFE OS state */
+const vocalSkills=[
+ ['lyrics','歌詞を覚える'],['rhythm','リズム・テンポ'],['pitch','音程'],['voice','発声・ブレス'],
+ ['head','ヘッドボイス・声区移行'],['dynamics','声量・強弱'],['emotion','感情表現'],['stage','ステージ表現']
+];
+function vocalState(){
+ if(!s.vocalGoal||typeof s.vocalGoal!=='object')s.vocalGoal={scores:{},logs:{}};
+ if(!s.vocalGoal.scores)s.vocalGoal.scores={};
+ if(!s.vocalGoal.logs)s.vocalGoal.logs={};
+ return s.vocalGoal;
+}
+function vocalGoalHTML(){
+ const v=vocalState(),day=today(),last='2026-12-05';
+ const remaining=Math.max(0,Math.ceil((dayDate(last)-dayDate(day))/864e5));
+ const rated=vocalSkills.filter(([id])=>Number(v.scores[id])>0).length;
+ const total=vocalSkills.reduce((n,[id])=>n+(Number(v.scores[id])||0),0);
+ const log=v.logs[day]||{};
+ const phases=[['11/21〜11/24','歌詞・リズム・音程の基礎'],['11/25〜11/28','高音・発声・ブレスを安定'],['11/29〜12/2','感情表現・ステージ練習'],['12/3〜12/4','本番シミュレーション・声の調整'],['12/5','LIVE本番 🍏']];
+ return '<div class="card" id="vocal-quest" style="border:1px solid #8bbd84;background:linear-gradient(145deg,#16362e,#172338)">'+
+ '<span class="eyebrow">🍏 SPECIAL QUEST · 12/5</span><h2>「ダーリン」で優勝を目指す！</h2>'+
+ '<p class="tip">みゅうLIVEてんじん16 · 本番まで <b style="color:var(--lime);font-size:23px">'+remaining+'日</b>。目標は順位だけじゃなく、心を届ける歌を完成させること。</p>'+
+ '<div class="qtrack"><div class="qfill" style="width:'+(total/24*100)+'%"></div></div>'+
+ '<p class="small">スキル達成度 '+total+'/24 · 評価済み '+rated+'/8（0＝未評価、1＝練習中、2＝安定し始めた、3＝本番レベル）</p>'+
+ vocalSkills.map(([id,label],i)=>'<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 0"><label for="vocal-'+id+'" style="font-size:13px;flex:1">'+(i+1)+'. '+esc(label)+'</label><select class="field" id="vocal-'+id+'" data-vocal-score="'+id+'" style="width:110px;padding:7px"><option value="0">未評価</option>'+[1,2,3].map(n=>'<option value="'+n+'" '+(Number(v.scores[id])===n?'selected':'')+'>'+n+' / 3</option>').join('')+'</select></div>').join('')+
+ '<details style="margin:15px 0"><summary>📅 本番までの5段階ロードマップ</summary><div class="vision-prose">'+phases.map(([d,x])=>'<p><b>'+d+'</b>　'+x+'</p>').join('')+'</div></details>'+
+ '<div style="border-top:1px solid #58736a;padding-top:13px;margin-top:12px"><h3>🎤 今日の練習ログ</h3>'+
+ '<label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="vocal-practiced" '+(log.practiced?'checked':'')+'> 今日、歌の練習をした</label>'+
+ '<textarea class="field" id="vocal-notes" rows="3" maxlength="1000" placeholder="今日できたこと・改善点・次回の課題">'+esc(log.notes||'')+'</textarea>'+
+ '<button type="button" class="button secondary" id="vocal-save">🍏 練習を記録する</button></div>'+
+ '<p class="tip">記録はこの端末のLIFE OSに保存。評価はいつでも更新できるよ。</p></div>';
+}
+document.addEventListener('change',e=>{
+ const b=e.target.closest('[data-vocal-score]');if(!b)return;
+ const id=b.dataset.vocalScore;if(!vocalSkills.some(x=>x[0]===id))return;
+ vocalState().scores[id]=Number(b.value);save();paint();notify('歌唱スキルの進捗を保存したよ 🍏');
+});
+document.addEventListener('click',e=>{
+ if(!e.target.closest('#vocal-save'))return;
+ const v=vocalState();v.logs[today()]={practiced:!!document.getElementById('vocal-practiced')?.checked,notes:(document.getElementById('vocal-notes')?.value||'').trim().slice(0,1000)};
+ save();paint();notify('今日のボイトレを記録したよ 🎤');
+});
 
 paint();
 workoutHashImport();

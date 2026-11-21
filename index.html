@@ -168,9 +168,92 @@ h2{letter-spacing:-.4px}
 .qadd{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}.qadd input:first-child{flex:1 1 150px;min-width:0}.qadd input[type=number]{flex:0 0 70px;min-width:0}
 .qcelebrate{position:fixed;z-index:9999;inset:0;background:#071b11ee;display:grid;place-items:center;pointer-events:none;color:#d9ffa2;font-size:clamp(27px,8vw,46px);font-weight:900;text-align:center;animation:qfade 1.6s forwards}@keyframes qfade{0%,100%{opacity:0}20%,80%{opacity:1}}@media(prefers-reduced-motion:reduce){.qcelebrate{animation:none}}
 .qitem button:focus-visible,.qclear:focus-visible,.qactions button:focus-visible{outline:3px solid #d4ff9d;outline-offset:3px}.qclock{font-size:clamp(32px,10vw,49px)}
-.qfuture input[type=date]{width:100%;margin:9px 0 12px}.qfuture .qitem button{flex:0 0 auto}.qfuture .qadd button{min-height:43px}</style></head><body><main class="app"><div class="top"><div class="logo">🍏 LIFE OS <span class="logo-mini">BLOOM</span></div><div class="date" id="headerDate"></div></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="toast" class="toast" role="status" aria-live="polite"></div><div id="pfcCelebration" class="pfc-pop" role="status" aria-live="polite"></div><input type="file" id="importFile" accept=".json,application/json" class="hidden"><script>
+.qfuture input[type=date]{width:100%;margin:9px 0 12px}.qfuture .qitem button{flex:0 0 auto}.qfuture .qadd button{min-height:43px}</style></head><body><main class="app"><div class="top"><div class="logo">🍏 LIFE OS <span class="logo-mini">BLOOM</span></div><div class="date" id="headerDate"></div></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="toast" class="toast" role="status" aria-live="polite"></div><div id="pfcCelebration" class="pfc-pop" role="status" aria-live="polite"></div><input type="file" id="importFile" accept=".json,application/json" class="hidden"><script src="https://accounts.google.com/gsi/client" async defer></script><script>
 const KEY='arc_life_os_v1';const tz='Asia/Tokyo';const iso=(d)=>{const a=new Intl.DateTimeFormat('sv-SE',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);return a};const today=()=>iso(new Date());const dayDate=x=>new Date(x+'T12:00:00+09:00');const add=(date,n)=>iso(new Date(dayDate(date).getTime()+n*864e5));const dow=['日','月','火','水','木','金','土'];const esc=s=>String(s??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));const HABITS=[{id:'sense',label:'五感・瞑想',min:'3分',max:'15分',emoji:'🌿'},{id:'learn',label:'心理学 / NLP / マーケ学習',min:'5分',max:'20分',emoji:'🧠'},{id:'create',label:'事業につながる小さな発信',min:'3分',max:'20分',emoji:'🚀'},{id:'reflect',label:'自己受容・振り返り',min:'3分',max:'10分',emoji:'♡'}];const TEMPLATE={0:[['20:00','20分','翌週の作戦会議','内面']],1:[['朝','3分','五感を感じる','内面'],['夜','10分','ダーリン練習（12/5まで）','音楽']],2:[['朝','3分','五感を感じる','内面'],['夜','60〜75分','筋トレ','身体']],3:[['夜','20分','事業：発信下書き','事業'],['夜','10分','ダーリン練習（12/5まで）','音楽']],4:[['夜','60〜75分','筋トレ','身体']],5:[['夜','15分','1週間の記録を振り返る','内面'],['夜','10分','ダーリン練習（12/5まで）','音楽']],6:[['午前 or 空き時間','45分','心理学・マーケ深掘りと発信','事業'],['午後 or 空き時間','60〜75分','筋トレ（調整可）','身体']]};const blank=()=>({habits:{},journal:{},plans:{},weekOverrides:{},focus:'',miniMode:true,workout:blankWorkout()});let s;try{s={...blank(),...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{s=blank()};let active='home',viewDate=today(),weekDate=today();const save=()=>localStorage.setItem(KEY,JSON.stringify(s));const notify=m=>{const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.style.display='none',2200)};const done=(day,id)=>!!s.habits[day]?.[id];const count=day=>HABITS.filter(h=>done(day,h.id)).length;const daysLeft=()=>Math.max(0,Math.ceil((dayDate('2027-01-01')-dayDate(today()))/864e5));const isPast=day=>day<=today();const total=()=>{let n=0;Object.entries(s.habits).forEach(([day,hs])=>{if(isPast(day))n+=HABITS.filter(h=>hs[h.id]).length});return n};const streak=()=>{let d=today(),n=0;if(count(d)===0)d=add(d,-1);for(let i=0;i<365;i++){if(count(d)===0)break;n++;d=add(d,-1)}return n};const level=()=>Math.floor(total()/20)+1;const fmt=day=>`${Number(day.slice(5,7))}/${Number(day.slice(8,10))} (${dow[dayDate(day).getDay()]})`;const dayPlan=day=>{let wd=dayDate(day).getDay();let defaults=(TEMPLATE[wd]||[]).map((a,i)=>({id:'base'+i,time:a[0],duration:a[1],title:a[2],category:a[3]}));if(day>'2026-12-05')defaults=defaults.filter(x=>!x.title.includes('ダーリン'));if(day==='2026-11-15')defaults=[{id:'beppu',time:'午後中心',duration:'遠征',title:'マッスルゲート別府を観戦（移動・回復優先）',category:'特別'}];if(day==='2026-12-05')defaults=[{id:'live',time:'本番',duration:'ライブ',title:'「ダーリン」ライブ出演。体調を整える',category:'特別'}];return [...defaults,...(s.plans[day]||[])].filter(x=>!(s.weekOverrides[day]||[]).includes(x.id))};function taskMarkup(day){return HABITS.map(h=>`<label class="task ${done(day,h.id)?'done':''}"><input type="checkbox" data-habit="${h.id}" data-day="${day}" ${done(day,h.id)?'checked':''}><div style="flex:1"><div class="name">${h.emoji} ${h.label}</div><div class="meta">${s.miniMode?'最低 '+h.min:'理想 '+h.max} · できたらチェック</div></div></label>`).join('')}function paint(){document.getElementById('headerDate').textContent=fmt(today());document.querySelectorAll('main section').forEach(e=>e.classList.add('hidden'));document.getElementById(active).classList.remove('hidden');document.querySelectorAll('.tab').forEach(e=>{const selected=e.dataset.tab===active;e.classList.toggle('active',selected);if(selected)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current')});document.getElementById(active).innerHTML=({home:homeHTML,week:weekHTML,workout:workoutHTML,nutrition:nutritionHTML,journal:journalHTML,vision:visionHTML,settings:settingsHTML})[active]();}
 
+
+
+/* Google Calendar GIS token model. OAuth access token stays in memory only. */
+let gcalTokenClient=null,gcalToken=null,gcalTokenExpiry=0,gcalBusy=false;
+const gcalStatus=(message)=>{const el=document.getElementById('gcal-status');if(el)el.textContent='ステータス：'+message;notify(message);};
+const gcalISOday=(date)=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(date);
+const gcalClock=(date)=>new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(date);
+function gcalImportEvent(event){
+ if(event.status==='cancelled'||!event.start?.dateTime)return {added:0,updated:0};
+ const start=new Date(event.start.dateTime),end=new Date(event.end?.dateTime||event.start.dateTime);
+ if(!Number.isFinite(start.getTime()))return {added:0,updated:0};
+ const day=gcalISOday(start),title=String(event.summary||'予定').trim().slice(0,90);
+ if(!title)return {added:0,updated:0};
+ const startClock=gcalClock(start),endClock=Number.isFinite(end.getTime())?gcalClock(end):'自由';
+ const mins=Math.max(1,Math.min(600,Math.round(((end-start)/60000)||25)));
+ const key=String(event.id||event.iCalUID||title+'-'+start.toISOString()).slice(0,300);
+ const quests=s.quests[day]??=[];
+ const matched=quests.find(q=>q.gcalKey===key);
+ if(matched){
+  if(matched.status==='done')return {added:0,updated:0};
+  // Keep user edits to title and duration. Update only fields untouched from the last Google version.
+  if(!matched.editedLocally){
+   matched.title=title;matched.start=startClock;matched.end=endClock;matched.minutes=mins;
+   if(matched.status!=='running'){s.questSessions[matched.id]={ms:mins*60000,at:null};}
+  }
+  return {added:0,updated:1};
+ }
+ const already=quests.some(q=>q.title===title&&q.start===startClock&&q.minutes===mins);
+ if(already)return {added:0,updated:0};
+ quests.push({id:'gcal-'+day+'-'+Math.random().toString(36).slice(2,10),gcalKey:key,title,start:startClock,end:endClock,minutes:mins,status:'pending',completedAt:null});
+ s.quests[day]=quests;return {added:1,updated:0};
+}
+async function gcalFetchAndImport(token){
+ const base=today(),end=add(base,14);
+ const since=new Date(base+'T00:00:00+09:00').toISOString();
+ const until=new Date(end+'T00:00:00+09:00').toISOString();
+ let count=0,updated=0,seen=0,pageToken='',pages=0;
+ do{
+  const url=new URL('https://www.googleapis.com/calendar/v3/calendars/primary/events');
+  url.searchParams.set('timeMin',since);url.searchParams.set('timeMax',until);
+  url.searchParams.set('singleEvents','true');url.searchParams.set('orderBy','startTime');url.searchParams.set('maxResults','250');
+  if(pageToken)url.searchParams.set('pageToken',pageToken);
+  const resp=await fetch(url.toString(),{headers:{Authorization:'Bearer '+token},cache:'no-store'});
+  if(!resp.ok){const info=await resp.json().catch(()=>({}));throw Error('Google API '+resp.status+'：'+(info.error?.message||'アクセスを確認してください'));}
+  const payload=await resp.json();
+  for(const ev of payload.items||[]){seen++;const result=gcalImportEvent(ev);count+=result.added;updated+=result.updated;}
+  pageToken=payload.nextPageToken||'';pages++;
+ }while(pageToken&&pages<12);
+ save();paint();return {count,updated,seen,more:!!pageToken};
+}
+function gcalStartAuth(){
+ const clientId=String(s.googleClientId||'').trim();
+ if(!/^[A-Za-z0-9_-]+-[A-Za-z0-9_-]+\.apps\.googleusercontent\.com$/.test(clientId)){gcalStatus('先に有効なOAuthクライアントIDを保存してね');return;}
+ if(!window.google?.accounts?.oauth2){gcalStatus('Google認証ライブラリを読み込み中。再度押してね');return;}
+ if(gcalBusy)return;
+ gcalBusy=true;gcalStatus('Googleの認証を開いています');
+ try{
+  gcalTokenClient=google.accounts.oauth2.initTokenClient({
+   client_id:clientId,scope:'https://www.googleapis.com/auth/calendar.readonly',
+   callback:async response=>{
+    if(response.error){gcalBusy=false;gcalStatus('認証エラー：'+response.error);return;}
+    gcalToken=response.access_token;gcalTokenExpiry=Date.now()+Number(response.expires_in||3600)*1000;
+    try{gcalStatus('予定を読み込み中');const result=await gcalFetchAndImport(gcalToken);gcalStatus('追加 '+result.count+'件・更新 '+result.updated+'件（今後14日間）'+(result.more?'。件数上限あり':''));}
+    catch(err){gcalStatus('同期できませんでした：'+err.message);}
+    finally{gcalBusy=false;}
+   },
+   error_callback:err=>{gcalBusy=false;gcalStatus('認証画面を完了できませんでした：'+(err.type||'もう一度試してね'));}
+  });
+  gcalTokenClient.requestAccessToken({prompt:gcalToken&&Date.now()<gcalTokenExpiry?'':'consent'});
+ }catch(err){gcalBusy=false;gcalStatus('認証を開始できませんでした：'+err.message);}
+}
+document.addEventListener('click',e=>{
+ if(e.target.closest('[data-gcal-save]')){
+  const input=document.getElementById('gcal-client-id');const id=input?.value.trim()||'';
+  if(id&&!/^[A-Za-z0-9_-]+-[A-Za-z0-9_-]+\.apps\.googleusercontent\.com$/.test(id)){gcalStatus('クライアントIDの形式を確認してね');return;}
+  s.googleClientId=id;save();gcalStatus(id?'クライアントIDを保存したよ':'クライアントIDを消去したよ');
+ }
+ if(e.target.closest('[data-gcal-sync]')){
+  const input=document.getElementById('gcal-client-id'),value=input?.value.trim()||'';
+  if(value!==String(s.googleClientId||'')){s.googleClientId=value;save();}
+  gcalStartAuth();
+ }
+});
 
 /* Phase 2 step 1: locally import an iCalendar file. No Google credentials or network requests. */
 const questICSUnescape=v=>v.replace(/\\n/gi,'\n').replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\\\/g,'\\');
@@ -309,7 +392,7 @@ document.addEventListener('click',e=>{
  const minutes=Number(minutesValue);if(!Number.isInteger(minutes)||minutes<1||minutes>600){notify('時間は1〜600分で入力してね');return;}
  const start=prompt('開始時刻（HH:MM、または「自由」）',q.start||'自由');if(start===null)return;
  if(start!=='自由'&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(start)){notify('開始時刻は HH:MM で入力してね');return;}
- q.title=clean;q.minutes=minutes;q.start=start;q.end=start==='自由'?'自由':(()=>{const total=Number(start.slice(0,2))*60+Number(start.slice(3))+minutes;return String(Math.floor(total/60)%24).padStart(2,'0')+':'+String(total%60).padStart(2,'0')})();
+ q.editedLocally=true;q.title=clean;q.minutes=minutes;q.start=start;q.end=start==='自由'?'自由':(()=>{const total=Number(start.slice(0,2))*60+Number(start.slice(3))+minutes;return String(Math.floor(total/60)%24).padStart(2,'0')+':'+String(total%60).padStart(2,'0')})();
  // Editing a running task would invalidate the clock; stop it and reset its duration.
  if(q.status==='running'){q.status='paused';}
  s.questSessions[q.id]={ms:minutes*60000,at:null};
@@ -396,7 +479,7 @@ document.addEventListener('click',event=>{
  if(!next){notify('言葉を入力してね');return;}
  s.visionDraft[editor.dataset.key]=next;save();paint();notify('大切な言葉を保存したよ ✦');
 });
-function settingsHTML(){return `<h1>自分に合う道具に、<br>育てていこう。</h1><p class="lead">予定や記録はこの端末のブラウザに保存。定期的にバックアップしてね。</p><div class="card"><h2>データの管理</h2><p class="tip">別の端末やブラウザには自動同期されません。バックアップをダウンロードして移行できます。</p><div class="actionrow"><button class="button" data-export="1">記録をバックアップ</button><button class="button secondary" data-import="1">バックアップを復元</button></div></div><div class="card"><h2>リセット</h2><p class="tip">間違えてリセットしないよう、実行時に確認します。</p><button class="button danger" data-reset="1">全記録を初期化</button></div><div class="card"><h2>使い方</h2><div class="item">① 今日：最低14分の習慣をチェック</div><div class="item">② 週間：曜日別の予定を編集</div><div class="item">③ 筋トレ：保存済み履歴と身体の目標を確認<br>④ 記録：自分の言葉で事実と気持ちを書く</div><div class="item">④ 目標：年末までの方向を見失わない</div><div class="item">⑤ 設定：JSONでバックアップ</div></div><div class="tip">このアプリはローカル動作版です。通知・Notion・Googleカレンダーとの同期は未実装です。</div>`}
+function settingsHTML(){return `<h1>自分に合う道具に、<br>育てていこう。</h1><p class="lead">予定や記録はこの端末のブラウザに保存。定期的にバックアップしてね。</p><div class="card"><h2>📅 Googleカレンダー連携（読み取り専用）</h2><p class="tip">Google Cloudで作成したウェブアプリ用OAuthクライアントIDを設定すると、Googleアカウントのカレンダーから今後14日間の予定をクエストとして読み込めます。Google側の予定は変更しません。初回はGoogleでアクセスを許可してください。</p><label class="label" for="gcal-client-id">OAuth クライアントID</label><input class="field" id="gcal-client-id" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="123456789-xxxx.apps.googleusercontent.com" value="${esc(s.googleClientId||'')}"><div class="actionrow"><button class="button secondary" data-gcal-save="1">IDを保存</button><button class="button" data-gcal-sync="1">Googleに接続して同期</button></div><p class="tip" id="gcal-status">ステータス：未接続。同期はボタンを押したときだけ実行します。</p><p class="tip">Google Cloud Console で「Google Calendar API」を有効化し、OAuth同意画面を設定。「承認済みJavaScript生成元」に <code>https://aomasku-commits.github.io</code> を追加してください。クライアントシークレットは入力しないでください。ブラウザに保存するのはクライアントIDだけで、アクセストークンは保存しません。</p></div><div class="card"><h2>データの管理</h2><p class="tip">別の端末やブラウザには自動同期されません。バックアップをダウンロードして移行できます。</p><div class="actionrow"><button class="button" data-export="1">記録をバックアップ</button><button class="button secondary" data-import="1">バックアップを復元</button></div></div><div class="card"><h2>リセット</h2><p class="tip">間違えてリセットしないよう、実行時に確認します。</p><button class="button danger" data-reset="1">全記録を初期化</button></div><div class="card"><h2>使い方</h2><div class="item">① 今日：最低14分の習慣をチェック</div><div class="item">② 週間：曜日別の予定を編集</div><div class="item">③ 筋トレ：保存済み履歴と身体の目標を確認<br>④ 記録：自分の言葉で事実と気持ちを書く</div><div class="item">④ 目標：年末までの方向を見失わない</div><div class="item">⑤ 設定：JSONでバックアップ</div></div><div class="tip">このアプリはローカル動作版です。Googleカレンダーは接続時のみ読み取り・取り込みが可能です。通知・Notion・常時自動同期は未実装です。</div>`}
 document.addEventListener('click',e=>{const el=e.target.closest('button');if(!el)return;if(el.dataset.tab){active=el.dataset.tab;paint();scrollTo(0,0)}else if(el.dataset.go){active=el.dataset.go;paint();scrollTo(0,0)}else if(el.dataset.shift){viewDate=add(viewDate,Number(el.dataset.shift));paint()}else if(el.dataset.today){viewDate=today();paint()}else if(el.dataset.mini){s.miniMode=!s.miniMode;save();paint()}else if(el.dataset.savefocus){s.focus=document.getElementById('focus').value;save();notify('今日の一件を保存したよ')}else if(el.dataset.weekshift){weekDate=add(weekDate,Number(el.dataset.weekshift));paint()}else if(el.dataset.weekday){weekDate=el.dataset.weekday;paint()}else if(el.dataset.addplan){const t=document.getElementById('planTitle').value.trim();if(!t){notify('予定名を入力してね');return}s.plans[weekDate]??=[];s.plans[weekDate].push({id:'custom-'+Date.now(),title:t,time:document.getElementById('planTime').value||'時間未定',duration:document.getElementById('planDuration').value||'自由',category:'追加'});save();paint();notify('予定を追加したよ')}else if(el.dataset.delplan){const id=el.dataset.delplan;if(id.startsWith('custom')){s.plans[weekDate]=(s.plans[weekDate]||[]).filter(p=>p.id!==id)}else{(s.weekOverrides[weekDate]??=[]).push(id)}save();paint();notify('この日の予定から外したよ')}else if(el.dataset.savejournal){s.journal[viewDate]={fact:document.getElementById('jfact').value,feeling:document.getElementById('jfeeling').value,honest:document.getElementById('jhonest').value,next:document.getElementById('jnext').value};save();notify('日記を保存したよ')}else if(el.dataset.export){const blob=new Blob([JSON.stringify({app:'ARC_LIFE_OS',version:1,exportedAt:new Date().toISOString(),data:s},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ARC_backup_'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000)}else if(el.dataset.import){document.getElementById('importFile').click()}else if(el.dataset.reset){if(confirm('本当にすべての記録を消去しますか？ バックアップをおすすめします。')){s=blank();save();paint();notify('初期化しました')}}});document.addEventListener('change',e=>{const t=e.target;if(t.dataset.habit){s.habits[t.dataset.day]??={};s.habits[t.dataset.day][t.dataset.habit]=t.checked;save();paint();if(t.checked)notify('約束をひとつ積み上げた ✦')}if(t.id==='viewDate'||t.id==='journalDate'){viewDate=t.value||today();paint()}});document.getElementById('importFile').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{const v=JSON.parse(await f.text());if(v.app!=='ARC_LIFE_OS'||!v.data||typeof v.data!=='object')throw Error('形式が違います');if(confirm('今の記録をバックアップの内容で置き換えますか？')){s={...blank(),...v.data};save();paint();notify('復元しました')}}catch(err){alert('バックアップを読み込めませんでした：'+err.message)}e.target.value=''});
 function blankWorkout() {
   return {sessions: [], draft: null};

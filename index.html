@@ -324,6 +324,24 @@ body{background:radial-gradient(ellipse 110% 390px at 50% -110px,#2c5940 0,trans
 .growth-note{font-size:10px!important;color:#aec6b6!important;line-height:1.65;margin-top:14px!important}
 .growth-teaser{margin:13px 0 16px;padding:17px}.growth-teaser h2{font-size:19px;color:#f6ffed;margin:7px 0 12px}.growth-teaser-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.growth-teaser-row>span{background:#ffffff12;padding:6px 9px;border-radius:10px;font-size:16px}.growth-teaser-row small{font-size:10px;color:#d4ffaf}.growth-teaser .button{width:100%;min-height:46px}
 @media(max-width:380px){.growth-branches{gap:3px}.growth-branch{font-size:10px;padding:9px 1px}.growth-icon{font-size:20px}.growth-tree{padding:16px 10px}}
+
+.skillpath{border-top:1px solid #d4ffd324;padding-top:17px;margin-top:17px}
+.skillpath-header{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.skillpath-header h3{display:block!important;margin:4px 0 0!important;font-size:17px!important}
+.skillpath-header>strong{font-size:11px;color:#ddffae;background:#baf18e1d;padding:7px 9px;border-radius:99px}
+.skillpath-info{font-size:11px!important;color:#c6daca!important;line-height:1.55;margin:10px 0 17px!important}
+.skillnode{position:relative;display:flex;gap:10px;background:#ffffff0c;border:1px solid #ffffff24;border-radius:15px;margin:10px 0;padding:12px 10px;min-height:78px}
+.skillnode:not(:last-of-type)::after{content:"";position:absolute;bottom:-11px;left:21px;width:2px;height:11px;background:#baf28c66}
+.skillnode.unlocked{border-color:#b7fa8f88;background:#baf28c18}
+.skillnode.ready{border-color:#dfefb555}
+.skillnode.locked{opacity:.6}
+.skillnode-step{display:grid;place-items:center;flex:0 0 22px;height:22px;border-radius:50%;background:#ffffff20;font-size:11px;font-weight:900}
+.skillnode.unlocked .skillnode-step{background:#d3ff9f;color:#21442c}
+.skillnode-main{flex:1;min-width:0}.skillnode-main strong{display:block;font-size:13px;color:#f6fff1}
+.skillnode-main p{font-size:11px!important;color:#c3d9c6!important;margin:4px 0!important;line-height:1.5}
+.skillnode-main small{display:block;font-size:10px;color:#d7edc8}
+.skillnode-action{margin-top:10px;border-radius:11px;min-height:44px;background:#b2f08e26;border:1px solid #c9f99f;color:#eaffdb;padding:9px 12px;font-size:12px;font-weight:850;cursor:pointer}
+.skillpath-note{font-size:10px!important;color:#b6d1bd!important;margin:15px 0 2px!important;line-height:1.6}
 </style></head><body><main class="app"><div class="top"><div class="logo">🍏 LIFE OS <span class="logo-mini">BLOOM</span></div><div class="date" id="headerDate"></div></div><div id="lifeos-diagnostic" class="lifeos-diagnostic" role="status" aria-live="polite"><strong>🍏 LIFE OS build 2026.11.21-D2</strong><span>画面を読み込み中。予定が表示されない場合は、この表示を確認してね。</span></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="questDock" class="quest-dock" hidden aria-label="クエスト操作">
 <div class="quest-dock-main"><span class="quest-dock-name" id="questDockName"></span><span class="quest-dock-time" id="questDockTime"></span></div>
 <button type="button" id="questDockBack" aria-label="クエストに戻る">↑ 戻る</button>
@@ -828,6 +846,48 @@ function growthScores(){
  for(const v of Object.values(out)){v.level=1+Math.floor(v.xp/100);v.percent=v.xp%100;}
  return out;
 }
+
+/* SKILL PATH: auto unlock from existing records and manual self-attested milestones. */
+const growthSkills={"body":[["始める","筋トレを1回記録","workouts",1],["土台をつくる","筋トレを5回記録","workouts",5],["食事と運動","身体のクエストを5回完了","bodyQuests",5],["続ける力","筋トレを10回記録","workouts",10],["自分の身体づくり","続けたい運動習慣を自分で決める","manual",1]],"work":[["価値の一歩","仕事クエストを1回完了","workQuests",1],["発信の習慣","仕事クエストを3回完了","workQuests",3],["サービスの種","届けたい相手と価値を整理する","manual",1],["伴走の実験","小さなセッションを試す","manual",1],["独立への基盤","仕事クエストを5回完了","workQuests",5]],"heart":[["自分の声","日記を1日記録","journals",1],["自己観察","日記を5日記録","journals",5],["心の時間","心のクエストを3回完了","heartQuests",3],["自分の味方","自分への優しい言葉を見つける","manual",1],["やさしい継続","日記を10日記録","journals",10]],"voice":[["声を出す","ボイトレを1日記録","vocalLogs",1],["声の土台","ボイトレを3日記録","vocalLogs",3],["歌詞を覚える","課題曲を歌詞を見ずに歌う","manual",1],["ヘッドボイス","力まず声区を切り替える練習をする","manual",1],["表現のステージ","人前で一曲を歌いきる","manual",1]],"learn":[["学び始める","教養クエストを1回完了","learnQuests",1],["知識を広げる","教養クエストを3回完了","learnQuests",3],["言葉にする","学んだことを自分の言葉で説明する","manual",1],["知識を積み重ねる","教養クエストを5回完了","learnQuests",5],["学びの地図","次に学びたいテーマを3つ選ぶ","manual",1]]};
+function growthSkillChecks(){
+ const counts={bodyQuests:0,workQuests:0,heartQuests:0,learnQuests:0};
+ for(const list of Object.values(s.quests||{}))if(Array.isArray(list))for(const q of list){
+  if(q.status!=='done')continue;
+  const kind=growthBranchForQuest(q),key=kind+'Quests';if(key in counts)counts[key]++;
+ }
+ return {...counts,workouts:Array.isArray(s.workout?.sessions)?s.workout.sessions.length:0,
+  journals:Object.values(s.journal||{}).filter(j=>j&&typeof j==='object'&&Object.values(j).some(v=>typeof v==='string'&&v.trim())).length,
+  vocalLogs:Object.values(s.vocalGoal?.logs||{}).filter(v=>v?.practiced===true).length};
+}
+function growthSkillState(branch){
+ const defs=growthSkills[branch]||[],metrics=growthSkillChecks(),man=s.growthSkillManual||{};
+ let previous=true;
+ return defs.map((d,i)=>{
+  const key=branch+'-'+i;
+  const count=d[2]==='manual'?(man[key]?1:0):Math.min(d[3],Math.max(0,Number(metrics[d[2]])||0));
+  const eligible=previous,done=eligible&&count>=d[3];
+  previous=done;
+  return {key,def:d,count,eligible,done,manual:d[2]==='manual'};
+ });
+}
+function growthSkillTreeHTML(){
+ const items=growthSkillState(growthChosen),done=items.filter(x=>x.done).length;
+ return '<div class="skillpath"><div class="skillpath-header"><div><span class="growth-eyebrow">SKILL PATH</span><h3>スキル解放ルート</h3></div><strong>'+done+' / '+items.length+'</strong></div>'+
+ '<p class="skillpath-info">前のスキルから順番に育つよ。自動達成と、自分で認める達成があるよ。</p>'+
+ items.map((x,i)=>'<div class="skillnode '+(x.done?'unlocked':x.eligible?'ready':'locked')+'"><span class="skillnode-step">'+(i+1)+'</span><div class="skillnode-main"><strong>'+(x.done?'🌿 ':x.eligible?'✨ ':'🔒 ')+esc(x.def[0])+'</strong><p>'+esc(x.def[1])+'</p><small>'+(x.manual?'自分で達成を確認':x.count+' / '+x.def[3])+' · '+(x.done?'解放済み':x.eligible?'挑戦できる':'前のスキルを解放すると挑戦できる')+'</small>'+
+ (x.manual&&x.eligible?'<button type="button" class="skillnode-action" data-growth-skill="'+x.key+'">'+(x.done?'↩ 達成を取り消す':'✓ 達成を記録')+'</button>':'')+'</div></div>').join('')+
+ '<p class="skillpath-note">スキルの解放は成長を眺めるための実績。XPの二重加算や、できない日の減点はしないよ。</p></div>';
+}
+document.addEventListener('click',event=>{
+ const b=event.target.closest('[data-growth-skill]');if(!b)return;
+ const key=b.dataset.growthSkill,valid=growthSkillState(growthChosen).find(x=>x.key===key);
+ if(!valid||!valid.manual||!valid.eligible)return;
+ if(!s.growthSkillManual||typeof s.growthSkillManual!=='object')s.growthSkillManual={};
+ if(s.growthSkillManual[key])delete s.growthSkillManual[key];
+ else s.growthSkillManual[key]=new Date().toISOString();
+ save();paint();notify(s.growthSkillManual[key]?'🍏 スキル解放！':'達成を戻したよ');
+});
+
 function growthTreeHTML(){
  const scores=growthScores(),branch=growthBranches.find(b=>b[0]===growthChosen)||growthBranches[0],v=scores[branch[0]];
  return '<section class="growth-tree" id="growth-tree"><span class="growth-eyebrow">✳ BLOOM GROWTH TREE</span>'+
@@ -839,6 +899,7 @@ function growthTreeHTML(){
  '<div class="growth-bar" role="progressbar" aria-label="次のレベルまで" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+v.percent+'"><i style="width:'+v.percent+'%"></i></div>'+
  '<div class="growth-evidence"><span>関連クエスト '+v.quests+'件クリア</span><span>関連記録 '+v.records+'件</span></div>'+
  '<div class="growth-milestones"><span class="active">🌱 Lv.1 芽吹き</span><span class="'+(v.level>=2?'active':'')+'">🌿 Lv.2 根づく</span><span class="'+(v.level>=3?'active':'')+'">🌳 Lv.3 育つ</span></div>'+
+ growthSkillTreeHTML()+
  '<p class="growth-note">関連クエスト完了：10 XP／筋トレ記録：15 XP／日記：5 XP／ボイトレ練習：10 XP。記録がない日も減点しないよ。</p></div></section>';
 }
 function growthTeaserHTML(){

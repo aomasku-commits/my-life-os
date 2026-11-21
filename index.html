@@ -311,6 +311,19 @@ body{background:radial-gradient(ellipse 110% 390px at 50% -110px,#2c5940 0,trans
 .qcelebrate-inner strong{color:#e2ffb2;letter-spacing:-.03em}
 .qcelebrate-inner span{display:block;color:#f4fff1;font-size:14px;margin-top:11px}
 @media(max-width:390px){#home .qitem-status{min-width:49px;padding:6px 5px;font-size:9px}#home .qxp-next strong{font-size:11px}}
+
+.growth-tree,.growth-teaser{border:1px solid #6a9b78;background:radial-gradient(circle at 50% 0%,#6fae762b,transparent 58%),linear-gradient(155deg,#143b32,#0b2628);border-radius:24px;padding:19px 14px;margin:18px 0;box-shadow:0 12px 34px #0004}
+.growth-eyebrow{font-size:10px;font-weight:900;letter-spacing:.14em;color:#cefb9d}.growth-tree h2{font-size:23px;margin:8px 0 3px;color:#f2ffed}.growth-intro{color:#c3dbcd;font-size:12px;margin:0}
+.growth-tree-art{height:125px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;margin:14px 0 10px}.growth-canopy{display:flex;align-items:center;justify-content:center;gap:11px;border-radius:55%;width:215px;height:72px;background:radial-gradient(circle at 40% 25%,#8ad78d99,#3f875d77);border:1px solid #b2eb9955;box-shadow:0 0 28px #73d67a29}.growth-canopy span{font-size:23px;filter:drop-shadow(0 2px 3px #0005)}
+.growth-trunk{height:34px;width:14px;border-radius:4px;background:linear-gradient(90deg,#725139,#ba9062,#795b3d);margin-top:-4px}.growth-tree-art>span{font-size:15px;line-height:15px;margin-top:-4px}
+.growth-branches{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:14px 0}.growth-branch{background:#ffffff0d;border:1px solid #ffffff22;color:#e8f9eb;border-radius:13px;display:flex;align-items:center;flex-direction:column;min-width:0;gap:3px;padding:11px 2px;cursor:pointer;touch-action:manipulation;font:inherit;font-size:11px;font-weight:750}
+.growth-branch.chosen{background:#b7ee9a22;border-color:#c8fa95;box-shadow:0 0 0 2px #c6fa9511}.growth-icon{font-size:23px}.growth-branch strong{font-size:11px;color:#d4ffa2}.growth-branch i{display:block;width:79%;height:4px;border-radius:8px;background:#ffffff22;overflow:hidden}.growth-branch i b{display:block;height:100%;background:#c3fb93}
+.growth-detail{padding:16px 13px;border:1px solid #ffffff26;border-radius:19px;background:#ffffff0b}.growth-detail h3{font-size:19px;margin:9px 0 3px;display:flex;justify-content:space-between;gap:6px;color:#f7fff0}.growth-detail h3 span{color:#d6ffa1}.growth-detail>p{font-size:12px;color:#c3dccb;margin:0 0 12px}.growth-points{display:flex;align-items:center;justify-content:space-between;color:#cce0d0;font-size:12px;margin:12px 0 7px}.growth-points strong{color:#e1ffb2;font-size:19px}.growth-bar{height:9px;border-radius:9px;background:#ffffff26;overflow:hidden}.growth-bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#83d5aa,#cefa92)}
+.growth-evidence{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.growth-evidence span{font-size:11px;background:#ffffff12;border-radius:99px;padding:6px 9px;color:#d6e9d7}
+.growth-milestones{display:flex;gap:6px;flex-wrap:wrap;margin-top:15px;border-top:1px solid #ffffff22;padding-top:13px}.growth-milestones span{font-size:10px;color:#9cbaa6;padding:6px;background:#ffffff0b;border-radius:8px}.growth-milestones .active{color:#e1ffb7;background:#c0ed8c24}
+.growth-note{font-size:10px!important;color:#aec6b6!important;line-height:1.65;margin-top:14px!important}
+.growth-teaser{margin:13px 0 16px;padding:17px}.growth-teaser h2{font-size:19px;color:#f6ffed;margin:7px 0 12px}.growth-teaser-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.growth-teaser-row>span{background:#ffffff12;padding:6px 9px;border-radius:10px;font-size:16px}.growth-teaser-row small{font-size:10px;color:#d4ffaf}.growth-teaser .button{width:100%;min-height:46px}
+@media(max-width:380px){.growth-branches{gap:3px}.growth-branch{font-size:10px;padding:9px 1px}.growth-icon{font-size:20px}.growth-tree{padding:16px 10px}}
 </style></head><body><main class="app"><div class="top"><div class="logo">🍏 LIFE OS <span class="logo-mini">BLOOM</span></div><div class="date" id="headerDate"></div></div><div id="lifeos-diagnostic" class="lifeos-diagnostic" role="status" aria-live="polite"><strong>🍏 LIFE OS build 2026.11.21-D2</strong><span>画面を読み込み中。予定が表示されない場合は、この表示を確認してね。</span></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="questDock" class="quest-dock" hidden aria-label="クエスト操作">
 <div class="quest-dock-main"><span class="quest-dock-name" id="questDockName"></span><span class="quest-dock-time" id="questDockTime"></span></div>
 <button type="button" id="questDockBack" aria-label="クエストに戻る">↑ 戻る</button>
@@ -756,7 +769,7 @@ document.addEventListener('click',function(event){
  if(kind==='next'){const qs=todaysQuests(),i=qs.findIndex(x=>x.id===q.id);const next=qs.slice(i+1).find(x=>x.status!=='done')||qs.find(x=>x.status!=='done');if(next){selectedQuestId=next.id;localStorage.setItem('lifeos_selected_quest',next.id);}paint();}
 });
 
-function homeHTML(){let n=count(viewDate),pct=Math.round(100*n/4),d=daysLeft();return `${viewDate===today()?questHTML():''}<div class="qbelow"><details class="qdetails qplanner" id="qplanner"><summary><span>📅 未来のクエスト管理</span><span class="qsummary-arrow">⌄</span></summary>${viewDate===today()?questFutureHTML():''}</details></div><details class="qlegacy" id="qlegacy"><summary>🌱 ビジョン・習慣・記録を見る <span>⌄</span></summary><div class="qlegacy-content"><div class="hero"><span class="eyebrow">WINTER ARC · 2026</span><strong>年末まであと ${d} 日</strong><p>自分の価値を証明する48日ではなく、<br>誠実に生きる自分を育てる期間。</p><div class="progress"><div class="fill" style="width:${Math.max(0,Math.min(100,Math.round((48-d)/48*100)))}%"></div></div><div class="statrow"><div class="stat"><b>${total()*10}</b><span>積み上げ XP</span></div><div class="stat"><b>${streak()}日</b><span>継続日数</span></div><div class="stat"><b>Lv.${level()}</b><span>自己信頼レベル</span></div></div></div><div class="card home-compass"><div class="eyebrow">MY NORTH STAR · 迷ったらここへ</div><div class="home-compass-words">自分の心に素直に。<br><em>自分の人生を生きる。</em></div><p class="small">今日の一歩が、なりたい自分につながっている。</p><button class="button" data-go="vision">私の未来と決意を読む ↗</button></div><div class="card"><div class="head"><h2>🍽 PFCクエスト</h2><span class="pill">食事でXPを獲得</span></div><p class="small">1食ずつ記録して、筋肉を守りながら減量しよう。</p><button class="button" data-go="nutrition">今日のPFCを開く →</button></div><div class="card workout-home"><div class="head"><h2>💪 身体の成長</h2><span class="pill">記録 ${s.workout.sessions.length}回</span></div><p class="small">トレーニングはChatGPTで。ここでは積み重ねた成長を眺めよう。</p><button class="button secondary" data-go="workout">成長グラフ・履歴を見る →</button></div><div class="card"><div class="head"><h2>今日の小さな約束</h2><span class="pill">${n}/4 完了</span></div><div class="datecontrol"><button data-shift="-1">‹</button><input type="date" id="viewDate" class="field" value="${viewDate}"><button data-shift="1">›</button><button class="button secondary" data-today="1">今日</button></div><div style="height:13px"></div><div class="progress"><div class="fill" style="width:${pct}%"></div></div>${taskMarkup(viewDate)}<div class="actionrow"><button class="button secondary" data-mini="1">${s.miniMode?'理想ラインを見る':'最低ラインに戻す'}</button><button class="button ghost" data-go="journal">気づきを残す →</button></div></div><div class="card"><div class="head"><h2>自分との約束</h2><span class="kicker">MY IDENTITY</span></div><div class="quote">私は過去の行動に責任を持つ。<br>他人を尊重し、自分にも誠実でいる。<br>完璧でなくても、今日の行動を選べる。</div><div class="tip">できなかった日も「失敗」ではない。次の日に最低ラインから再開。</div></div><div class="card"><div class="head"><h2>今日の重要な一件</h2><span class="pill">FOCUS</span></div><input id="focus" class="field" placeholder="例：自己肯定感について3行書く" value="${esc(s.focus)}"><div class="actionrow"><button class="button" data-savefocus="1">この一件に決める</button></div></div></div></details>`}
+function homeHTML(){let n=count(viewDate),pct=Math.round(100*n/4),d=daysLeft();return `${viewDate===today()?questHTML():''}${viewDate===today()?growthTeaserHTML():''}<div class="qbelow"><details class="qdetails qplanner" id="qplanner"><summary><span>📅 未来のクエスト管理</span><span class="qsummary-arrow">⌄</span></summary>${viewDate===today()?questFutureHTML():''}</details></div><details class="qlegacy" id="qlegacy"><summary>🌱 ビジョン・習慣・記録を見る <span>⌄</span></summary><div class="qlegacy-content"><div class="hero"><span class="eyebrow">WINTER ARC · 2026</span><strong>年末まであと ${d} 日</strong><p>自分の価値を証明する48日ではなく、<br>誠実に生きる自分を育てる期間。</p><div class="progress"><div class="fill" style="width:${Math.max(0,Math.min(100,Math.round((48-d)/48*100)))}%"></div></div><div class="statrow"><div class="stat"><b>${total()*10}</b><span>積み上げ XP</span></div><div class="stat"><b>${streak()}日</b><span>継続日数</span></div><div class="stat"><b>Lv.${level()}</b><span>自己信頼レベル</span></div></div></div><div class="card home-compass"><div class="eyebrow">MY NORTH STAR · 迷ったらここへ</div><div class="home-compass-words">自分の心に素直に。<br><em>自分の人生を生きる。</em></div><p class="small">今日の一歩が、なりたい自分につながっている。</p><button class="button" data-go="vision">私の未来と決意を読む ↗</button></div><div class="card"><div class="head"><h2>🍽 PFCクエスト</h2><span class="pill">食事でXPを獲得</span></div><p class="small">1食ずつ記録して、筋肉を守りながら減量しよう。</p><button class="button" data-go="nutrition">今日のPFCを開く →</button></div><div class="card workout-home"><div class="head"><h2>💪 身体の成長</h2><span class="pill">記録 ${s.workout.sessions.length}回</span></div><p class="small">トレーニングはChatGPTで。ここでは積み重ねた成長を眺めよう。</p><button class="button secondary" data-go="workout">成長グラフ・履歴を見る →</button></div><div class="card"><div class="head"><h2>今日の小さな約束</h2><span class="pill">${n}/4 完了</span></div><div class="datecontrol"><button data-shift="-1">‹</button><input type="date" id="viewDate" class="field" value="${viewDate}"><button data-shift="1">›</button><button class="button secondary" data-today="1">今日</button></div><div style="height:13px"></div><div class="progress"><div class="fill" style="width:${pct}%"></div></div>${taskMarkup(viewDate)}<div class="actionrow"><button class="button secondary" data-mini="1">${s.miniMode?'理想ラインを見る':'最低ラインに戻す'}</button><button class="button ghost" data-go="journal">気づきを残す →</button></div></div><div class="card"><div class="head"><h2>自分との約束</h2><span class="kicker">MY IDENTITY</span></div><div class="quote">私は過去の行動に責任を持つ。<br>他人を尊重し、自分にも誠実でいる。<br>完璧でなくても、今日の行動を選べる。</div><div class="tip">できなかった日も「失敗」ではない。次の日に最低ラインから再開。</div></div><div class="card"><div class="head"><h2>今日の重要な一件</h2><span class="pill">FOCUS</span></div><input id="focus" class="field" placeholder="例：自己肯定感について3行書く" value="${esc(s.focus)}"><div class="actionrow"><button class="button" data-savefocus="1">この一件に決める</button></div></div></div></details>`}
 function weekHTML(){const dowIdx=dayDate(weekDate).getDay(),monday=add(weekDate,-(dowIdx+6)%7),days=Array.from({length:7},(_,i)=>add(monday,i));return `<h1>週間リズムをつくる。</h1><p class="lead">予定は固定しすぎない。70%の余白を残し、調整できる週へ。</p><div class="card"><div class="head"><h2>今週の予定</h2><div class="datecontrol"><button data-weekshift="-7">‹</button><button data-weekshift="7">›</button></div></div><div class="days">${days.map(d=>`<button class="day ${d===weekDate?'active':''}" data-weekday="${d}"><span>${dow[dayDate(d).getDay()]}</span><b>${+d.slice(8)}</b><span>${count(d)?count(d)+'/4':'·'}</span></button>`).join('')}</div><div style="margin-top:17px"><span class="eyebrow">${fmt(weekDate)} · PLAN</span>${dayPlan(weekDate).map(p=>`<div class="item"><div class="itemtop"><div><div class="itemtime">${esc(p.time)}　·　${esc(p.duration)}</div><div class="itemtitle">${esc(p.title)}</div></div><div style="display:flex;align-items:center;gap:5px"><span class="tag">${esc(p.category)}</span><button class="remove" title="この日から外す" data-delplan="${esc(p.id)}">×</button></div></div></div>`).join('')||'<div class="empty">予定はまだありません。余白も大切な計画です。</div>'}</div></div><div class="card"><h2>この日の予定を追加</h2><label class="label">やること</label><input class="field" id="planTitle" placeholder="例：学びを音声で3分アウトプット"><div class="grid2"><div><label class="label">時間帯</label><input class="field" id="planTime" placeholder="夜 / 20:00"></div><div><label class="label">所要時間</label><input class="field" id="planDuration" placeholder="20分"></div></div><div class="actionrow"><button class="button" data-addplan="1">予定を追加</button></div><div class="tip" style="margin-top:11px">所要時間は自分の予想の1.5倍を見積もる。終わりの条件も決めよう。</div></div><div class="card"><h2>週間設計ルール</h2><div class="item">平日：帰宅が遅い日は最低14分のみでOK</div><div class="item">筋トレ：週2回を必須、3回目は余裕がある週</div><div class="item">発信：週1件「公開または人に届ける」を目標</div><div class="item">週末：事業45分＋日曜のレビュー20分</div><div class="item">ボイトレ：12/5までは10分×週3〜5回を目標</div></div>`}
 function journalHTML(){const j=s.journal[viewDate]||{};return `<h1>その日の自分を、<br>ちゃんと見てあげる。</h1><p class="lead">感情を無理にポジティブにしない。事実と心の声を別々に残そう。</p><div class="card"><div class="head"><h2>今日のジャーナル</h2><span class="pill">${fmt(viewDate)}</span></div><input type="date" class="field" id="journalDate" value="${viewDate}"><label class="label">今日あった事実</label><textarea class="field" id="jfact" placeholder="何が起きた？ できたこと・できなかったことも事実だけで">${esc(j.fact)}</textarea><label class="label">自分で感じたこと（書きたいときだけ）</label><textarea class="field" id="jfeeling" placeholder="本当は何を感じた？ まだ分からなければ空欄でOK">${esc(j.feeling)}</textarea><label class="label">誠実に選んだ小さな行動</label><textarea class="field" id="jhonest" placeholder="例：見栄を張らずに素直に話せた">${esc(j.honest)}</textarea><label class="label">明日の最小の一歩</label><input class="field" id="jnext" placeholder="例：起床後に3分瞑想" value="${esc(j.next)}"><div class="actionrow"><button class="button" data-savejournal="1">この日の記録を保存</button></div></div><div class="card"><h2>自己受容のヒント</h2><div class="quote">行動は改善できる。<br>でも、できなかった日を理由に自分の存在を否定しなくていい。</div><div class="tip">日記には、あなたが言っていない気持ちや結論を自動追加しません。</div></div>`}
 
@@ -777,11 +790,75 @@ function visionPanel(key,label,subtitle,opened=false){
  return '<details class="card vision-expand" '+(opened?'open':'')+'><summary><span>'+label+'</span><small>'+subtitle+'</small></summary><div class="vision-prose">'+visionLines(visionValue(key))+'</div>'+
  '<button type="button" class="button ghost vision-edit-trigger" data-vision-edit="'+key+'">この言葉を編集する</button></details>';
 }
+
+/* GROWTH TREE: progress is derived from existing saved records only. */
+const growthBranches=[
+ ['body','💪','身体','筋トレ・食事・健康'],
+ ['work','🚀','仕事','マーケティング・発信・事業'],
+ ['heart','🫧','心','自己受容・日記・瞑想'],
+ ['voice','🎤','歌','ボイトレ・表現'],
+ ['learn','📚','教養','読書・心理学・学び直し']
+];
+let growthChosen='body';
+function growthBranchForQuest(q){
+ const t=String(q.title||'').normalize('NFKC').toLowerCase();
+ if(/ボイトレ|発声|歌|カラオケ|ダーリン/.test(t))return 'voice';
+ if(/筋トレ|ジム|プール|水泳|運動|食事|料理|ご飯|丼|ランチ|自炊|睡眠/.test(t))return 'body';
+ if(/瞑想|感情|日記|ジャーナル|自己受容|セルフイメージ|五感/.test(t))return 'heart';
+ if(/心理学|読書|勉強|教養|歴史|政治|経済|学習/.test(t))return 'learn';
+ if(/仕事|チャイハナ|マーケ|独立|コーチング|life os|発信|ラジオ|収録|副業|営業/.test(t))return 'work';
+ return null;
+}
+function growthScores(){
+ const out=Object.fromEntries(growthBranches.map(b=>[b[0],{xp:0,quests:0,records:0}]));
+ for(const list of Object.values(s.quests||{})){
+  if(!Array.isArray(list))continue;
+  for(const q of list){
+   if(q.status!=='done')continue;
+   const type=growthBranchForQuest(q);if(!type)continue;
+   out[type].quests++;out[type].xp+=10;
+  }
+ }
+ const workouts=Array.isArray(s.workout?.sessions)?s.workout.sessions.length:0;
+ out.body.xp+=workouts*15;out.body.records+=workouts;
+ const journalDays=Object.values(s.journal||{}).filter(j=>j&&typeof j==='object'&&Object.values(j).some(v=>typeof v==='string'&&v.trim())).length;
+ out.heart.xp+=journalDays*5;out.heart.records+=journalDays;
+ const vocalDays=Object.values(s.vocalGoal?.logs||{}).filter(x=>x?.practiced===true).length;
+ out.voice.xp+=vocalDays*10;out.voice.records+=vocalDays;
+ for(const v of Object.values(out)){v.level=1+Math.floor(v.xp/100);v.percent=v.xp%100;}
+ return out;
+}
+function growthTreeHTML(){
+ const scores=growthScores(),branch=growthBranches.find(b=>b[0]===growthChosen)||growthBranches[0],v=scores[branch[0]];
+ return '<section class="growth-tree" id="growth-tree"><span class="growth-eyebrow">✳ BLOOM GROWTH TREE</span>'+
+ '<h2>人生の成長ツリー</h2><p class="growth-intro">小さな行動で、5つの芽を育てよう。</p>'+
+ '<div class="growth-tree-art" aria-hidden="true"><div class="growth-canopy">'+growthBranches.map(b=>'<span>'+b[1]+'</span>').join('')+'</div><div class="growth-trunk"></div><span>🍏</span></div>'+
+ '<div class="growth-branches">'+growthBranches.map(b=>{const z=scores[b[0]],chosen=b[0]===growthChosen;return '<button type="button" class="growth-branch '+(chosen?'chosen':'')+'" data-growth-branch="'+b[0]+'" aria-pressed="'+chosen+'"><span class="growth-icon">'+b[1]+'</span><span>'+b[2]+'</span><strong>Lv.'+z.level+'</strong><i><b style="width:'+z.percent+'%"></b></i></button>';}).join('')+'</div>'+
+ '<div class="growth-detail"><span class="growth-eyebrow">SELECTED BRANCH</span><h3>'+branch[1]+' '+branch[2]+' <span>Lv.'+v.level+'</span></h3><p>'+branch[3]+'</p>'+
+ '<div class="growth-points"><strong>'+v.xp+' XP</strong><span>次のレベルまで '+(100-v.percent)+' XP</span></div>'+
+ '<div class="growth-bar" role="progressbar" aria-label="次のレベルまで" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+v.percent+'"><i style="width:'+v.percent+'%"></i></div>'+
+ '<div class="growth-evidence"><span>関連クエスト '+v.quests+'件クリア</span><span>関連記録 '+v.records+'件</span></div>'+
+ '<div class="growth-milestones"><span class="active">🌱 Lv.1 芽吹き</span><span class="'+(v.level>=2?'active':'')+'">🌿 Lv.2 根づく</span><span class="'+(v.level>=3?'active':'')+'">🌳 Lv.3 育つ</span></div>'+
+ '<p class="growth-note">関連クエスト完了：10 XP／筋トレ記録：15 XP／日記：5 XP／ボイトレ練習：10 XP。記録がない日も減点しないよ。</p></div></section>';
+}
+function growthTeaserHTML(){
+ const scores=growthScores();
+ return '<section class="growth-teaser"><span class="growth-eyebrow">🍏 YOUR GROWTH</span><h2>人生は、少しずつ育つ。</h2>'+
+ '<div class="growth-teaser-row">'+growthBranches.map(b=>'<span title="'+b[2]+'">'+b[1]+' <small>'+scores[b[0]].level+'</small></span>').join('')+'</div>'+
+ '<button type="button" class="button secondary" data-go="vision">5つの成長ツリーを見る →</button></section>';
+}
+document.addEventListener('click',event=>{
+ const button=event.target.closest('[data-growth-branch]');if(!button)return;
+ const id=button.dataset.growthBranch;if(!growthBranches.some(b=>b[0]===id))return;
+ growthChosen=id;paint();
+});
+
 function visionHTML(){
  const motivation=visionValue('north'),id=visionValue('identity').split('\n').filter(Boolean).slice(0,2);
  return '<div class="vision-page"><span class="eyebrow">MY NORTH STAR · 人生の羅針盤</span>'+
  '<h1>私は、<br><span style="color:var(--lime)">自分の人生を生きる。</span></h1>'+
  '<p class="lead">心が揺れた日も、ここに戻ってこよう。何を達成するかの前に、どう生きたいかを思い出す場所。</p>'+
+ growthTreeHTML()+
  '<div class="hero vision-north"><span class="eyebrow">一番大切にしたいこと</span><strong>'+visionLines(motivation)+'</strong>'+
  '<button type="button" class="button secondary" data-vision-edit="north">この言葉を育てる</button></div>'+
  '<div class="card vision-identity"><div class="head"><h2>🪞 私は、こんな人間でありたい</h2><span class="pill">IDENTITY</span></div>'+

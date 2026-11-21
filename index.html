@@ -423,6 +423,47 @@ button.bloom-saved{box-shadow:0 0 0 3px #d5ff9766,0 0 25px #b2ff7550}
 #home .qdedupe-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 12px}
 #home .qdedupe-tools button{min-height:40px;background:#285540;border:1px solid #87b98a;border-radius:10px;color:#dcffbc;font-size:12px;font-weight:850;padding:9px 12px}
 #home .qdedupe-tools span{font-size:11px;color:#a9c6b2;line-height:1.4}
+
+/* Past quest journal — uncluttered mobile first design. */
+.qpast{margin:16px 0;padding:17px 14px;background:linear-gradient(160deg,#153b31,#0d2824);border:1px solid #6a9b76;border-radius:20px}
+.qpast-head{display:flex;gap:12px;justify-content:space-between;align-items:flex-start}
+.qpast-head h2{font-size:19px;line-height:1.4;margin:5px 0}.qpast-head p{font-size:12px;color:#b9d8bf;margin:4px 0}
+.qpast-counter{flex-shrink:0;padding:7px 9px;border:1px solid #7eaf86;border-radius:20px;color:#dbffb0;font-size:10px;font-weight:900}
+.qpast-datebar{display:grid;grid-template-columns:42px minmax(0,1fr) 42px 56px;gap:7px;margin:18px 0 14px}
+.qpast-datebar button{min-height:44px;border-radius:10px;border:1px solid #719879;background:#275241;color:#eaffdf;font-size:15px;font-weight:800}
+.qpast-datebar button:disabled{opacity:.4}.qpast-datebar input{display:block;width:100%;min-width:0;max-width:100%;border:1px solid #719879;border-radius:10px;background:#09291f;color:#e8ffe5;padding:8px;font-size:15px}
+.qpast-list{display:flex;flex-direction:column;gap:10px}
+.qpast-item{padding:14px;background:#1c4435;border:1px solid #50775b;border-radius:15px;min-width:0}
+.qpast-item.qpast-isdone{border-color:#9cce83;background:#214b37}
+.qpast-item-head{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-bottom:8px}
+.qpast-state,.qpast-points{color:#c2d8c6;font-size:11px;font-weight:800}.qpast-isdone .qpast-state,.qpast-isdone .qpast-points{color:#d0ff96}
+.qpast-item strong{display:block;overflow-wrap:anywhere;font-size:16px;line-height:1.4}.qpast-schedule{font-size:12px;color:#b9d6be;margin:7px 0}
+.qpast-reflection{padding:10px 12px;margin:9px 0;border-left:3px solid #c7fa94;background:#0b3024;border-radius:0 9px 9px 0;font-size:13px;line-height:1.5;color:#ebffd9}
+.qpast-open{width:100%;min-height:44px;border-radius:10px;background:#bff78f;color:#153521;font-size:13px;font-weight:900;border:0;padding:9px;margin-top:8px}
+.qpast-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:16px;border-top:1px solid #ffffff23;padding-top:13px;font-size:12px;color:#bdd3be}.qpast-bottom strong{color:#d1ff98;font-size:17px}
+.qpast-empty{padding:25px 14px;text-align:center;color:#b9d4bc;font-size:13px;line-height:1.7}.qpast-empty small{display:block;font-size:11px;margin-top:8px}
+body.qpast-modal-open{overflow:hidden}
+.qpast-overlay{position:fixed;inset:0;z-index:1700;background:#041810e8;display:flex;align-items:flex-end;justify-content:center}
+.qpast-sheet{width:min(100%,600px);max-height:94dvh;display:flex;flex-direction:column;background:#123429;color:#f0ffee;border:1px solid #7bac81;border-radius:22px 22px 0 0;overflow:hidden}
+.qpast-sheet *{box-sizing:border-box}
+.qpast-sheet-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:18px 16px 13px;border-bottom:1px solid #ffffff25}
+.qpast-sheet-head small{font-size:10px;color:#cbff96;font-weight:900}.qpast-sheet-head h2{font-size:19px;margin:3px 0 7px}.qpast-sheet-head p{font-size:13px;color:#c0d6c4;margin:0}
+.qpast-sheet-head button{flex:0 0 40px;min-height:40px;border-radius:50%;background:#ffffff14;border:1px solid #ffffff30;color:white;font-size:22px}
+.qpast-sheet-scroll{overflow-y:auto;flex:1;padding:15px 16px 25px;overscroll-behavior:contain}
+.qpast-step{padding:14px 12px;margin-bottom:12px;border:1px solid #4d7960;background:#173d2f;border-radius:13px}
+.qpast-step-title{display:flex;gap:9px;align-items:center}.qpast-step-title span{color:#142f20;background:#d1fb95;padding:5px;border-radius:7px;font-size:11px;font-weight:900}
+.qpast-step-title strong{font-size:15px}.qpast-step p{color:#b8d2ba;font-size:12px;line-height:1.5;margin:9px 0}
+.qpast-step label{display:flex;flex-direction:column;gap:6px;margin-top:10px;font-size:12px;font-weight:750;color:#d7ecd9;min-width:0}
+.qpast-step input,.qpast-step textarea{width:100%;max-width:100%;min-width:0;padding:10px 9px;border-radius:10px;background:#0a2a21;color:#efffea;border:1px solid #719c7a;font-size:16px;font-family:inherit}
+.qpast-step textarea{resize:vertical;min-height:85px;line-height:1.5}
+.qpast-timegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.qpast-error{margin-bottom:12px;padding:10px;background:#6a482b;color:#fff1d3;border-radius:10px;font-size:12px}
+.qpast-footer{display:flex;flex-direction:column;gap:9px;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:#0b2b21;border-top:1px solid #ffffff26}
+.qpast-footer button{min-height:49px;border:0;border-radius:11px;background:#c9fd92;color:#153922;font-size:14px;font-weight:900}
+.qpast-footer button+button{background:#274e3b;color:#e2ffe4;border:1px solid #729c7d}
+@media(max-width:370px){.qpast-timegrid{grid-template-columns:minmax(0,1fr)}.qpast-datebar{grid-template-columns:35px minmax(0,1fr) 35px 50px;gap:4px}}
+@media(min-width:660px){.qpast-overlay{align-items:center}.qpast-sheet{border-radius:22px;max-height:90vh}}
+@media(prefers-reduced-motion:no-preference){.qpast-sheet{animation:qpast-slide .26s cubic-bezier(.2,.8,.2,1)}@keyframes qpast-slide{from{opacity:.65;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}}
 </style></head><body><main class="app"><div class="top"><div class="logo">🍏 LIFE OS <span class="logo-mini">BLOOM</span></div><div class="date" id="headerDate"></div></div><div id="lifeos-diagnostic" class="lifeos-diagnostic" role="status" aria-live="polite"><strong>🍏 LIFE OS build 2026.11.21-D2</strong><span>画面を読み込み中。予定が表示されない場合は、この表示を確認してね。</span></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="questDock" class="quest-dock" hidden aria-label="クエスト操作">
 <div class="quest-dock-main"><span class="quest-dock-name" id="questDockName"></span><span class="quest-dock-time" id="questDockTime"></span></div>
 <button type="button" id="questDockBack" aria-label="クエストに戻る">↑ 戻る</button>
@@ -1251,7 +1292,85 @@ document.addEventListener('click',function(event){
  if(kind==='next'){const qs=todaysQuests(),i=qs.findIndex(x=>x.id===q.id);const next=qs.slice(i+1).find(x=>x.status!=='done')||qs.find(x=>x.status!=='done');if(next){selectedQuestId=next.id;localStorage.setItem('lifeos_selected_quest',next.id);}paint();}
 });
 
-function homeHTML(){let n=count(viewDate),pct=Math.round(100*n/4),d=daysLeft();return `${viewDate===today()?questHTML():''}${viewDate===today()?growthTeaserHTML():''}<div class="qbelow"><details class="qdetails qplanner" id="qplanner"><summary><span>📅 未来のクエスト管理</span><span class="qsummary-arrow">⌄</span></summary>${viewDate===today()?questFutureHTML():''}</details></div><details class="qlegacy" id="qlegacy"><summary>🌱 ビジョン・習慣・記録を見る <span>⌄</span></summary><div class="qlegacy-content"><div class="hero"><span class="eyebrow">WINTER ARC · 2026</span><strong>年末まであと ${d} 日</strong><p>自分の価値を証明する48日ではなく、<br>誠実に生きる自分を育てる期間。</p><div class="progress"><div class="fill" style="width:${Math.max(0,Math.min(100,Math.round((48-d)/48*100)))}%"></div></div><div class="statrow"><div class="stat"><b>${total()*10}</b><span>積み上げ XP</span></div><div class="stat"><b>${streak()}日</b><span>継続日数</span></div><div class="stat"><b>Lv.${level()}</b><span>自己信頼レベル</span></div></div></div><div class="card home-compass"><div class="eyebrow">MY NORTH STAR · 迷ったらここへ</div><div class="home-compass-words">自分の心に素直に。<br><em>自分の人生を生きる。</em></div><p class="small">今日の一歩が、なりたい自分につながっている。</p><button class="button" data-go="vision">私の未来と決意を読む ↗</button></div><div class="card"><div class="head"><h2>🍽 PFCクエスト</h2><span class="pill">食事でXPを獲得</span></div><p class="small">1食ずつ記録して、筋肉を守りながら減量しよう。</p><button class="button" data-go="nutrition">今日のPFCを開く →</button></div><div class="card workout-home"><div class="head"><h2>💪 身体の成長</h2><span class="pill">記録 ${s.workout.sessions.length}回</span></div><p class="small">トレーニングはChatGPTで。ここでは積み重ねた成長を眺めよう。</p><button class="button secondary" data-go="workout">成長グラフ・履歴を見る →</button></div><div class="card"><div class="head"><h2>今日の小さな約束</h2><span class="pill">${n}/4 完了</span></div><div class="datecontrol"><button data-shift="-1">‹</button><input type="date" id="viewDate" class="field" value="${viewDate}"><button data-shift="1">›</button><button class="button secondary" data-today="1">今日</button></div><div style="height:13px"></div><div class="progress"><div class="fill" style="width:${pct}%"></div></div>${taskMarkup(viewDate)}<div class="actionrow"><button class="button secondary" data-mini="1">${s.miniMode?'理想ラインを見る':'最低ラインに戻す'}</button><button class="button ghost" data-go="journal">気づきを残す →</button></div></div><div class="card"><div class="head"><h2>自分との約束</h2><span class="kicker">MY IDENTITY</span></div><div class="quote">私は過去の行動に責任を持つ。<br>他人を尊重し、自分にも誠実でいる。<br>完璧でなくても、今日の行動を選べる。</div><div class="tip">できなかった日も「失敗」ではない。次の日に最低ラインから再開。</div></div><div class="card"><div class="head"><h2>今日の重要な一件</h2><span class="pill">FOCUS</span></div><input id="focus" class="field" placeholder="例：自己肯定感について3行書く" value="${esc(s.focus)}"><div class="actionrow"><button class="button" data-savefocus="1">この一件に決める</button></div></div></div></details>`}
+
+/* Past quest journal: plan vs actual, concise reflection and reversible XP. */
+let pastQuestDay=add(today(),-1);
+function qPastHTML(){
+ const day=pastQuestDay<=today()?pastQuestDay:today(),items=questSorted(s.quests?.[day]||[]);
+ const completed=items.filter(q=>q.status==='done').length;
+ return '<section class="qpast qbox" id="qpast"><div class="qpast-head"><div><div class="qhint">✦ PAST QUEST JOURNAL</div><h2>できたことを、積み上げよう。</h2><p>過去の予定も振り返って、成長の記録に。</p></div><span class="qpast-counter">'+completed+' / '+items.length+' CLEAR</span></div>'+
+ '<div class="qpast-datebar"><button type="button" data-past-shift="-1" aria-label="前の日">‹</button><input id="qpast-date" type="date" max="'+today()+'" value="'+day+'" aria-label="振り返る日付"><button type="button" data-past-shift="1" '+(day>=today()?'disabled':'')+' aria-label="次の日">›</button><button type="button" data-past-today>今日</button></div>'+
+ '<div class="qpast-list">'+(items.length?items.map(q=>'<article class="qpast-item '+(q.status==='done'?'qpast-isdone':'')+'"><div class="qpast-item-head"><span class="qpast-state">'+(q.status==='done'?'✓ CLEAR':'○ 未完了')+'</span><span class="qpast-points">'+(q.status==='done'?'獲得済 +'+(Number(q.xp)||10)+' XP':'クリアで +10 XP')+'</span></div><strong>'+esc(q.title)+'</strong><div class="qpast-schedule">予定 '+esc(q.start||'自由')+'〜'+esc(q.end||'自由')+(q.actual?.start?'　実績 '+esc(q.actual.start)+'〜'+esc(q.actual.end||''):'')+'</div>'+(q.actual?.note?'<p class="qpast-reflection">“'+esc(q.actual.note)+'”</p>':'')+
+ '<button class="qpast-open" type="button" data-past-open="'+esc(q.id)+'" data-past-day="'+day+'">'+(q.status==='done'?'✎ 実績・一言を編集':'✦ 振り返ってクリア')+'</button></article>').join(''):'<div class="qpast-empty">この日のクエストはまだないよ。記録済みのある日を選んでね。<small>Googleの過去予定は自動でさかのぼって取り込まれません。</small></div>')+'</div>'+
+ '<div class="qpast-bottom"><span>累計クエスト XP</span><strong>✦ '+questLifetimeXP()+' XP</strong></div></section>';
+}
+function qPastClose(){document.getElementById('qpast-modal')?.remove();document.body.classList.remove('qpast-modal-open');}
+function qPastOpen(id,day){
+ const q=(s.quests?.[day]||[]).find(x=>x.id===id);if(!q)return;
+ qPastClose();
+ const modal=document.createElement('div');modal.id='qpast-modal';modal.className='qpast-overlay';
+ const valid=x=>/^([01]\d|2[0-3]):[0-5]\d$/.test(String(x||''))?x:'';
+ const actual=q.actual||{};
+ modal.innerHTML='<div class="qpast-sheet" role="dialog" aria-modal="true" aria-label="クエストの振り返り">'+
+ '<div class="qpast-sheet-head"><div><small>🍏 QUEST REFLECTION</small><h2>今日までの一歩を記録</h2><p>'+esc(q.title)+'</p></div><button type="button" data-past-close aria-label="閉じる">×</button></div>'+
+ '<div class="qpast-sheet-scroll">'+
+ '<div class="qpast-step"><div class="qpast-step-title"><span>01</span><strong>予定していた時間</strong></div><p>変更した場合も、一番最初の予定は履歴に残るよ。</p><div class="qpast-timegrid"><label>開始<input id="qpast-plan-start" type="time" value="'+esc(valid(q.start))+'"></label><label>終了<input id="qpast-plan-end" type="time" value="'+esc(valid(q.end))+'"></label></div></div>'+
+ '<div class="qpast-step"><div class="qpast-step-title"><span>02</span><strong>実際にやったこと</strong></div><label>何をした？<input id="qpast-actual-title" maxlength="100" value="'+esc(actual.title||q.title)+'"></label><div class="qpast-timegrid"><label>実際の開始（任意）<input id="qpast-actual-start" type="time" value="'+esc(valid(actual.start))+'"></label><label>実際の終了（任意）<input id="qpast-actual-end" type="time" value="'+esc(valid(actual.end))+'"></label></div></div>'+
+ '<div class="qpast-step"><div class="qpast-step-title"><span>03</span><strong>一言振り返り</strong></div><p>何ができた？ 何を感じた？ 小さな気づきで大丈夫。</p><textarea id="qpast-note" maxlength="500" rows="3" placeholder="例：予定より短かったけど、最初の一歩を踏み出せた。">'+esc(actual.note||'')+'</textarea></div>'+
+ '<div id="qpast-error" class="qpast-error" role="alert" hidden></div></div>'+
+ '<div class="qpast-footer"><button type="button" data-past-save="'+(q.status==='done'?'edit':'clear')+'">'+(q.status==='done'?'✓ 実績を更新する':'✦ 記録してクリア +10 XP')+'</button>'+
+ (q.status==='done'?'<button type="button" data-past-undo>↶ クリアを取り消す</button>':'<button type="button" data-past-save="draft">クリアせず保存</button>')+'</div></div>';
+ document.body.appendChild(modal);document.body.classList.add('qpast-modal-open');
+ modal.addEventListener('click',e=>{if(e.target===modal||e.target.closest('[data-past-close]'))qPastClose();});
+ modal.querySelectorAll('[data-past-save]').forEach(button=>button.onclick=()=>qPastSave(q,day,button.dataset.pastSave));
+ modal.querySelector('[data-past-undo]')?.addEventListener('click',()=>qPastUndo(q));
+}
+function qPastError(message){
+ const el=document.getElementById('qpast-error');if(el){el.hidden=false;el.textContent=message;}notify(message);
+}
+function qPastSave(q,day,mode){
+ const modal=document.getElementById('qpast-modal');if(!modal)return;
+ const val=id=>String(modal.querySelector('#'+id)?.value||'').trim();
+ const pStart=val('qpast-plan-start'),pEnd=val('qpast-plan-end'),aStart=val('qpast-actual-start'),aEnd=val('qpast-actual-end');
+ const actualTitle=val('qpast-actual-title').slice(0,100),note=val('qpast-note').slice(0,500);
+ const valid=x=>/^([01]\d|2[0-3]):[0-5]\d$/.test(x);
+ const timeMinutes=x=>Number(x.slice(0,2))*60+Number(x.slice(3));
+ if(!!pStart!==!!pEnd||pStart&&(!valid(pStart)||!valid(pEnd)||timeMinutes(pEnd)<=timeMinutes(pStart))){qPastError('予定の開始・終了時刻を正しく入力してね');return;}
+ if(!!aStart!==!!aEnd||aStart&&(!valid(aStart)||!valid(aEnd)||timeMinutes(aEnd)<=timeMinutes(aStart))){qPastError('実際の時間は両方入力するか、両方空欄にしてね');return;}
+ if(!actualTitle){qPastError('実際にしたことを入力してね');return;}
+ if(pStart&&(q.start!==pStart||q.end!==pEnd)){
+  const mins=timeMinutes(pEnd)-timeMinutes(pStart);
+  qPlanRevision(q,day,{start:pStart,end:pEnd,minutes:mins},'振り返りで予定を修正');
+  q.start=pStart;q.end=pEnd;q.minutes=mins;q.editedLocally=true;
+  if(q.status!=='running')s.questSessions[q.id]={ms:mins*60000,at:null};
+ }
+ q.actual={title:actualTitle,start:aStart,end:aEnd,note,source:'manual',recordedAt:q.actual?.recordedAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
+ const firstClear=q.status!=='done'&&mode!=='draft';
+ if(firstClear){q.status='done';q.completedAt=new Date().toISOString();if(s.questSessions[q.id])s.questSessions[q.id].at=null;}
+ save();qPastClose();paint();
+ if(firstClear)questCelebrate(q.title,questRankXP()===0);
+ else notify(mode==='draft'?'実績を下書き保存したよ':'振り返りを更新したよ。XPは二重加算していないよ');
+}
+function qPastUndo(q){
+ if(q.status!=='done')return;
+ q.status='paused';q.completedAt=null;
+ // Preserve user-written reflection: only completion status and XP are undone.
+ if(s.questSessions[q.id])s.questSessions[q.id].at=null;
+ save();qPastClose();paint();notify('クリアを取り消したよ。振り返りは残して、XPだけ元に戻したよ');
+}
+document.addEventListener('change',e=>{
+ if(e.target.id!=='qpast-date')return;
+ const d=e.target.value;if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||d>today())return;
+ pastQuestDay=d;paint();
+});
+document.addEventListener('click',e=>{
+ const move=e.target.closest('[data-past-shift]'),todayBtn=e.target.closest('[data-past-today]'),open=e.target.closest('[data-past-open]');
+ if(move){e.preventDefault();pastQuestDay=add(pastQuestDay,Number(move.dataset.pastShift));if(pastQuestDay>today())pastQuestDay=today();paint();return;}
+ if(todayBtn){e.preventDefault();pastQuestDay=today();paint();return;}
+ if(open){e.preventDefault();qPastOpen(open.dataset.pastOpen,open.dataset.pastDay);return;}
+});
+
+function homeHTML(){let n=count(viewDate),pct=Math.round(100*n/4),d=daysLeft();return `${viewDate===today()?questHTML():''}${viewDate===today()?growthTeaserHTML():''}${qPastHTML()}<div class="qbelow"><details class="qdetails qplanner" id="qplanner"><summary><span>📅 未来のクエスト管理</span><span class="qsummary-arrow">⌄</span></summary>${viewDate===today()?questFutureHTML():''}</details></div><details class="qlegacy" id="qlegacy"><summary>🌱 ビジョン・習慣・記録を見る <span>⌄</span></summary><div class="qlegacy-content"><div class="hero"><span class="eyebrow">WINTER ARC · 2026</span><strong>年末まであと ${d} 日</strong><p>自分の価値を証明する48日ではなく、<br>誠実に生きる自分を育てる期間。</p><div class="progress"><div class="fill" style="width:${Math.max(0,Math.min(100,Math.round((48-d)/48*100)))}%"></div></div><div class="statrow"><div class="stat"><b>${total()*10}</b><span>積み上げ XP</span></div><div class="stat"><b>${streak()}日</b><span>継続日数</span></div><div class="stat"><b>Lv.${level()}</b><span>自己信頼レベル</span></div></div></div><div class="card home-compass"><div class="eyebrow">MY NORTH STAR · 迷ったらここへ</div><div class="home-compass-words">自分の心に素直に。<br><em>自分の人生を生きる。</em></div><p class="small">今日の一歩が、なりたい自分につながっている。</p><button class="button" data-go="vision">私の未来と決意を読む ↗</button></div><div class="card"><div class="head"><h2>🍽 PFCクエスト</h2><span class="pill">食事でXPを獲得</span></div><p class="small">1食ずつ記録して、筋肉を守りながら減量しよう。</p><button class="button" data-go="nutrition">今日のPFCを開く →</button></div><div class="card workout-home"><div class="head"><h2>💪 身体の成長</h2><span class="pill">記録 ${s.workout.sessions.length}回</span></div><p class="small">トレーニングはChatGPTで。ここでは積み重ねた成長を眺めよう。</p><button class="button secondary" data-go="workout">成長グラフ・履歴を見る →</button></div><div class="card"><div class="head"><h2>今日の小さな約束</h2><span class="pill">${n}/4 完了</span></div><div class="datecontrol"><button data-shift="-1">‹</button><input type="date" id="viewDate" class="field" value="${viewDate}"><button data-shift="1">›</button><button class="button secondary" data-today="1">今日</button></div><div style="height:13px"></div><div class="progress"><div class="fill" style="width:${pct}%"></div></div>${taskMarkup(viewDate)}<div class="actionrow"><button class="button secondary" data-mini="1">${s.miniMode?'理想ラインを見る':'最低ラインに戻す'}</button><button class="button ghost" data-go="journal">気づきを残す →</button></div></div><div class="card"><div class="head"><h2>自分との約束</h2><span class="kicker">MY IDENTITY</span></div><div class="quote">私は過去の行動に責任を持つ。<br>他人を尊重し、自分にも誠実でいる。<br>完璧でなくても、今日の行動を選べる。</div><div class="tip">できなかった日も「失敗」ではない。次の日に最低ラインから再開。</div></div><div class="card"><div class="head"><h2>今日の重要な一件</h2><span class="pill">FOCUS</span></div><input id="focus" class="field" placeholder="例：自己肯定感について3行書く" value="${esc(s.focus)}"><div class="actionrow"><button class="button" data-savefocus="1">この一件に決める</button></div></div></div></details>`}
 function weekHTML(){const dowIdx=dayDate(weekDate).getDay(),monday=add(weekDate,-(dowIdx+6)%7),days=Array.from({length:7},(_,i)=>add(monday,i));return `<h1>週間リズムをつくる。</h1><p class="lead">予定は固定しすぎない。70%の余白を残し、調整できる週へ。</p><div class="card"><div class="head"><h2>今週の予定</h2><div class="datecontrol"><button data-weekshift="-7">‹</button><button data-weekshift="7">›</button></div></div><div class="days">${days.map(d=>`<button class="day ${d===weekDate?'active':''}" data-weekday="${d}"><span>${dow[dayDate(d).getDay()]}</span><b>${+d.slice(8)}</b><span>${count(d)?count(d)+'/4':'·'}</span></button>`).join('')}</div><div style="margin-top:17px"><span class="eyebrow">${fmt(weekDate)} · PLAN</span>${dayPlan(weekDate).map(p=>`<div class="item"><div class="itemtop"><div><div class="itemtime">${esc(p.time)}　·　${esc(p.duration)}</div><div class="itemtitle">${esc(p.title)}</div></div><div style="display:flex;align-items:center;gap:5px"><span class="tag">${esc(p.category)}</span><button class="remove" title="この日から外す" data-delplan="${esc(p.id)}">×</button></div></div></div>`).join('')||'<div class="empty">予定はまだありません。余白も大切な計画です。</div>'}</div></div><div class="card"><h2>この日の予定を追加</h2><label class="label">やること</label><input class="field" id="planTitle" placeholder="例：学びを音声で3分アウトプット"><div class="grid2"><div><label class="label">時間帯</label><input class="field" id="planTime" placeholder="夜 / 20:00"></div><div><label class="label">所要時間</label><input class="field" id="planDuration" placeholder="20分"></div></div><div class="actionrow"><button class="button" data-addplan="1">予定を追加</button></div><div class="tip" style="margin-top:11px">所要時間は自分の予想の1.5倍を見積もる。終わりの条件も決めよう。</div></div><div class="card"><h2>週間設計ルール</h2><div class="item">平日：帰宅が遅い日は最低14分のみでOK</div><div class="item">筋トレ：週2回を必須、3回目は余裕がある週</div><div class="item">発信：週1件「公開または人に届ける」を目標</div><div class="item">週末：事業45分＋日曜のレビュー20分</div><div class="item">ボイトレ：12/5までは10分×週3〜5回を目標</div></div>`}
 function journalHTML(){const j=s.journal[viewDate]||{};return `<h1>その日の自分を、<br>ちゃんと見てあげる。</h1><p class="lead">感情を無理にポジティブにしない。事実と心の声を別々に残そう。</p><div class="card"><div class="head"><h2>今日のジャーナル</h2><span class="pill">${fmt(viewDate)}</span></div><input type="date" class="field" id="journalDate" value="${viewDate}"><label class="label">今日あった事実</label><textarea class="field" id="jfact" placeholder="何が起きた？ できたこと・できなかったことも事実だけで">${esc(j.fact)}</textarea><label class="label">自分で感じたこと（書きたいときだけ）</label><textarea class="field" id="jfeeling" placeholder="本当は何を感じた？ まだ分からなければ空欄でOK">${esc(j.feeling)}</textarea><label class="label">誠実に選んだ小さな行動</label><textarea class="field" id="jhonest" placeholder="例：見栄を張らずに素直に話せた">${esc(j.honest)}</textarea><label class="label">明日の最小の一歩</label><input class="field" id="jnext" placeholder="例：起床後に3分瞑想" value="${esc(j.next)}"><div class="actionrow"><button class="button" data-savejournal="1">この日の記録を保存</button></div></div><div class="card"><h2>自己受容のヒント</h2><div class="quote">行動は改善できる。<br>でも、できなかった日を理由に自分の存在を否定しなくていい。</div><div class="tip">日記には、あなたが言っていない気持ちや結論を自動追加しません。</div></div>`}
 

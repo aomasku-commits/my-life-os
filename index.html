@@ -489,15 +489,15 @@ const CSTART='[LIFE OS COACHING START]',CEND='[LIFE OS COACHING END]';
 const CQUEST=[['vision','🌈 最高の未来','この予定で最高の結果が出たら、どんな未来に近づく？'],['outcome','🎯 ベストな結果','終了時に何ができていれば最高？'],['reality','🪞 今の現状','今の状況・使えるもの・障害は？'],['options','💡 手段・選択肢','どんな方法なら実現できそう？'],['action','🚀 具体的な第一歩','最初の5分で何をする？ 邪魔が入ったら？'],['review','✨ 振り返り','何ができた？ 何を学んだ？ 次は？']];
 function coachPart(t){t=String(t||'');const a=t.indexOf(CSTART),b=t.indexOf(CEND,a+CSTART.length);return a>=0&&b>=0?t.slice(a+CSTART.length,b).trim():''}
 function coachOutside(t){t=String(t||'');const a=t.indexOf(CSTART),b=t.indexOf(CEND,a+CSTART.length);return a>=0&&b>=0?(t.slice(0,a)+t.slice(b+CEND.length)).trim():t}
-function coachRead(t){const v={};let key=null;for(const line of String(t||'').split('\\n')){const match=CQUEST.find(([k])=>line==='['+k+']')||(line==='[ai-summary]'?['ai-summary']:null);if(match){key=match[0];v[key]='';continue;}if(key)v[key]+=(v[key]?'\\n':'')+line;}for(const k in v)v[k]=v[k].trim();return v}
-function coachDescription(remote,q){const old=coachOutside(remote);const body=CQUEST.map(([k])=>'['+k+']\\n'+String(q.coaching?.[k]||'').trim().slice(0,1600)).concat(q.aiCoachingSummary?['[ai-summary]\\n'+String(q.aiCoachingSummary).slice(0,12000)]:[]).join('\\n\\n');return (old?old+'\\n\\n':'')+CSTART+'\\n'+body+'\\n'+CEND}
+function coachRead(t){const v={};let key=null;for(const line of String(t||'').split('\n')){const match=CQUEST.find(([k])=>line==='['+k+']')||(line==='[ai-summary]'?['ai-summary']:null);if(match){key=match[0];v[key]='';continue;}if(key)v[key]+=(v[key]?'\n':'')+line;}for(const k in v)v[k]=v[k].trim();return v}
+function coachDescription(remote,q){const old=coachOutside(remote);const body=CQUEST.map(([k])=>'['+k+']\n'+String(q.coaching?.[k]||'').trim().slice(0,1600)).concat(q.aiCoachingSummary?['[ai-summary]\n'+String(q.aiCoachingSummary).slice(0,12000)]:[]).join('\n\n');return (old?old+'\n\n':'')+CSTART+'\n'+body+'\n'+CEND}
 
 /* Explicit ChatGPT handoff: never expose a private API key in GitHub Pages. */
 function coachPrompt(q,day,draft){
- const lines=CQUEST.map(([k,label])=>label+': '+String(draft[k]||'未記入').slice(0,600)).join('\\n');
- return 'LIFE OSの予定について私のコーチ「あおい」と対話したいです。\\n'+
- '予定：'+q.title+'\\n日付：'+day+'\\n時間：'+q.start+'〜'+q.end+'\\n'+
- '現状の回答：\\n'+lines+'\\n\\n'+
+ const lines=CQUEST.map(([k,label])=>label+': '+String(draft[k]||'未記入').slice(0,600)).join('\n');
+ return 'LIFE OSの予定について私のコーチ「あおい」と対話したいです。\n'+
+ '予定：'+q.title+'\n日付：'+day+'\n時間：'+q.start+'〜'+q.end+'\n'+
+ '現状の回答：\n'+lines+'\n\n'+
  'GROWモデルと未来志向のコーチングを使い、理想の未来、最高の結果、現在地、選択肢、最初の5分、if-thenを深掘りしてください。'+
  '質問は必ず1回につき1つ。私が答えるまで次に進まず、肯定を押し付けず、具体的な行動まで伴走してください。'+
  '最後に、LIFE OSに貼れるよう「最高の結果」「選んだ方法」「最初の一歩」「障害と対策」「振り返りの問い」の見出しで簡潔なまとめを出してください。最初の質問から始めて。';

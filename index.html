@@ -904,7 +904,7 @@ function questFutureHTML(){
  '<label class="qhint" for="qfuture-date">表示する日付（今後30日）</label><input class="field" type="date" id="qfuture-date" min="'+dateMin+'" max="'+dateMax+'" value="'+preview+'">'+
  '<p class="qhint">'+fmt(preview)+' · '+qs.length+'件の予定</p>'+(rows||'<p class="qhint">この日のクエストはまだないよ。</p>')+
  '<div class="qadd"><input class="field" id="qfuture-title" maxlength="90" placeholder="未来のクエストを追加"><input class="field" type="number" id="qfuture-minutes" min="1" max="600" value="25" aria-label="分数"><button type="button" data-qfuture-add="1">＋追加</button></div>'+
- '<p class="qhint">.icsから読み込んだ明日以降の予定もここに表示されるよ。編集はLIFE OS内だけに反映され、Googleカレンダーは変わらないよ。</p></div>';
+ '<p class="qhint">.icsから読み込んだ明日以降の予定もここに表示されるよ。「予定の編集」はGoogleと同期できるよ。「実績」はLIFE OSだけに記録して、Googleの予定を勝手に変更しないよ。</p></div>';
 }
 document.addEventListener('change',e=>{
  if(e.target.id!=='qfuture-date')return;
@@ -1458,6 +1458,7 @@ function importNov21TeriyakiMeal(){
  if(meal&&meal.status!=='done'){
   meal.status='done';
   meal.completedAt=new Date().toISOString();
+  qActualDefault(meal);
   meal.editedLocally=true;
   if(s.questSessions?.[meal.id]){
    s.questSessions[meal.id].at=null;

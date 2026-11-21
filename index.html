@@ -171,6 +171,73 @@ h2{letter-spacing:-.4px}
 </style></head><body><main class="app"><div class="top"><div class="logo">🍏 LIFE OS <span class="logo-mini">BLOOM</span></div><div class="date" id="headerDate"></div></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="toast" class="toast" role="status" aria-live="polite"></div><div id="pfcCelebration" class="pfc-pop" role="status" aria-live="polite"></div><input type="file" id="importFile" accept=".json,application/json" class="hidden"><script>
 const KEY='arc_life_os_v1';const tz='Asia/Tokyo';const iso=(d)=>{const a=new Intl.DateTimeFormat('sv-SE',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);return a};const today=()=>iso(new Date());const dayDate=x=>new Date(x+'T12:00:00+09:00');const add=(date,n)=>iso(new Date(dayDate(date).getTime()+n*864e5));const dow=['日','月','火','水','木','金','土'];const esc=s=>String(s??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));const HABITS=[{id:'sense',label:'五感・瞑想',min:'3分',max:'15分',emoji:'🌿'},{id:'learn',label:'心理学 / NLP / マーケ学習',min:'5分',max:'20分',emoji:'🧠'},{id:'create',label:'事業につながる小さな発信',min:'3分',max:'20分',emoji:'🚀'},{id:'reflect',label:'自己受容・振り返り',min:'3分',max:'10分',emoji:'♡'}];const TEMPLATE={0:[['20:00','20分','翌週の作戦会議','内面']],1:[['朝','3分','五感を感じる','内面'],['夜','10分','ダーリン練習（12/5まで）','音楽']],2:[['朝','3分','五感を感じる','内面'],['夜','60〜75分','筋トレ','身体']],3:[['夜','20分','事業：発信下書き','事業'],['夜','10分','ダーリン練習（12/5まで）','音楽']],4:[['夜','60〜75分','筋トレ','身体']],5:[['夜','15分','1週間の記録を振り返る','内面'],['夜','10分','ダーリン練習（12/5まで）','音楽']],6:[['午前 or 空き時間','45分','心理学・マーケ深掘りと発信','事業'],['午後 or 空き時間','60〜75分','筋トレ（調整可）','身体']]};const blank=()=>({habits:{},journal:{},plans:{},weekOverrides:{},focus:'',miniMode:true,workout:blankWorkout()});let s;try{s={...blank(),...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{s=blank()};let active='home',viewDate=today(),weekDate=today();const save=()=>localStorage.setItem(KEY,JSON.stringify(s));const notify=m=>{const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.style.display='none',2200)};const done=(day,id)=>!!s.habits[day]?.[id];const count=day=>HABITS.filter(h=>done(day,h.id)).length;const daysLeft=()=>Math.max(0,Math.ceil((dayDate('2027-01-01')-dayDate(today()))/864e5));const isPast=day=>day<=today();const total=()=>{let n=0;Object.entries(s.habits).forEach(([day,hs])=>{if(isPast(day))n+=HABITS.filter(h=>hs[h.id]).length});return n};const streak=()=>{let d=today(),n=0;if(count(d)===0)d=add(d,-1);for(let i=0;i<365;i++){if(count(d)===0)break;n++;d=add(d,-1)}return n};const level=()=>Math.floor(total()/20)+1;const fmt=day=>`${Number(day.slice(5,7))}/${Number(day.slice(8,10))} (${dow[dayDate(day).getDay()]})`;const dayPlan=day=>{let wd=dayDate(day).getDay();let defaults=(TEMPLATE[wd]||[]).map((a,i)=>({id:'base'+i,time:a[0],duration:a[1],title:a[2],category:a[3]}));if(day>'2026-12-05')defaults=defaults.filter(x=>!x.title.includes('ダーリン'));if(day==='2026-11-15')defaults=[{id:'beppu',time:'午後中心',duration:'遠征',title:'マッスルゲート別府を観戦（移動・回復優先）',category:'特別'}];if(day==='2026-12-05')defaults=[{id:'live',time:'本番',duration:'ライブ',title:'「ダーリン」ライブ出演。体調を整える',category:'特別'}];return [...defaults,...(s.plans[day]||[])].filter(x=>!(s.weekOverrides[day]||[]).includes(x.id))};function taskMarkup(day){return HABITS.map(h=>`<label class="task ${done(day,h.id)?'done':''}"><input type="checkbox" data-habit="${h.id}" data-day="${day}" ${done(day,h.id)?'checked':''}><div style="flex:1"><div class="name">${h.emoji} ${h.label}</div><div class="meta">${s.miniMode?'最低 '+h.min:'理想 '+h.max} · できたらチェック</div></div></label>`).join('')}function paint(){document.getElementById('headerDate').textContent=fmt(today());document.querySelectorAll('main section').forEach(e=>e.classList.add('hidden'));document.getElementById(active).classList.remove('hidden');document.querySelectorAll('.tab').forEach(e=>{const selected=e.dataset.tab===active;e.classList.toggle('active',selected);if(selected)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current')});document.getElementById(active).innerHTML=({home:homeHTML,week:weekHTML,workout:workoutHTML,nutrition:nutritionHTML,journal:journalHTML,vision:visionHTML,settings:settingsHTML})[active]();}
 
+
+/* Phase 2 step 1: locally import an iCalendar file. No Google credentials or network requests. */
+const questICSUnescape=v=>v.replace(/\\n/gi,'\n').replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\\\/g,'\\');
+function questICSParseDate(raw,tzid){
+ const v=(raw||'').trim();if(!/^\d{8}(T\d{6}Z?)?$/.test(v))return null;
+ const y=+v.slice(0,4),m=+v.slice(4,6),d=+v.slice(6,8);
+ if(m<1||m>12||d<1||d>31)return null;
+ if(v.length===8)return {day:v.slice(0,4)+'-'+v.slice(4,6)+'-'+v.slice(6,8),clock:'00:00',allDay:true};
+ const hour=+v.slice(9,11),minute=+v.slice(11,13),sec=+v.slice(13,15);
+ if(hour>23||minute>59||sec>59)return null;
+ if(v.endsWith('Z')){
+  const date=new Date(Date.UTC(y,m-1,d,hour,minute,sec));
+  const datePart=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(date);
+  const clock=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(date);
+  return {day:datePart,clock,allDay:false};
+ }
+ // Google Calendar Japan export uses local time with TZID=Asia/Tokyo.
+ // Reject other TZID values rather than silently shifting an event.
+ if(tzid&&tzid!=='Asia/Tokyo')return null;
+ return {day:v.slice(0,4)+'-'+v.slice(4,6)+'-'+v.slice(6,8),clock:v.slice(9,11)+':'+v.slice(11,13),allDay:false};
+}
+function questICSRead(text){
+ const rows=text.replace(/\r\n?/g,'\n').split('\n');const lines=[];
+ for(const row of rows){if(/^[ \t]/.test(row)&&lines.length)lines[lines.length-1]+=row.slice(1);else lines.push(row);}
+ const events=[];let ev=null;
+ for(const line of lines){
+  if(line==='BEGIN:VEVENT'){ev={};continue;}
+  if(line==='END:VEVENT'){if(ev)events.push(ev);ev=null;continue;}
+  if(!ev)continue;const k=line.indexOf(':');if(k<0)continue;
+  const head=line.slice(0,k),value=line.slice(k+1),key=head.split(';')[0].toUpperCase();
+  if(['DTSTART','DTEND','UID','SUMMARY','STATUS','RECURRENCE-ID'].includes(key))ev[key]={head,value};
+ }
+ return events;
+}
+function questICSImport(text){
+ if(!/BEGIN:VCALENDAR/.test(text)||text.length>5000000)throw Error('正しい5MB以下の .ics ファイルを選んでね');
+ const events=questICSRead(text);const base=today(),limit=add(base,13);let count=0,skipped=0;
+ for(const ev of events){
+  if(ev.STATUS?.value==='CANCELLED'||ev['RECURRENCE-ID']){skipped++;continue;}
+  const rawStart=ev.DTSTART,rawEnd=ev.DTEND;if(!rawStart){skipped++;continue;}
+  const tzMatch=rawStart.head.match(/TZID=([^;:]+)/i),tzid=tzMatch?.[1]||'';
+  const start=questICSParseDate(rawStart.value,tzid);
+  const end=rawEnd?questICSParseDate(rawEnd.value,rawEnd.head.match(/TZID=([^;:]+)/i)?.[1]||tzid):null;
+  if(!start||start.allDay||start.day<base||start.day>limit){skipped++;continue;}
+  const title=questICSUnescape(ev.SUMMARY?.value||'予定').trim().slice(0,90);
+  if(!title){skipped++;continue;}
+  const uid=(ev.UID?.value||title+'|'+start.day+'|'+start.clock).slice(0,250);
+  const key=uid+'|'+start.day+'|'+start.clock;
+  const dayItems=s.quests[start.day]??=[];
+  if(dayItems.some(q=>q.calendarKey===key)){skipped++;continue;}
+  // End may be on another day; cap quest duration to 10 hours.
+  let minutes=25;if(end){const beginMs=Date.parse(start.day+'T'+start.clock+':00+09:00');const endMs=Date.parse(end.day+'T'+end.clock+':00+09:00');minutes=Math.min(600,Math.max(1,Math.round((endMs-beginMs)/60000)||25));}
+  const id='ics-'+start.day+'-'+count+'-'+Math.random().toString(36).slice(2,8);
+  dayItems.push({id,title,start:start.clock,end:end&&!end.allDay?end.clock:'自由',minutes,status:'pending',completedAt:null,calendarKey:key});
+  s.quests[start.day]=dayItems;count++;
+ }
+ save();paint();notify(count+'件取り込み · '+skipped+'件スキップ');
+ return {added:count,skipped};
+}
+document.addEventListener('change',async e=>{
+ if(e.target.id!=='quest-ics-input')return;
+ const file=e.target.files?.[0];e.target.value='';if(!file)return;
+ if(file.size>5000000){notify('5MB以下のファイルにしてね');return;}
+ try{const text=await file.text();const result=questICSImport(text);alert('カレンダー取り込み完了\n追加：'+result.added+'件（今日から14日間）\n対象外・重複：'+result.skipped+'件\n\n同じ予定は重複追加されません。');}
+ catch(err){alert('取り込めませんでした：'+err.message);}
+});
+
 /* LIFE OS — QUEST MODE Phase 1: additive state, existing storage unchanged */
 const questSeed=[["13:00","13:30","🎤 カラオケ・録音"],["13:30","14:00","🍜 帰宅・そばランチ"],["14:00","16:00","🍜 チャイハナマーケ"],["16:00","16:30","🚶 ジムへ移動"],["16:30","19:00","💪 ジム・プール"],["19:00","20:00","🍽️ 夕食・休憩"],["20:00","20:30","🎵 ボイトレ復習"],["20:30","21:15","🎙️ ラジオ収録"],["21:15","21:45","🧠 心理学"],["21:45","22:15","📖 読書"],["22:15","23:00","🌙 セルフイメージ"]];
 if(!s.quests || typeof s.quests!=='object')s.quests={};
@@ -197,7 +264,7 @@ function questHTML(){
  const qs=todaysQuests(),q=selectedQuest(),wins=qs.filter(x=>x.status==='done').length;
  let content='<div class="qbox" id="qbox"><div class="qhint">🍏 QUEST MODE · '+wins+'/'+qs.length+' CLEAR · '+(wins*10)+' XP</div><div class="qtrack" aria-label="今日の達成率"><div class="qfill" style="width:'+(qs.length?wins/qs.length*100:0)+'%"></div></div>';
  if(q){const left=remainingQuest(q);content+='<h2>'+esc(q.title)+'</h2><div class="qhint">'+esc(q.start)+' – '+esc(q.end)+' · '+q.minutes+'分</div><div class="qclock" id="qclock">'+showQuestTime(left)+'</div><div class="qhint" style="text-align:center" id="qstatus">'+(q.status==='running'?'集中タイム':q.status==='done'?'QUEST CLEAR!':left===0?'時間になったよ。延長してもOK':'スタートするとカウントダウン')+'</div><div class="qtrack"><div class="qfill" id="qfill" style="width:'+Math.min(100,left/(q.minutes*60)*100)+'%"></div></div><button class="qclear" data-qact="complete" '+(q.status==='done'?'disabled':'')+'>'+(q.status==='done'?'✓ QUEST CLEARED!':'✓ クエスト完了！')+'</button><div class="qactions">'+(q.status==='done'?'<button data-qact="undo">↩ 完了を取り消す</button>':'')+(q.status==='done'?'':'<button data-qact="toggle">'+(q.status==='running'?'⏸ 一時停止':'▶ 集中スタート')+'</button><button data-qact="extend">＋5分延長</button>')+'<button data-qact="next">次のクエスト →</button></div>';}
- content+='<div style="margin-top:15px">'+qs.map(x=>'<div class="qitem '+(q&&q.id===x.id?'current':'')+'"><button data-qselect="'+esc(x.id)+'">'+(x.status==='done'?'✅':'◯')+' '+esc(x.title)+'<small>'+esc(x.start)+'–'+esc(x.end)+' · '+x.minutes+'分</small></button><span class="qhint">'+(x.status==='done'?'CLEAR':x.status==='running'?'NOW':'+10XP')+'</span><button data-qremove="'+esc(x.id)+'" aria-label="削除">×</button></div>').join('')+'</div><div class="qactions"><button data-qact="import-week">📅 週間の予定をクエストに取り込む</button></div><div class="qadd"><input class="field" id="qtitle" maxlength="90" placeholder="クエストを追加"><input class="field" id="qminutes" type="number" value="25" min="1" max="600" aria-label="分数"><button data-qact="add">＋追加</button></div><p class="qhint">時間切れでも失敗ではないよ。予定を調整して続けよう。</p></div>';
+ content+='<div style="margin-top:15px">'+qs.map(x=>'<div class="qitem '+(q&&q.id===x.id?'current':'')+'"><button data-qselect="'+esc(x.id)+'">'+(x.status==='done'?'✅':'◯')+' '+esc(x.title)+'<small>'+esc(x.start)+'–'+esc(x.end)+' · '+x.minutes+'分</small></button><span class="qhint">'+(x.status==='done'?'CLEAR':x.status==='running'?'NOW':'+10XP')+'</span><button data-qremove="'+esc(x.id)+'" aria-label="削除">×</button></div>').join('')+'</div><div class="qactions"><button data-qact="import-week">📅 週間の予定を取り込む</button><button data-qact="import-ics">📥 カレンダー(.ics)を取り込む</button></div><p class="qhint">カレンダー取り込みは端末内で処理。外部への自動送信はしません。Googleカレンダー自動同期は未対応です。</p><input id="quest-ics-input" type="file" accept=".ics,text/calendar" style="display:none"><div class="qadd"><input class="field" id="qtitle" maxlength="90" placeholder="クエストを追加"><input class="field" id="qminutes" type="number" value="25" min="1" max="600" aria-label="分数"><button data-qact="add">＋追加</button></div><p class="qhint">時間切れでも失敗ではないよ。予定を調整して続けよう。</p></div>';
  return content;
 }
 function questClockRefresh(){if(active!=='home')return;const q=selectedQuest(),e=document.getElementById('qclock');if(!q||!e)return;const left=remainingQuest(q);e.textContent=showQuestTime(left);const fill=document.getElementById('qfill');if(fill)fill.style.width=Math.min(100,left/(q.minutes*60)*100)+'%';const label=document.getElementById('qstatus');if(label&&q.status==='running')label.textContent=left===0?'時間になったよ。延長してもOK':'集中タイム';}
@@ -209,6 +276,7 @@ document.addEventListener('click',function(event){
  if(select){selectedQuestId=select.dataset.qselect;localStorage.setItem('lifeos_selected_quest',selectedQuestId);paint();return;}
  if(remove){const id=remove.dataset.qremove;if(!confirm('このクエストを削除しますか？'))return;s.quests[today()]=todaysQuests().filter(q=>q.id!==id);delete s.questSessions[id];if(selectedQuestId===id)selectedQuestId=null;save();paint();return;}
  const kind=action.dataset.qact;
+ if(kind==='import-ics'){document.getElementById('quest-ics-input')?.click();return;}
  if(kind==='import-week'){copyWeeklyPlansToQuests();return;}
  if(kind==='add'){const title=document.getElementById('qtitle').value.trim(),minutes=Number(document.getElementById('qminutes').value);if(!title||!Number.isInteger(minutes)||minutes<1||minutes>600){notify('名前と1～600分を入力してね');return;}const id='q-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);(s.quests[today()]??=[]).push({id,title,start:'自由',end:'自由',minutes,status:'pending',completedAt:null});selectedQuestId=id;localStorage.setItem('lifeos_selected_quest',id);save();paint();return;}
  const q=selectedQuest();if(!q)return;

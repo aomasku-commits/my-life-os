@@ -464,6 +464,14 @@ body.qpast-modal-open{overflow:hidden}
 @media(max-width:370px){.qpast-timegrid{grid-template-columns:minmax(0,1fr)}.qpast-datebar{grid-template-columns:35px minmax(0,1fr) 35px 50px;gap:4px}}
 @media(min-width:660px){.qpast-overlay{align-items:center}.qpast-sheet{border-radius:22px;max-height:90vh}}
 @media(prefers-reduced-motion:no-preference){.qpast-sheet{animation:qpast-slide .26s cubic-bezier(.2,.8,.2,1)}@keyframes qpast-slide{from{opacity:.65;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}}
+
+/* Quick actions inside the NEXT QUEST hero. */
+#home .qhero-edit-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px;margin:13px 0 16px}
+#home .qhero-edit-actions button{min-width:0;min-height:47px;padding:9px 8px;border:1px solid #b4dd99;background:#234d39;color:#e7ffdc;border-radius:13px;font-size:12px;font-weight:850;line-height:1.35}
+#home .qhero-edit-actions button:first-child{background:#bdfa89;color:#14351f;border-color:transparent}
+#home .qhero-sync-bar{margin-top:14px;padding-top:13px;border-top:1px solid #ffffff23;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px}
+#home .qhero-sync-bar span{font-size:11px;color:#b2d1b9;font-weight:700}
+#home .qhero-sync-bar button{border:1px solid #638e71;background:#1c3c32;color:#daefd8;border-radius:10px;font-size:12px;font-weight:800;padding:8px 12px;min-height:39px}
 </style></head><body><main class="app"><div class="top"><div class="logo">🍏 LIFE OS <span class="logo-mini">BLOOM</span></div><div class="date" id="headerDate"></div></div><div id="lifeos-diagnostic" class="lifeos-diagnostic" role="status" aria-live="polite"><strong>🍏 LIFE OS build 2026.11.21-D2</strong><span>画面を読み込み中。予定が表示されない場合は、この表示を確認してね。</span></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="questDock" class="quest-dock" hidden aria-label="クエスト操作">
 <div class="quest-dock-main"><span class="quest-dock-name" id="questDockName"></span><span class="quest-dock-time" id="questDockTime"></span></div>
 <button type="button" id="questDockBack" aria-label="クエストに戻る">↑ 戻る</button>
@@ -727,7 +735,7 @@ async function coachSave(q,day,push){
  const answers={};for(const [key] of CQUEST)answers[key]=String(modal.querySelector('[data-coach-field="'+key+'"]')?.value||'').trim().slice(0,1600);
  if(JSON.stringify(q.coaching||{})!==JSON.stringify(answers)){q.coaching=answers;q.coachDirty=true;}
  save();paint();coachClose();
- if(push){if(!start){gcalStatus('LIFE OSに保存したよ。Google連携には開始と終了が必要だよ');return;}if(!gcalToken||Date.now()>=gcalTokenExpiry){gcalStatus('LIFE OSに保存したよ。Googleに接続して同期してね');return;}await gcalPushOne(q,newDay);}
+ if(push){if(!start){gcalStatus('LIFE OSに保存したよ。Google連携には開始と終了が必要だよ');return;}if(!gcalToken||Date.now()>=gcalTokenExpiry){gcalStatus('LIFE OSに保存したよ。変更は保持されているので、Google接続後に同期してね');return;}await gcalPushOne(q,newDay);}
  else notify('予定とコーチングを保存したよ');
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-coach-open]');if(b){e.preventDefault();coachOpen(b.dataset.coachOpen,b.dataset.coachDay||today());}});
@@ -834,14 +842,14 @@ function gcalStartAuth(){
    client_id:clientId,scope:'https://www.googleapis.com/auth/calendar.events',
    callback:async response=>{
     if(response.error){gcalBusy=false;gcalStatus('認証エラー：'+response.error);return;}
-    gcalToken=response.access_token;gcalTokenExpiry=Date.now()+Number(response.expires_in||3600)*1000;
+    gcalToken=response.access_token;gcalTokenExpiry=Date.now()+Number(response.expires_in||3600)*1000;s.googleAuthorized=true;save();
     try{gcalBusy=false;await gcalSyncBoth();}
     catch(err){gcalStatus('同期できませんでした：'+err.message);}
     finally{gcalBusy=false;}
    },
-   error_callback:err=>{gcalBusy=false;gcalStatus('認証画面を完了できませんでした：'+(err.type||'もう一度試してね'));}
+   error_callback:err=>{gcalBusy=false;gcalStatus('認証画面を完了できませんでした。Googleに接続して再試行してね：'+(err.type||'認証が必要'));}
   });
-  gcalTokenClient.requestAccessToken({prompt:gcalToken&&Date.now()<gcalTokenExpiry?'':'consent'});
+  gcalTokenClient.requestAccessToken({prompt:s.googleAuthorized?'':'consent'});
  }catch(err){gcalBusy=false;gcalStatus('認証を開始できませんでした：'+err.message);}
 }
 document.addEventListener('click',e=>{
@@ -896,7 +904,7 @@ async function gcalSafePush(q,day){
 async function gcalPushOne(q,day){
  if(gcalBusy){gcalStatus('同期中です');return;}
  try{
-  if(!gcalToken||Date.now()>=gcalTokenExpiry){gcalStatus('まずGoogleに接続してね');return;}
+  if(!gcalToken||Date.now()>=gcalTokenExpiry){gcalStatus('LIFE OSには保存済み。Googleへは「↻ 同期」で反映できるよ');return;}
   const mode=q.gcalKey?'更新':'新規追加';
   if(!confirm('Googleカレンダーに'+mode+'しますか？\\n'+q.title+'\\n'+day+' '+q.start))return;
   gcalBusy=true;await gcalSafePush(q,day);gcalStatus('Googleカレンダーに'+mode+'したよ');
@@ -1164,13 +1172,14 @@ function questHTML(){
  if(q){
   content+='<section class="qhero" aria-label="選択中のクエスト">'+
   '<div class="qhero-eyebrow"><span class="qhero-spark">✦</span> '+(completed?'QUEST CLEAR':running?'FOCUS NOW':'NEXT QUEST')+'</div>'+
-  '<h2>'+esc(q.title)+'</h2><div class="qhint">'+esc(q.start||'自由')+' – '+esc(q.end||'自由')+' · 予定 '+q.minutes+' 分</div>'+
+  '<h2>'+esc(q.title)+'</h2><div class="qhint">'+esc(q.start||'自由')+' – '+esc(q.end||'自由')+' · 予定 '+q.minutes+' 分</div>'+ 
+  '<div class="qhero-edit-actions"><button type="button" data-coach-open="'+esc(q.id)+'" data-coach-day="'+today()+'">✎ 予定・時間を編集</button><button type="button" data-past-open="'+esc(q.id)+'" data-past-day="'+today()+'">✦ 振り返りを記録</button></div>'+
   '<div class="qclock" id="qclock">'+showQuestTime(remaining)+'</div>'+
   '<div class="qhint qclock-status" id="qstatus">'+(completed?'よくできたね！':running?'集中中 · 残り時間':remaining===0?'予定時間になったよ。延長しても大丈夫':'スタートすると残り時間を計測するよ')+'</div>'+
   '<div class="qtrack qtimer-track" role="progressbar" aria-label="クエスト残り時間" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.round(percent)+'"><div class="qfill" id="qfill" style="width:'+percent+'%"></div></div>'+
   '<button type="button" class="qclear" data-qact="complete" '+(completed?'disabled':'')+'>'+(completed?'✓ QUEST CLEARED!':'✓ クエスト完了！')+'</button>'+
   '<div class="qactions qhero-actions">'+(completed?'<button type="button" data-qact="undo">↩ 取り消す</button>':'<button type="button" data-qact="toggle">'+(running?'⏸ 一時停止':'▶ 集中スタート')+'</button><button type="button" data-qact="extend">＋5分延長</button>')+
-  '<button type="button" data-qact="next">次へ →</button></div></section>';
+  '<button type="button" data-qact="next">次へ →</button></div><div class="qhero-sync-bar"><span id="qhero-gcal-indicator">'+(gcalToken&&Date.now()<gcalTokenExpiry?'● Google接続中':'○ Google未接続')+'</span><button type="button" data-gcal-home-sync>↻ 同期'+(q.editedLocally||q.coachDirty?'（変更あり）':'')+'</button></div></section>';
  }else{
   content+='<div class="qempty"><strong>今日の予定がまだ表示されていないよ。</strong><p>下の「予定の取り込み・同期」を開き、Google予定を同期してね。別ブラウザで開いた場合は保存データが共有されないよ。</p></div>';
  }
@@ -1537,7 +1546,7 @@ document.addEventListener('click',event=>{
  if(!next){notify('言葉を入力してね');return;}
  s.visionDraft[editor.dataset.key]=next;save();paint();notify('大切な言葉を保存したよ ✦');
 });
-function settingsHTML(){return `<h1>自分に合う道具に、<br>育てていこう。</h1><p class="lead">予定や記録はこの端末のブラウザに保存。定期的にバックアップしてね。</p><div class="card"><h2>📅 Googleカレンダー連携（読み込み・書き戻し）</h2><p class="tip">Google Cloudで作成したウェブアプリ用OAuthクライアントIDを設定すると、Googleアカウントのカレンダーから今後14日間の予定をクエストとして読み込めます。今後14日間の「予定」を双方向同期。LIFE OSでは当初の予定・予定の変更履歴・実績を別々に保存し、実績はGoogleの予定を上書きしません。日時を設定した新規クエストもGoogleへ登録できます。Google側で同じ予定が変更されていた場合は自動上書きしません。</p><label class="label" for="gcal-client-id">OAuth クライアントID</label><input class="field" id="gcal-client-id" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="123456789-xxxx.apps.googleusercontent.com" value="${esc(s.googleClientId||'')}"><div class="actionrow"><button class="button secondary" data-gcal-save="1">IDを保存</button><button class="button" data-gcal-sync="1">Googleに接続して同期</button></div><p class="tip" id="gcal-status">ステータス：${s.lastGcalSyncAt?'最終同期 '+new Date(s.lastGcalSyncAt).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}):'未同期'}。同期はボタンを押したときだけ実行します。</p><p class="tip">Google Cloud Console で「Google Calendar API」を有効化し、OAuth同意画面を設定。「承認済みJavaScript生成元」に <code>https://aomasku-commits.github.io</code> を追加してください。クライアントシークレットは入力しないでください。ブラウザに保存するのはクライアントIDだけで、アクセストークンは保存しません。</p></div><div class="card"><h2>データの管理</h2><p class="tip">別の端末やブラウザには自動同期されません。バックアップをダウンロードして移行できます。</p><div class="actionrow"><button class="button" data-export="1">記録をバックアップ</button><button class="button secondary" data-import="1">バックアップを復元</button></div></div><div class="card"><h2>リセット</h2><p class="tip">間違えてリセットしないよう、実行時に確認します。</p><button class="button danger" data-reset="1">全記録を初期化</button></div><div class="card"><h2>使い方</h2><div class="item">① 今日：最低14分の習慣をチェック</div><div class="item">② 週間：曜日別の予定を編集</div><div class="item">③ 筋トレ：保存済み履歴と身体の目標を確認<br>④ 記録：自分の言葉で事実と気持ちを書く</div><div class="item">④ 目標：年末までの方向を見失わない</div><div class="item">⑤ 設定：JSONでバックアップ</div></div><div class="tip">Google同期はボタン操作で実行される双方向同期です。バックグラウンドでの常時同期、Google予定の削除、端末間のLIFE OS記録同期は未実装です。</div>`}
+function settingsHTML(){return `<h1>自分に合う道具に、<br>育てていこう。</h1><p class="lead">予定や記録はこの端末のブラウザに保存。定期的にバックアップしてね。</p><div class="card"><h2>📅 Googleカレンダー連携（読み込み・書き戻し）</h2><p class="tip">Google Cloudで作成したウェブアプリ用OAuthクライアントIDを設定すると、Googleアカウントのカレンダーから今後14日間の予定をクエストとして読み込めます。今後14日間の「予定」を双方向同期。LIFE OSでは当初の予定・予定の変更履歴・実績を別々に保存し、実績はGoogleの予定を上書きしません。日時を設定した新規クエストもGoogleへ登録できます。Google側で同じ予定が変更されていた場合は自動上書きしません。</p><label class="label" for="gcal-client-id">OAuth クライアントID</label><input class="field" id="gcal-client-id" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="123456789-xxxx.apps.googleusercontent.com" value="${esc(s.googleClientId||'')}"><div class="actionrow"><button class="button secondary" data-gcal-save="1">IDを保存</button><button class="button" data-gcal-sync="1">Googleに接続して同期</button></div><p class="tip" id="gcal-status">ステータス：${s.lastGcalSyncAt?'最終同期 '+new Date(s.lastGcalSyncAt).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}):'未同期'}。同期はボタンを押したときだけ実行します。</p><p class="tip">Google Cloud Console で「Google Calendar API」を有効化し、OAuth同意画面を設定。「承認済みJavaScript生成元」に <code>https://aomasku-commits.github.io</code> を追加してください。クライアントシークレットは入力しないでください。ブラウザに保存するのはクライアントIDだけで、アクセストークンは保存しません。</p></div><div class="card"><h2>データの管理</h2><p class="tip">別の端末やブラウザには自動同期されません。バックアップをダウンロードして移行できます。</p><div class="actionrow"><button class="button" data-export="1">記録をバックアップ</button><button class="button secondary" data-import="1">バックアップを復元</button></div></div><div class="card"><h2>リセット</h2><p class="tip">間違えてリセットしないよう、実行時に確認します。</p><button class="button danger" data-reset="1">全記録を初期化</button></div><div class="card"><h2>使い方</h2><div class="item">① 今日：最低14分の習慣をチェック</div><div class="item">② 週間：曜日別の予定を編集</div><div class="item">③ 筋トレ：保存済み履歴と身体の目標を確認<br>④ 記録：自分の言葉で事実と気持ちを書く</div><div class="item">④ 目標：年末までの方向を見失わない</div><div class="item">⑤ 設定：JSONでバックアップ</div></div><div class="tip">Google認証が有効な間は再接続不要で同期できます。一度承認したアカウントでは次回の認証画面を省略できる場合があります。認証状態はブラウザの仕様により継続できないことがあります。LIFE OSで編集した内容は端末に保持され、再接続後に同期できます。バックグラウンドでの常時同期、Google予定の削除、端末間のLIFE OS記録同期は未実装です。</div>`}
 document.addEventListener('click',e=>{const el=e.target.closest('button');if(!el)return;if(el.dataset.tab){active=el.dataset.tab;paint();scrollTo(0,0)}else if(el.dataset.go){active=el.dataset.go;paint();scrollTo(0,0)}else if(el.dataset.shift){viewDate=add(viewDate,Number(el.dataset.shift));paint()}else if(el.dataset.today){viewDate=today();paint()}else if(el.dataset.mini){s.miniMode=!s.miniMode;save();paint()}else if(el.dataset.savefocus){s.focus=document.getElementById('focus').value;save();notify('今日の一件を保存したよ')}else if(el.dataset.weekshift){weekDate=add(weekDate,Number(el.dataset.weekshift));paint()}else if(el.dataset.weekday){weekDate=el.dataset.weekday;paint()}else if(el.dataset.addplan){const t=document.getElementById('planTitle').value.trim();if(!t){notify('予定名を入力してね');return}s.plans[weekDate]??=[];s.plans[weekDate].push({id:'custom-'+Date.now(),title:t,time:document.getElementById('planTime').value||'時間未定',duration:document.getElementById('planDuration').value||'自由',category:'追加'});save();paint();notify('予定を追加したよ')}else if(el.dataset.delplan){const id=el.dataset.delplan;if(id.startsWith('custom')){s.plans[weekDate]=(s.plans[weekDate]||[]).filter(p=>p.id!==id)}else{(s.weekOverrides[weekDate]??=[]).push(id)}save();paint();notify('この日の予定から外したよ')}else if(el.dataset.savejournal){s.journal[viewDate]={fact:document.getElementById('jfact').value,feeling:document.getElementById('jfeeling').value,honest:document.getElementById('jhonest').value,next:document.getElementById('jnext').value};save();notify('日記を保存したよ')}else if(el.dataset.export){const blob=new Blob([JSON.stringify({app:'ARC_LIFE_OS',version:1,exportedAt:new Date().toISOString(),data:s},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ARC_backup_'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000)}else if(el.dataset.import){document.getElementById('importFile').click()}else if(el.dataset.reset){if(confirm('本当にすべての記録を消去しますか？ バックアップをおすすめします。')){s=blank();save();paint();notify('初期化しました')}}});document.addEventListener('change',e=>{const t=e.target;if(t.dataset.habit){s.habits[t.dataset.day]??={};s.habits[t.dataset.day][t.dataset.habit]=t.checked;save();paint();if(t.checked)notify('約束をひとつ積み上げた ✦')}if(t.id==='viewDate'||t.id==='journalDate'){viewDate=t.value||today();paint()}});document.getElementById('importFile').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{const v=JSON.parse(await f.text());if(v.app!=='ARC_LIFE_OS'||!v.data||typeof v.data!=='object')throw Error('形式が違います');if(confirm('今の記録をバックアップの内容で置き換えますか？')){s={...blank(),...v.data};save();paint();notify('復元しました')}}catch(err){alert('バックアップを読み込めませんでした：'+err.message)}e.target.value=''});
 function blankWorkout() {
   return {sessions: [], draft: null};

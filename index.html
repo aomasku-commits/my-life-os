@@ -23,7 +23,28 @@
 .workout-status{min-height:1.4em;margin:8px 0 0}
 #workout button:disabled{opacity:.46;cursor:default}
 #workout button:focus-visible,.tab:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
-.navwrap{gap:1px}.tab{flex:1;min-width:0;padding:7px 1px}.pfc-meters{display:grid;gap:15px}.pfc-meter .pfc-heading{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.pfc-meter .progress{margin-top:5px}.pfc-meter .fill.over{background:linear-gradient(90deg,#ffa6ca,#eeaa66)}.pfc-inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pfc-score{font-size:34px;color:var(--lime);font-weight:900}.pfc-log{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}.pfc-log:last-child{border:0}</style></head><body><main class="app"><div class="top"><div class="logo">✦ ARC / LIFE OS</div><div class="date" id="headerDate"></div></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="toast" class="toast" role="status" aria-live="polite"></div><input type="file" id="importFile" accept=".json,application/json" class="hidden"><script>
+.navwrap{gap:1px}.tab{flex:1;min-width:0;padding:7px 1px}.pfc-meters{display:grid;gap:15px}.pfc-meter .pfc-heading{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.pfc-meter .progress{margin-top:5px}.pfc-meter .fill.over{background:linear-gradient(90deg,#ffa6ca,#eeaa66)}.pfc-inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pfc-score{font-size:34px;color:var(--lime);font-weight:900}.pfc-log{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}.pfc-log:last-child{border:0}
+/* Nutrition Quest 2 */
+.pfc-rings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
+.pfc-ring{position:relative;display:grid;place-items:center;aspect-ratio:1;border-radius:18px;background:#202a41;padding:8px}
+.pfc-ring svg{display:block;width:100%;height:auto;max-width:130px;transform:rotate(-90deg);overflow:visible}
+.pfc-ring circle{fill:none;stroke:#34425b;stroke-width:9}
+.pfc-ring circle.arc{stroke:var(--ring);stroke-linecap:round;stroke-dasharray:var(--percent) 100;transition:stroke-dasharray .6s ease}
+.pfc-ring circle.over{stroke:#ffa6ca}
+.pfc-ring .ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.pfc-ring .ring-inner b{font-size:22px;line-height:1.15}.pfc-ring .ring-inner small{font-size:11px;color:#b8c6dc}
+.pfc-ring .ring-title{font-size:12px;font-weight:800;position:absolute;bottom:4px;left:0;right:0;text-align:center}
+.pfc-ring-summary{font-size:11px;color:#b8c6dc;text-align:center;margin:0 0 5px}
+.pfc-quick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.pfc-quick{border:1px solid #526181;background:#24314a;border-radius:14px;padding:12px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;color:white;font:inherit;text-align:left;cursor:pointer;min-width:0}
+.pfc-quick b{font-size:13px;line-height:1.3;overflow-wrap:anywhere}.pfc-quick small{font-size:11px;color:#c0c9db}.pfc-quick .quick-plus{color:var(--lime);font-size:12px;font-weight:900}
+.pfc-log-actions{display:flex;flex-direction:column;gap:6px;flex:none}.pfc-log-actions button{padding:6px 9px;font-size:11px}
+.pfc-milestones{display:flex;gap:8px;flex-wrap:wrap}.pfc-milestone{border:1px solid #44526c;background:#202b42;border-radius:50px;font-size:12px;padding:5px 10px}.pfc-milestone.earned{border-color:#92c77d;color:#d3ffa3}
+.pfc-pop{position:fixed;top:calc(16px + env(safe-area-inset-top));left:50%;transform:translate(-50%,-18px) scale(.95);padding:13px 18px;border-radius:18px;background:#c5ff8b;color:#172519;font-weight:900;box-shadow:0 15px 50px #0008;z-index:30;pointer-events:none;opacity:0;transition:opacity .25s,transform .25s;max-width:90%;text-align:center}
+.pfc-pop.show{transform:translate(-50%,0) scale(1);opacity:1}
+@media(max-width:370px){.pfc-ring .ring-inner b{font-size:18px}.pfc-ring .ring-title{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.pfc-ring circle.arc,.pfc-pop{transition:none}}
+</style></head><body><main class="app"><div class="top"><div class="logo">✦ ARC / LIFE OS</div><div class="date" id="headerDate"></div></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="toast" class="toast" role="status" aria-live="polite"></div><div id="pfcCelebration" class="pfc-pop" role="status" aria-live="polite"></div><input type="file" id="importFile" accept=".json,application/json" class="hidden"><script>
 const KEY='arc_life_os_v1';const tz='Asia/Tokyo';const iso=(d)=>{const a=new Intl.DateTimeFormat('sv-SE',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);return a};const today=()=>iso(new Date());const dayDate=x=>new Date(x+'T12:00:00+09:00');const add=(date,n)=>iso(new Date(dayDate(date).getTime()+n*864e5));const dow=['日','月','火','水','木','金','土'];const esc=s=>String(s??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));const HABITS=[{id:'sense',label:'五感・瞑想',min:'3分',max:'15分',emoji:'🌿'},{id:'learn',label:'心理学 / NLP / マーケ学習',min:'5分',max:'20分',emoji:'🧠'},{id:'create',label:'事業につながる小さな発信',min:'3分',max:'20分',emoji:'🚀'},{id:'reflect',label:'自己受容・振り返り',min:'3分',max:'10分',emoji:'♡'}];const TEMPLATE={0:[['20:00','20分','翌週の作戦会議','内面']],1:[['朝','3分','五感を感じる','内面'],['夜','10分','ダーリン練習（12/5まで）','音楽']],2:[['朝','3分','五感を感じる','内面'],['夜','60〜75分','筋トレ','身体']],3:[['夜','20分','事業：発信下書き','事業'],['夜','10分','ダーリン練習（12/5まで）','音楽']],4:[['夜','60〜75分','筋トレ','身体']],5:[['夜','15分','1週間の記録を振り返る','内面'],['夜','10分','ダーリン練習（12/5まで）','音楽']],6:[['午前 or 空き時間','45分','心理学・マーケ深掘りと発信','事業'],['午後 or 空き時間','60〜75分','筋トレ（調整可）','身体']]};const blank=()=>({habits:{},journal:{},plans:{},weekOverrides:{},focus:'',miniMode:true,workout:blankWorkout()});let s;try{s={...blank(),...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{s=blank()};let active='home',viewDate=today(),weekDate=today();const save=()=>localStorage.setItem(KEY,JSON.stringify(s));const notify=m=>{const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.style.display='none',2200)};const done=(day,id)=>!!s.habits[day]?.[id];const count=day=>HABITS.filter(h=>done(day,h.id)).length;const daysLeft=()=>Math.max(0,Math.ceil((dayDate('2027-01-01')-dayDate(today()))/864e5));const isPast=day=>day<=today();const total=()=>{let n=0;Object.entries(s.habits).forEach(([day,hs])=>{if(isPast(day))n+=HABITS.filter(h=>hs[h.id]).length});return n};const streak=()=>{let d=today(),n=0;if(count(d)===0)d=add(d,-1);for(let i=0;i<365;i++){if(count(d)===0)break;n++;d=add(d,-1)}return n};const level=()=>Math.floor(total()/20)+1;const fmt=day=>`${Number(day.slice(5,7))}/${Number(day.slice(8,10))} (${dow[dayDate(day).getDay()]})`;const dayPlan=day=>{let wd=dayDate(day).getDay();let defaults=(TEMPLATE[wd]||[]).map((a,i)=>({id:'base'+i,time:a[0],duration:a[1],title:a[2],category:a[3]}));if(day>'2026-12-05')defaults=defaults.filter(x=>!x.title.includes('ダーリン'));if(day==='2026-11-15')defaults=[{id:'beppu',time:'午後中心',duration:'遠征',title:'マッスルゲート別府を観戦（移動・回復優先）',category:'特別'}];if(day==='2026-12-05')defaults=[{id:'live',time:'本番',duration:'ライブ',title:'「ダーリン」ライブ出演。体調を整える',category:'特別'}];return [...defaults,...(s.plans[day]||[])].filter(x=>!(s.weekOverrides[day]||[]).includes(x.id))};function taskMarkup(day){return HABITS.map(h=>`<label class="task ${done(day,h.id)?'done':''}"><input type="checkbox" data-habit="${h.id}" data-day="${day}" ${done(day,h.id)?'checked':''}><div style="flex:1"><div class="name">${h.emoji} ${h.label}</div><div class="meta">${s.miniMode?'最低 '+h.min:'理想 '+h.max} · できたらチェック</div></div></label>`).join('')}function paint(){document.getElementById('headerDate').textContent=fmt(today());document.querySelectorAll('main section').forEach(e=>e.classList.add('hidden'));document.getElementById(active).classList.remove('hidden');document.querySelectorAll('.tab').forEach(e=>{const selected=e.dataset.tab===active;e.classList.toggle('active',selected);if(selected)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current')});document.getElementById(active).innerHTML=({home:homeHTML,week:weekHTML,workout:workoutHTML,nutrition:nutritionHTML,journal:journalHTML,vision:visionHTML,settings:settingsHTML})[active]();}
 function homeHTML(){let n=count(viewDate),pct=Math.round(100*n/4),d=daysLeft();return `<h1>理想の自分は、<br><span style="color:var(--lime)">今日の一歩</span>から。</h1><p class="lead">強くなるために、自分を責めない。<br>小さな行動で、自己信頼を育てよう。</p><div class="hero"><span class="eyebrow">WINTER ARC · 2026</span><strong>年末まであと ${d} 日</strong><p>自分の価値を証明する48日ではなく、<br>誠実に生きる自分を育てる期間。</p><div class="progress"><div class="fill" style="width:${Math.max(0,Math.min(100,Math.round((48-d)/48*100)))}%"></div></div><div class="statrow"><div class="stat"><b>${total()*10}</b><span>積み上げ XP</span></div><div class="stat"><b>${streak()}日</b><span>継続日数</span></div><div class="stat"><b>Lv.${level()}</b><span>自己信頼レベル</span></div></div></div><div class="card"><div class="head"><h2>🍽 PFCクエスト</h2><span class="pill">食事でXPを獲得</span></div><p class="small">1食ずつ記録して、筋肉を守りながら減量しよう。</p><button class="button" data-go="nutrition">今日のPFCを開く →</button></div><div class="card workout-home"><div class="head"><h2>筋トレ</h2><span class="pill">累計 ${s.workout.sessions.length}回</span></div><button class="button" data-go="workout">${s.workout.draft?.stage==='record'?'途中の記録に戻る':'今日の筋トレを開く'} →</button></div><div class="card"><div class="head"><h2>今日の小さな約束</h2><span class="pill">${n}/4 完了</span></div><div class="datecontrol"><button data-shift="-1">‹</button><input type="date" id="viewDate" class="field" value="${viewDate}"><button data-shift="1">›</button><button class="button secondary" data-today="1">今日</button></div><div style="height:13px"></div><div class="progress"><div class="fill" style="width:${pct}%"></div></div>${taskMarkup(viewDate)}<div class="actionrow"><button class="button secondary" data-mini="1">${s.miniMode?'理想ラインを見る':'最低ラインに戻す'}</button><button class="button ghost" data-go="journal">気づきを残す →</button></div></div><div class="card"><div class="head"><h2>自分との約束</h2><span class="kicker">MY IDENTITY</span></div><div class="quote">私は過去の行動に責任を持つ。<br>他人を尊重し、自分にも誠実でいる。<br>完璧でなくても、今日の行動を選べる。</div><div class="tip">できなかった日も「失敗」ではない。次の日に最低ラインから再開。</div></div><div class="card"><div class="head"><h2>今日の重要な一件</h2><span class="pill">FOCUS</span></div><input id="focus" class="field" placeholder="例：自己肯定感について3行書く" value="${esc(s.focus)}"><div class="actionrow"><button class="button" data-savefocus="1">この一件に決める</button></div></div>`}
 function weekHTML(){const dowIdx=dayDate(weekDate).getDay(),monday=add(weekDate,-(dowIdx+6)%7),days=Array.from({length:7},(_,i)=>add(monday,i));return `<h1>週間リズムをつくる。</h1><p class="lead">予定は固定しすぎない。70%の余白を残し、調整できる週へ。</p><div class="card"><div class="head"><h2>今週の予定</h2><div class="datecontrol"><button data-weekshift="-7">‹</button><button data-weekshift="7">›</button></div></div><div class="days">${days.map(d=>`<button class="day ${d===weekDate?'active':''}" data-weekday="${d}"><span>${dow[dayDate(d).getDay()]}</span><b>${+d.slice(8)}</b><span>${count(d)?count(d)+'/4':'·'}</span></button>`).join('')}</div><div style="margin-top:17px"><span class="eyebrow">${fmt(weekDate)} · PLAN</span>${dayPlan(weekDate).map(p=>`<div class="item"><div class="itemtop"><div><div class="itemtime">${esc(p.time)}　·　${esc(p.duration)}</div><div class="itemtitle">${esc(p.title)}</div></div><div style="display:flex;align-items:center;gap:5px"><span class="tag">${esc(p.category)}</span><button class="remove" title="この日から外す" data-delplan="${esc(p.id)}">×</button></div></div></div>`).join('')||'<div class="empty">予定はまだありません。余白も大切な計画です。</div>'}</div></div><div class="card"><h2>この日の予定を追加</h2><label class="label">やること</label><input class="field" id="planTitle" placeholder="例：学びを音声で3分アウトプット"><div class="grid2"><div><label class="label">時間帯</label><input class="field" id="planTime" placeholder="夜 / 20:00"></div><div><label class="label">所要時間</label><input class="field" id="planDuration" placeholder="20分"></div></div><div class="actionrow"><button class="button" data-addplan="1">予定を追加</button></div><div class="tip" style="margin-top:11px">所要時間は自分の予想の1.5倍を見積もる。終わりの条件も決めよう。</div></div><div class="card"><h2>週間設計ルール</h2><div class="item">平日：帰宅が遅い日は最低14分のみでOK</div><div class="item">筋トレ：週2回を必須、3回目は余裕がある週</div><div class="item">発信：週1件「公開または人に届ける」を目標</div><div class="item">週末：事業45分＋日曜のレビュー20分</div><div class="item">ボイトレ：12/5までは10分×週3〜5回を目標</div></div>`}
@@ -285,57 +306,106 @@ document.addEventListener('click', event => {
 });
 
 
-/* Gamified PFC daily meal tracker */
+/* Nutrition Quest 2 — existing local state retained */
 const PFC_GOALS={kcal:2200,p:160,f:60,c:255};
-if(!s.nutrition||!Array.isArray(s.nutrition.meals)){
+if(!s.nutrition || !Array.isArray(s.nutrition.meals)){
  s.nutrition={meals:[{id:'starter-veloce-a-20261121',date:'2026-11-21',name:'ベローチェ モーニングA（ホットサンドのみ）',kcal:383,p:14.2,f:21.3,c:35.1}]};save();
 }
-let nutritionDate=today();
+if(!Array.isArray(s.nutrition.favorites)){s.nutrition.favorites=[];save();}
+let nutritionDate=today(),pfcCelebrationTimer=null;
 const nutritionMeals=day=>s.nutrition.meals.filter(m=>m.date===day);
 const nutritionTotals=day=>nutritionMeals(day).reduce((a,m)=>{for(const k of ['kcal','p','f','c'])a[k]+=Number(m[k])||0;return a},{kcal:0,p:0,f:0,c:0});
 const nutritionNum=n=>Number.isInteger(n)?String(n):n.toFixed(1);
+const pfcXP=(day)=>{const t=nutritionTotals(day),meals=nutritionMeals(day);return meals.length*10+(t.p>=160?40:0)+(t.kcal>=1900&&t.kcal<=2300?20:0)+(t.f>=45&&t.f<=70?10:0)+(t.c>=220&&t.c<=280?10:0);};
+function pfcCelebrate(message){
+ const el=document.getElementById('pfcCelebration');if(!el)return;
+ el.textContent=message;el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
+ clearTimeout(pfcCelebrationTimer);pfcCelebrationTimer=setTimeout(()=>el.classList.remove('show'),2100);
+}
 function nutritionMeter(label,key,totals,unit){
  const val=totals[key],goal=PFC_GOALS[key],ratio=val/goal;
  return '<div class="pfc-meter"><div class="pfc-heading"><b>'+label+'</b><span>'+nutritionNum(val)+' / '+goal+unit+'</span></div>'+
  '<div class="progress" role="progressbar" aria-label="'+label+'" aria-valuemin="0" aria-valuemax="'+goal+'" aria-valuenow="'+val+'"><div class="fill '+(ratio>1.05?'over':'')+'" style="width:'+Math.min(100,Math.max(0,ratio*100))+'%"></div></div>'+
  '<div class="small">残り '+nutritionNum(Math.max(0,Math.round((goal-val)*10)/10))+unit+(val>goal?'（目標より '+nutritionNum(Math.round((val-goal)*10)/10)+unit+' 多い）':'')+'</div></div>';
 }
+function pfcRing(key,label,value,goal,color){
+ const ratio=value/goal,percentage=Math.max(0,Math.min(100,Math.round(ratio*100))),over=ratio>1.05;
+ return '<div class="pfc-ring" style="--ring:'+color+';--percent:'+percentage+'">'+
+ '<svg viewBox="0 0 120 120" role="img" aria-label="'+esc(label)+' '+nutritionNum(value)+' / '+goal+'g"><circle cx="60" cy="60" r="47" pathLength="100"></circle><circle class="arc '+(over?'over':'')+'" cx="60" cy="60" r="47" pathLength="100"></circle></svg>'+
+ '<div class="ring-inner"><b>'+percentage+'%</b><small>'+nutritionNum(value)+' / '+goal+'g</small></div><div class="ring-title">'+label+'</div></div>';
+}
+function pfcSignature(m){return [m.name,...['kcal','p','f','c'].map(k=>Number(m[k]))].join('|');}
+function pfcRecent(){const seen=new Set(s.nutrition.favorites.map(pfcSignature)),recent=[];for(const m of [...s.nutrition.meals].reverse()){const sig=pfcSignature(m);if(!seen.has(sig)){seen.add(sig);recent.push(m);}if(recent.length>=4)break;}return recent;}
+function pfcQuickCard(m,kind,index){
+ return '<button type="button" class="pfc-quick" data-pfc-quick="'+kind+'" data-pfc-index="'+index+'"><span class="quick-plus">＋ ワンタップ追加</span><b>'+esc(m.name)+'</b><small>'+nutritionNum(Number(m.kcal))+'kcal · P '+nutritionNum(Number(m.p))+' / F '+nutritionNum(Number(m.f))+' / C '+nutritionNum(Number(m.c))+'g</small></button>';
+}
 function nutritionHTML(){
  const meals=nutritionMeals(nutritionDate),t=nutritionTotals(nutritionDate),foodXP=meals.length*10;
  const pGood=t.p>=160,calGood=t.kcal>=1900&&t.kcal<=2300,fGood=t.f>=45&&t.f<=70,cGood=t.c>=220&&t.c<=280;
  const bonus=(pGood?40:0)+(calGood?20:0)+(fGood?10:0)+(cGood?10:0);
  const quests=[['タンパク質160g以上',pGood,40],['カロリー1,900〜2,300kcal',calGood,20],['脂質45〜70g',fGood,10],['炭水化物220〜280g',cGood,10]];
- return '<h1>🍽 PFCクエスト</h1><p class="lead">食べたら記録してXP獲得。目標は目安、100点より継続が勝ち！</p>'+
+ const favorites=s.nutrition.favorites,recent=pfcRecent(),milestones=[1,3,10,30];
+ const ever=s.nutrition.meals.length;
+ return '<h1>🍽 PFCクエスト</h1><p class="lead">食事で経験値を積もう。目標は目安、完璧より楽しく継続！</p>'+
  '<div class="hero"><span class="eyebrow">NUTRITION QUEST · '+fmt(nutritionDate)+'</span><strong class="pfc-score">'+(foodXP+bonus)+' XP</strong>'+
  '<div class="small">'+meals.length+'食を記録（1食につき+10 XP） · 栄養クエスト最大+80 XP</div>'+
  '<div class="actionrow"><button class="button secondary" data-pfc-shift="-1">‹ 前日</button><button class="button secondary" data-pfc-today="1">今日</button><button class="button secondary" data-pfc-shift="1">翌日 ›</button></div></div>'+
- '<div class="card"><div class="head"><h2>今日のゲージ</h2><span class="pill">目標 2,200 kcal</span></div><div class="pfc-meters">'+
- nutritionMeter('🔥 カロリー','kcal',t,'kcal')+nutritionMeter('💪 P｜タンパク質','p',t,'g')+nutritionMeter('🥑 F｜脂質','f',t,'g')+nutritionMeter('🍚 C｜炭水化物','c',t,'g')+
- '</div><p class="tip">栄養表示の数値は概算の場合があります。カロリーとPFC換算値は誤差により一致しないことがあります。</p></div>'+
+ '<div class="card"><div class="head"><h2>🎯 PFCリング</h2><span class="pill">一目で進捗</span></div><div class="pfc-rings">'+
+ pfcRing('p','P タンパク質',t.p,160,'#baff87')+pfcRing('f','F 脂質',t.f,60,'#ffbc87')+pfcRing('c','C 炭水化物',t.c,255,'#a99dff')+
+ '</div><p class="pfc-ring-summary">リングは目標に向かって満ちるよ。100%を超えても減点なし。</p>'+
+ '<div class="pfc-meters">'+nutritionMeter('🔥 カロリー','kcal',t,'kcal')+
+ '</div><p class="tip">残り：P '+nutritionNum(Math.max(0,160-t.p))+'g / F '+nutritionNum(Math.max(0,60-t.f))+'g / C '+nutritionNum(Math.max(0,255-t.c))+'g。栄養成分は概算の場合があります。</p></div>'+
+ '<div class="card"><div class="head"><h2>⚡ ワンタップ食事登録</h2><span class="pill">＋10 XP / 食</span></div>'+
+ (favorites.length?'<p class="small">★ お気に入り</p><div class="pfc-quick-grid">'+favorites.map((m,i)=>pfcQuickCard(m,'favorite',i)).join('')+'</div>':'<p class="small">お気に入りは食事ログの「★ 保存」から登録できるよ。</p>')+
+ (recent.length?'<p class="small" style="margin:16px 0 8px">最近のメニュー</p><div class="pfc-quick-grid">'+recent.map((m,i)=>pfcQuickCard(m,'recent',i)).join('')+'</div>':'')+
+ '<p class="tip">同じ食事をもう一度食べたらタップ。量が違う日は下のフォームから数値を調整してね。</p></div>'+
  '<div class="card"><h2>🏆 今日のクエスト</h2>'+quests.map(([label,ok,points])=>'<div class="item">'+(ok?'✅':'◻️')+' '+label+' <span class="pill" style="float:right">'+(ok?'達成 +':'+')+points+' XP</span></div>').join('')+
- '<div class="tip">XPはこの画面だけのゲーム得点で、LIFE OSの習慣XPとは別です。体調を優先して取り組もう。</div></div>'+
- '<form id="nutrition-add" class="card"><h2>＋ 食事を記録</h2><label class="label" for="pfc-name">メニュー名</label><input id="pfc-name" class="field" required maxlength="90" placeholder="例：鶏もも肉の玄米オムライス">'+
+ '<div class="tip">今日の合計に応じたボーナス。翌日以降も記録した日の達成状況を見られるよ。</div></div>'+
+ '<div class="card"><h2>✨ コレクション</h2><p class="small">これまでの食事記録：'+ever+'件</p><div class="pfc-milestones">'+milestones.map(n=>'<span class="pfc-milestone '+(ever>=n?'earned':'')+'">'+(ever>=n?'🏅':'🔒')+' '+n+'食記録</span>').join('')+'</div><p class="tip">食事を厳しく制限するためではなく、記録の習慣を楽しむための実績だよ。</p></div>'+
+ '<form id="nutrition-add" class="card"><h2>＋ 食事を手入力</h2><label class="label" for="pfc-name">メニュー名</label><input id="pfc-name" class="field" required maxlength="90" placeholder="例：鶏もも肉の玄米オムライス">'+
  '<div class="pfc-inputs">'+[['kcal','カロリー kcal'],['p','P｜タンパク質 g'],['f','F｜脂質 g'],['c','C｜炭水化物 g']].map(([key,label])=>'<div><label class="label" for="pfc-'+key+'">'+label+'</label><input id="pfc-'+key+'" class="field" type="number" min="0" max="10000" step="0.1" required inputmode="decimal" placeholder="0"></div>').join('')+'</div>'+
  '<div class="actionrow"><button class="button" type="submit">食事を保存 ＋10 XP</button></div></form>'+
  '<div class="card"><div class="head"><h2>食事ログ</h2><span class="pill">'+meals.length+'件</span></div>'+
- (meals.length?meals.map(m=>'<div class="pfc-log"><div><b>'+esc(m.name)+'</b><br><small class="muted">'+nutritionNum(m.kcal)+'kcal · P '+nutritionNum(m.p)+' / F '+nutritionNum(m.f)+' / C '+nutritionNum(m.c)+' g</small></div><button class="button ghost" data-pfc-delete="'+esc(m.id)+'" aria-label="'+esc(m.name)+'を削除">削除</button></div>').join(''):'<p class="muted">まだ食事の記録がありません。</p>')+'</div>';
+ (meals.length?meals.map(m=>'<div class="pfc-log"><div style="min-width:0"><b>'+esc(m.name)+'</b><br><small class="muted">'+nutritionNum(Number(m.kcal))+'kcal · P '+nutritionNum(Number(m.p))+' / F '+nutritionNum(Number(m.f))+' / C '+nutritionNum(Number(m.c))+'g</small></div><div class="pfc-log-actions"><button class="button secondary" data-pfc-fav="'+esc(m.id)+'">'+(favorites.some(f=>pfcSignature(f)===pfcSignature(m))?'★ 保存済':'☆ 保存')+'</button><button class="button ghost" data-pfc-delete="'+esc(m.id)+'" aria-label="'+esc(m.name)+'を削除">削除</button></div></div>').join(''):'<p class="muted">まだ食事の記録がありません。</p>')+'</div>'+
+ '<p class="tip">この記録は端末内に保存されます。設定から定期的にバックアップしてね。</p>';
+}
+function pfcAddMeal(m){
+ const beforeXP=pfcXP(nutritionDate);
+ const meal={id:'meal-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),date:nutritionDate,name:m.name};
+ for(const k of ['kcal','p','f','c'])meal[k]=Number(m[k]);
+ s.nutrition.meals.push(meal);save();paint();
+ const delta=pfcXP(nutritionDate)-beforeXP;
+ pfcCelebrate('✨ 食事を記録！ +'+delta+' XP');
 }
 document.addEventListener('submit',e=>{
  if(e.target.id!=='nutrition-add')return;
  e.preventDefault();
  const name=document.getElementById('pfc-name').value.trim();
- const meal={id:'meal-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),date:nutritionDate,name};
+ const meal={name};
  for(const key of ['kcal','p','f','c'])meal[key]=Number(document.getElementById('pfc-'+key).value);
  if(!name||['kcal','p','f','c'].some(k=>!Number.isFinite(meal[k])||meal[k]<0||meal[k]>10000)){notify('メニュー名と正しいPFCを入力してね');return}
- s.nutrition.meals.push(meal);save();paint();notify('食事を記録！ +10 XP ✦');
+ pfcAddMeal(meal);
 });
 document.addEventListener('click',e=>{
  const b=e.target.closest('button');if(!b)return;
  if(b.dataset.pfcShift){nutritionDate=add(nutritionDate,Number(b.dataset.pfcShift));paint();}
  if(b.dataset.pfcToday){nutritionDate=today();paint();}
- if(b.dataset.pfcDelete){const m=s.nutrition.meals.find(x=>x.id===b.dataset.pfcDelete);if(!m)return;
- if(!confirm('「'+m.name+'」の記録を削除する？'))return;
- s.nutrition.meals=s.nutrition.meals.filter(x=>x.id!==m.id);save();paint();notify('食事記録を削除したよ');}
+ if(b.dataset.pfcQuick){
+  const ix=Number(b.dataset.pfcIndex),source=b.dataset.pfcQuick==='favorite'?s.nutrition.favorites:pfcRecent();
+  if(!Number.isInteger(ix)||ix<0||ix>=source.length)return;
+  pfcAddMeal(source[ix]);return;
+ }
+ if(b.dataset.pfcFav){
+  const m=s.nutrition.meals.find(x=>x.id===b.dataset.pfcFav);if(!m)return;
+  const index=s.nutrition.favorites.findIndex(f=>pfcSignature(f)===pfcSignature(m));
+  if(index>=0){s.nutrition.favorites.splice(index,1);save();paint();notify('お気に入りを解除');}
+  else{s.nutrition.favorites.unshift({name:m.name,kcal:Number(m.kcal),p:Number(m.p),f:Number(m.f),c:Number(m.c)});save();paint();notify('★ ワンタップ用に保存したよ');}
+ }
+ if(b.dataset.pfcDelete){
+  const m=s.nutrition.meals.find(x=>x.id===b.dataset.pfcDelete);if(!m)return;
+  if(!confirm('「'+m.name+'」の記録を削除する？'))return;
+  s.nutrition.meals=s.nutrition.meals.filter(x=>x.id!==m.id);save();paint();notify('食事記録を削除したよ');
+ }
 });
 
 paint();

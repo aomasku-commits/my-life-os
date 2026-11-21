@@ -44,6 +44,15 @@
 .pfc-pop.show{transform:translate(-50%,0) scale(1);opacity:1}
 @media(max-width:370px){.pfc-ring .ring-inner b{font-size:18px}.pfc-ring .ring-title{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.pfc-ring circle.arc,.pfc-pop{transition:none}}
+
+/* ChatGPT workout bridge */
+.sync-card textarea{width:100%;min-height:105px;resize:vertical;font-size:13px;line-height:1.5}
+.sync-card .sync-actions{display:flex;gap:8px;flex-wrap:wrap}
+.sync-hint{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.lift-chart{width:100%;height:auto;display:block}
+.lift-chart text{fill:#bfcbe0;font-family:inherit;font-size:11px}
+.lift-chart .line{fill:none;stroke:#c5ff8b;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.lift-chart .dot{fill:#c5ff8b}
 </style></head><body><main class="app"><div class="top"><div class="logo">✦ ARC / LIFE OS</div><div class="date" id="headerDate"></div></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="toast" class="toast" role="status" aria-live="polite"></div><div id="pfcCelebration" class="pfc-pop" role="status" aria-live="polite"></div><input type="file" id="importFile" accept=".json,application/json" class="hidden"><script>
 const KEY='arc_life_os_v1';const tz='Asia/Tokyo';const iso=(d)=>{const a=new Intl.DateTimeFormat('sv-SE',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);return a};const today=()=>iso(new Date());const dayDate=x=>new Date(x+'T12:00:00+09:00');const add=(date,n)=>iso(new Date(dayDate(date).getTime()+n*864e5));const dow=['日','月','火','水','木','金','土'];const esc=s=>String(s??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));const HABITS=[{id:'sense',label:'五感・瞑想',min:'3分',max:'15分',emoji:'🌿'},{id:'learn',label:'心理学 / NLP / マーケ学習',min:'5分',max:'20分',emoji:'🧠'},{id:'create',label:'事業につながる小さな発信',min:'3分',max:'20分',emoji:'🚀'},{id:'reflect',label:'自己受容・振り返り',min:'3分',max:'10分',emoji:'♡'}];const TEMPLATE={0:[['20:00','20分','翌週の作戦会議','内面']],1:[['朝','3分','五感を感じる','内面'],['夜','10分','ダーリン練習（12/5まで）','音楽']],2:[['朝','3分','五感を感じる','内面'],['夜','60〜75分','筋トレ','身体']],3:[['夜','20分','事業：発信下書き','事業'],['夜','10分','ダーリン練習（12/5まで）','音楽']],4:[['夜','60〜75分','筋トレ','身体']],5:[['夜','15分','1週間の記録を振り返る','内面'],['夜','10分','ダーリン練習（12/5まで）','音楽']],6:[['午前 or 空き時間','45分','心理学・マーケ深掘りと発信','事業'],['午後 or 空き時間','60〜75分','筋トレ（調整可）','身体']]};const blank=()=>({habits:{},journal:{},plans:{},weekOverrides:{},focus:'',miniMode:true,workout:blankWorkout()});let s;try{s={...blank(),...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{s=blank()};let active='home',viewDate=today(),weekDate=today();const save=()=>localStorage.setItem(KEY,JSON.stringify(s));const notify=m=>{const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.style.display='none',2200)};const done=(day,id)=>!!s.habits[day]?.[id];const count=day=>HABITS.filter(h=>done(day,h.id)).length;const daysLeft=()=>Math.max(0,Math.ceil((dayDate('2027-01-01')-dayDate(today()))/864e5));const isPast=day=>day<=today();const total=()=>{let n=0;Object.entries(s.habits).forEach(([day,hs])=>{if(isPast(day))n+=HABITS.filter(h=>hs[h.id]).length});return n};const streak=()=>{let d=today(),n=0;if(count(d)===0)d=add(d,-1);for(let i=0;i<365;i++){if(count(d)===0)break;n++;d=add(d,-1)}return n};const level=()=>Math.floor(total()/20)+1;const fmt=day=>`${Number(day.slice(5,7))}/${Number(day.slice(8,10))} (${dow[dayDate(day).getDay()]})`;const dayPlan=day=>{let wd=dayDate(day).getDay();let defaults=(TEMPLATE[wd]||[]).map((a,i)=>({id:'base'+i,time:a[0],duration:a[1],title:a[2],category:a[3]}));if(day>'2026-12-05')defaults=defaults.filter(x=>!x.title.includes('ダーリン'));if(day==='2026-11-15')defaults=[{id:'beppu',time:'午後中心',duration:'遠征',title:'マッスルゲート別府を観戦（移動・回復優先）',category:'特別'}];if(day==='2026-12-05')defaults=[{id:'live',time:'本番',duration:'ライブ',title:'「ダーリン」ライブ出演。体調を整える',category:'特別'}];return [...defaults,...(s.plans[day]||[])].filter(x=>!(s.weekOverrides[day]||[]).includes(x.id))};function taskMarkup(day){return HABITS.map(h=>`<label class="task ${done(day,h.id)?'done':''}"><input type="checkbox" data-habit="${h.id}" data-day="${day}" ${done(day,h.id)?'checked':''}><div style="flex:1"><div class="name">${h.emoji} ${h.label}</div><div class="meta">${s.miniMode?'最低 '+h.min:'理想 '+h.max} · できたらチェック</div></div></label>`).join('')}function paint(){document.getElementById('headerDate').textContent=fmt(today());document.querySelectorAll('main section').forEach(e=>e.classList.add('hidden'));document.getElementById(active).classList.remove('hidden');document.querySelectorAll('.tab').forEach(e=>{const selected=e.dataset.tab===active;e.classList.toggle('active',selected);if(selected)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current')});document.getElementById(active).innerHTML=({home:homeHTML,week:weekHTML,workout:workoutHTML,nutrition:nutritionHTML,journal:journalHTML,vision:visionHTML,settings:settingsHTML})[active]();}
 function homeHTML(){let n=count(viewDate),pct=Math.round(100*n/4),d=daysLeft();return `<h1>理想の自分は、<br><span style="color:var(--lime)">今日の一歩</span>から。</h1><p class="lead">強くなるために、自分を責めない。<br>小さな行動で、自己信頼を育てよう。</p><div class="hero"><span class="eyebrow">WINTER ARC · 2026</span><strong>年末まであと ${d} 日</strong><p>自分の価値を証明する48日ではなく、<br>誠実に生きる自分を育てる期間。</p><div class="progress"><div class="fill" style="width:${Math.max(0,Math.min(100,Math.round((48-d)/48*100)))}%"></div></div><div class="statrow"><div class="stat"><b>${total()*10}</b><span>積み上げ XP</span></div><div class="stat"><b>${streak()}日</b><span>継続日数</span></div><div class="stat"><b>Lv.${level()}</b><span>自己信頼レベル</span></div></div></div><div class="card"><div class="head"><h2>🍽 PFCクエスト</h2><span class="pill">食事でXPを獲得</span></div><p class="small">1食ずつ記録して、筋肉を守りながら減量しよう。</p><button class="button" data-go="nutrition">今日のPFCを開く →</button></div><div class="card workout-home"><div class="head"><h2>筋トレ</h2><span class="pill">累計 ${s.workout.sessions.length}回</span></div><button class="button" data-go="workout">${s.workout.draft?.stage==='record'?'途中の記録に戻る':'今日の筋トレを開く'} →</button></div><div class="card"><div class="head"><h2>今日の小さな約束</h2><span class="pill">${n}/4 完了</span></div><div class="datecontrol"><button data-shift="-1">‹</button><input type="date" id="viewDate" class="field" value="${viewDate}"><button data-shift="1">›</button><button class="button secondary" data-today="1">今日</button></div><div style="height:13px"></div><div class="progress"><div class="fill" style="width:${pct}%"></div></div>${taskMarkup(viewDate)}<div class="actionrow"><button class="button secondary" data-mini="1">${s.miniMode?'理想ラインを見る':'最低ラインに戻す'}</button><button class="button ghost" data-go="journal">気づきを残す →</button></div></div><div class="card"><div class="head"><h2>自分との約束</h2><span class="kicker">MY IDENTITY</span></div><div class="quote">私は過去の行動に責任を持つ。<br>他人を尊重し、自分にも誠実でいる。<br>完璧でなくても、今日の行動を選べる。</div><div class="tip">できなかった日も「失敗」ではない。次の日に最低ラインから再開。</div></div><div class="card"><div class="head"><h2>今日の重要な一件</h2><span class="pill">FOCUS</span></div><input id="focus" class="field" placeholder="例：自己肯定感について3行書く" value="${esc(s.focus)}"><div class="actionrow"><button class="button" data-savefocus="1">この一件に決める</button></div></div>`}
@@ -125,10 +134,11 @@ function workoutHTML() {
  const benchPct=bench?Math.min(100,Math.round(bench.weight/100*100)):0;
  const sessionUnits=newest.reduce((sum,session)=>sum+(session.exercises||[]).reduce((n,e)=>n+(e.sets||[]).length,0),0);
  const totalFood=s.nutrition&&Array.isArray(s.nutrition.meals)?s.nutrition.meals.length:0;
+ const benchHistory=workoutLiftHistory('ベンチプレス');
  return '<h1>💪 身体の成長ログ</h1><p class="lead">トレーニングはChatGPTで。ここでは成長の軌跡を眺めよう。</p>'+
  '<div class="hero workout-hero"><div class="eyebrow">MY BODY STORY</div><strong>積み上げた努力は消えない。</strong>'+
  '<div class="statrow"><div class="stat"><b>'+count+'</b><span>保存された筋トレ回数</span></div><div class="stat"><b>'+dates.size+'</b><span>トレーニング日数</span></div><div class="stat"><b>'+sessionUnits+'</b><span>記録済みセット数</span></div></div>'+
- '<p class="small">この画面にはLIFE OSに保存された履歴のみ表示。ChatGPT側の記録はまだ自動同期されません。</p></div>'+
+ '<p class="small">この画面はLIFE OSに保存された履歴を表示します。ChatGPTからの記録は下の連携欄で取り込めます。</p></div>'+
  '<div class="card"><div class="head"><h2>🎯 理想の身体への目標</h2><span class="pill">2026 → 2027</span></div>'+
  '<div class="phase"><b>体脂肪率16% · 2026/12/31</b><small>計測値の自動同期は未対応。数値の進捗を推測せず、実測値で確認しよう。</small></div>'+
  '<div class="phase"><b>ベンチプレス100kg · 挑戦目標</b><small>'+(bench?'保存履歴の最高重量 '+nutritionNum(bench.weight)+'kg（'+bench.reps+'回）':'LIFE OS内にベンチプレス履歴なし')+'</small></div>'+
@@ -136,6 +146,8 @@ function workoutHTML() {
  '<div class="phase"><b>体脂肪率10% · 2027/7</b><small>健康状態と進捗に合わせて調整する長期目標。</small></div>'+
  '<div class="phase"><b>行動目標：週2〜3回の筋トレ</b><small>今週、LIFE OSに保存された日数：'+weekly+'日 / 目安2〜3日</small></div>'+
  '<div class="phase"><b>食事を積み重ねる</b><small>食事ログ累計：'+totalFood+'食 · PFCタブで今日の進捗を確認</small></div></div>'+
+ '<div class="card"><h2>📈 ベンチプレス成長グラフ</h2>'+workoutChart(benchHistory)+'<p class="small">日付ごとの最大使用重量。異なる回数のセットも含むため、筋力の厳密な比較ではありません。</p></div>'+ 
+ '<div class="card sync-card"><div class="head"><h2>🔗 ChatGPTの記録を連携</h2><span class="pill">既存記録を保持</span></div><p class="small">ChatGPTが作ったトレーニングJSONを貼るか、共有リンクから取り込み。既に同じ内容がある場合は重複登録しません。</p><form id="workout-sync-form"><label class="label" for="workout-sync-json">ChatGPTからコピーしたJSON</label><textarea id="workout-sync-json" class="field" placeholder=\'例：{"date":"2026-11-21","exercises":[{"name":"ベンチプレス","sets":[{"weight":75,"reps":5}]}]}\' required></textarea><div class="actionrow"><button type="submit" class="button">記録を取り込む</button></div></form><p class="sync-hint">個人の記録はこの端末に保存。自動的なクラウド同期ではありません。取り込み前に内容を確認してね。</p></div>'+ 
  '<div class="card"><h2>🏅 保存履歴の自己ベスト</h2>'+
  (bests.length?bests.map(b=>'<div class="item"><b>'+esc(b.name)+'</b><br><span class="small">'+nutritionNum(b.weight)+'kg × '+b.reps+'回 · '+esc(b.date)+'</span></div>').join(''):'<p class="empty">アプリ内に保存されたセットデータはまだないよ。ChatGPTの記録は別に残っています。</p>')+'</div>'+
  '<div class="card"><div class="head"><h2>📜 トレーニング履歴</h2><span class="pill">'+count+'回</span></div>'+
@@ -423,5 +435,97 @@ document.addEventListener('click',e=>{
  }
 });
 
+
+/* Import contract: a session {date:"YYYY-MM-DD", exercises:[{name,sets:[{weight,reps}]}]}
+   or {sessions:[...]} or an array of sessions.  Confirm URL imports before mutation. */
+function workoutNormalizeImport(raw){
+ const arr=Array.isArray(raw)?raw:Array.isArray(raw?.sessions)?raw.sessions:[raw];
+ if(arr.length<1||arr.length>100)throw Error('1〜100回分のセッションを指定してください');
+ return arr.map((session)=>{
+  if(!session||typeof session!=='object'||!/^20\d\d-\d\d-\d\d$/.test(session.date)||!Number.isFinite(dayDate(session.date).getTime())||iso(dayDate(session.date))!==session.date||session.date>today())throw Error('日付は今日以前のYYYY-MM-DD形式で指定してください');
+  if(!Array.isArray(session.exercises)||!session.exercises.length||session.exercises.length>35)throw Error('種目は1〜35個で指定してください');
+  const exercises=session.exercises.map(ex=>{
+   if(typeof ex.name!=='string'||!ex.name.trim()||ex.name.length>80)throw Error('種目名が不正です');
+   if(!Array.isArray(ex.sets)||!ex.sets.length||ex.sets.length>30)throw Error('各種目のセットは1〜30件にしてください');
+   const unit=ex.unit==='秒'?'秒':'回';
+   const sets=ex.sets.map(set=>{
+    const weight=set.weight===null||set.weight===undefined||set.weight===''?null:Number(set.weight);
+    const reps=Number(set.reps);
+    if((weight!==null&&(!Number.isFinite(weight)||weight<0||weight>1000))||!Number.isInteger(reps)||reps<1||reps>10000)throw Error('重量か回数が不正です');
+    return {weight,reps};
+   });
+   return {name:exerciseName(ex.name.trim()),unit,sets};
+  });
+  return {date:session.date,exercises};
+ });
+}
+function workoutFingerprint(session){
+ const canonical=(session.exercises||[]).map(ex=>[workoutKey(exerciseName(ex.name)),(ex.sets||[]).map(set=>[set.weight==null?null:Number(set.weight),Number(set.reps)])]);
+ return JSON.stringify([session.date,canonical]);
+}
+function workoutImport(raw){
+ const incoming=workoutNormalizeImport(raw),existing=new Set(s.workout.sessions.map(workoutFingerprint));
+ let added=0;
+ for(const session of incoming){
+  const key=workoutFingerprint(session);
+  if(existing.has(key))continue;
+  existing.add(key);
+  s.workout.sessions.push({...session,number:s.workout.sessions.length+1});
+  added++;
+ }
+ if(added){save();paint();}
+ notify(added?added+'回分のトレーニングを連携しました ✦':'すべて登録済み。重複はありません');
+ return added;
+}
+function workoutLiftHistory(name){
+ const history=[];
+ for(const session of s.workout.sessions){
+  const sets=(session.exercises||[]).filter(e=>workoutKey(exerciseName(e.name))===workoutKey(name)).flatMap(e=>e.sets||[]);
+  const values=sets.map(set=>Number(set.weight)).filter(v=>Number.isFinite(v)&&v>0);
+  if(values.length)history.push({date:session.date,weight:Math.max(...values)});
+ }
+ const days=new Map();
+ for(const v of history)days.set(v.date,Math.max(v.weight,days.get(v.date)||0));
+ return [...days].sort((a,b)=>a[0].localeCompare(b[0])).map(([date,weight])=>({date,weight}));
+}
+function workoutChart(history){
+ if(!history.length)return '<p class="empty">記録を取り込むと、ここに重量の推移が表示されるよ。</p>';
+ const points=history.slice(-24),vals=points.map(v=>v.weight),lo=Math.max(0,Math.floor((Math.min(...vals)-5)/5)*5),hi=Math.max(lo+10,Math.ceil((Math.max(...vals)+5)/5)*5);
+ const coords=points.map((v,i)=>({x:points.length===1?160:32+i*256/(points.length-1),y:145-(v.weight-lo)/(hi-lo)*110}));
+ const path=coords.map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
+ return '<svg class="lift-chart" viewBox="0 0 320 185" role="img" aria-label="保存されたベンチプレス重量の推移"><path d="M32 35 V145 H288" fill="none" stroke="#596984"/>'+
+ '<text x="2" y="39">'+hi+'kg</text><text x="2" y="146">'+lo+'kg</text><path class="line" d="'+path+'"/>'+
+ coords.map((p,i)=>'<circle class="dot" cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="4"><title>'+esc(points[i].date)+' '+points[i].weight+'kg</title></circle>').join('')+
+ '<text x="32" y="166">'+esc(points[0].date.slice(5))+'</text><text x="288" y="166" text-anchor="end">'+esc(points.at(-1).date.slice(5))+'</text></svg>';
+}
+document.addEventListener('submit',event=>{
+ if(event.target.id!=='workout-sync-form')return;
+ event.preventDefault();
+ try{
+  const raw=JSON.parse(document.getElementById('workout-sync-json').value);
+  const sessions=workoutNormalizeImport(raw);
+  const preview=sessions.map(s=>s.date+'：'+s.exercises.map(e=>e.name+' '+e.sets.length+'セット').join('、')).join('\n');
+  if(!confirm('この記録を追加しますか？\n'+preview.slice(0,900)))return;
+  workoutImport(raw);
+ }catch(err){alert('取り込めませんでした：'+err.message);}
+});
+function workoutHashImport(){
+ const hash=window.location.hash;
+ if(!hash.startsWith('#workout='))return;
+ try{
+  const value=hash.slice('#workout='.length);
+  if(value.length>30000)throw Error('共有データが長すぎます');
+  const payload=JSON.parse(decodeURIComponent(value));
+  const sessions=workoutNormalizeImport(payload);
+  const summary=sessions.map(s=>s.date+' '+s.exercises.length+'種目').join('\n');
+  if(confirm('ChatGPTの筋トレ記録をLIFE OSに取り込みますか？\n'+summary.slice(0,950))){
+   active='workout';workoutImport(payload);scrollTo(0,0);
+  }
+ }catch(e){alert('共有リンクの記録を読めませんでした：'+e.message);}
+ finally{history.replaceState(null,'',window.location.pathname+window.location.search);}
+}
+window.addEventListener('hashchange',workoutHashImport);
+
 paint();
+workoutHashImport();
 </script></body></html>

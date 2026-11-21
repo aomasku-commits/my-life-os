@@ -354,6 +354,13 @@ body{background:radial-gradient(ellipse 110% 390px at 50% -110px,#2c5940 0,trans
 #home .qitem-controls button[data-gcal-push]{background:#bdf78b;color:#143921;border-color:transparent;font-weight:800}
 #home .qitem-controls .qitem-delete{width:38px;min-width:38px;padding:6px;background:#ffffff08;color:#b4cbb9;border-color:#ffffff22;font-size:19px}
 @media(max-width:370px){#home .qitem-controls .qitem-status{width:100%;text-align:left}#home .qitem-controls{justify-content:flex-start}}
+
+#home .qledger{width:100%;min-width:0;display:flex;flex-direction:column;gap:6px;padding:10px 11px;background:#06271e88;border:1px solid #ffffff18;border-radius:11px}
+#home .qledger>div{display:grid;grid-template-columns:76px minmax(0,1fr);gap:9px;font-size:12px;line-height:1.55;color:#e1f4e1;overflow-wrap:anywhere}
+#home .qledger b{font-size:11px;color:#9bbda6;white-space:nowrap}
+#home .qledger span small{display:block;margin-top:2px;font-size:11px}
+#home .qledger-count{font-size:10px;color:#abc6af;text-align:right}
+#home .qitem-controls button[data-qactual]{background:#c8fb95;color:#163b27;font-weight:800;border-color:transparent}
 </style></head><body><main class="app"><div class="top"><div class="logo">🍏 LIFE OS <span class="logo-mini">BLOOM</span></div><div class="date" id="headerDate"></div></div><div id="lifeos-diagnostic" class="lifeos-diagnostic" role="status" aria-live="polite"><strong>🍏 LIFE OS build 2026.11.21-D2</strong><span>画面を読み込み中。予定が表示されない場合は、この表示を確認してね。</span></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="questDock" class="quest-dock" hidden aria-label="クエスト操作">
 <div class="quest-dock-main"><span class="quest-dock-name" id="questDockName"></span><span class="quest-dock-time" id="questDockTime"></span></div>
 <button type="button" id="questDockBack" aria-label="クエストに戻る">↑ 戻る</button>
@@ -385,6 +392,68 @@ let gcalTokenClient=null,gcalToken=null,gcalTokenExpiry=0,gcalBusy=false;
 const gcalStatus=(message)=>{const el=document.getElementById('gcal-status');if(el)el.textContent='ステータス：'+message;notify(message);};
 const gcalISOday=(date)=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(date);
 const gcalClock=(date)=>new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(date);
+
+/* PLAN / ACTUAL: independent records. Original plan is immutable after capture. */
+function qPlan(q,day){return {title:q.title,start:q.start,end:q.end,minutes:q.minutes,date:day};}
+function qEnsure(q,day){
+ if(!q.originalPlan)q.originalPlan=qPlan(q,day);
+ if(!Array.isArray(q.planHistory))q.planHistory=[];
+}
+function qPlanRevision(q,day,change,source){
+ qEnsure(q,day);
+ const before=qPlan(q,day),after={...before,...change};
+ if(['title','start','end','minutes','date'].some(k=>String(before[k])!==String(after[k]))){
+  q.planHistory.push({before,after,source:source||'LIFE OS',at:new Date().toISOString()});
+  if(q.planHistory.length>60)q.planHistory=q.planHistory.slice(-60);
+ }
+}
+function qActualDefault(q){
+ if(!q.actual)q.actual={title:q.title,start:'',end:'',note:'',source:'completion',recordedAt:q.completedAt||new Date().toISOString()};
+}
+function qActualEdit(q){
+ const previous=q.actual||{};
+ const title=prompt('実際にしたこと',previous.title||q.title);if(title===null)return;
+ if(!title.trim()){notify('実績名を入力してね');return;}
+ const start=prompt('実際の開始時刻 HH:MM（不明なら空欄）',previous.start||'');if(start===null)return;
+ if(start&&!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(start)){notify('開始時刻は HH:MM か空欄にしてね');return;}
+ const end=prompt('実際の終了時刻 HH:MM（不明なら空欄）',previous.end||'');if(end===null)return;
+ if(end&&!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(end)){notify('終了時刻は HH:MM か空欄にしてね');return;}
+ const note=prompt('実績メモ（任意）',previous.note||'');if(note===null)return;
+ q.actual={title:title.trim().slice(0,100),start,end,note:note.slice(0,500),source:'manual',recordedAt:previous.recordedAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
+ if(q.status!=='done'){q.status='done';q.completedAt=new Date().toISOString();} 
+ if(s.questSessions?.[q.id])s.questSessions[q.id].at=null;
+ save();paint();notify('実績を保存したよ。Googleの予定は変更していないよ');
+}
+function qLedger(q){
+ const o=q.originalPlan,changed=o&&['title','start','end'].some(k=>String(o[k])!==String(q[k]));
+ return '<div class="qledger">'+(changed?'<div><b>当初の予定</b><span>'+esc(o.title)+' · '+esc(o.start)+'–'+esc(o.end)+'</span></div>':'')+
+ '<div><b>現在の予定</b><span>'+esc(q.title)+' · '+esc(q.start)+'–'+esc(q.end)+'</span></div>'+
+ '<div><b>実績</b><span>'+(q.actual?esc(q.actual.title)+(q.actual.start?' · '+esc(q.actual.start)+(q.actual.end?'–'+esc(q.actual.end):''):'')+(q.actual.note?'<small>'+esc(q.actual.note)+'</small>':''):'未記録')+'</span></div>'+
+ (q.planHistory?.length?'<small class="qledger-count">予定の変更履歴 '+q.planHistory.length+'件</small>':'')+'</div>';
+}
+function qMigrate(){
+ let modified=false;
+ for(const [day,items] of Object.entries(s.quests||{})){
+  for(const q of Array.isArray(items)?items:[]){
+   if(!q.originalPlan){
+    qEnsure(q,day);modified=true;
+    if(day==='2026-11-21'&&q.start==='13:00'&&/LIFE OS開発/.test(q.title)){
+     q.originalPlan={title:'🎤 カラオケ｜ダーリン録音',start:'13:00',end:'13:30',minutes:30,date:day};
+     q.planHistory.push({before:q.originalPlan,after:qPlan(q,day),source:'本人の11/21実績報告',at:'2026-11-21T15:00:00+09:00'});
+     q.actual={title:'🍏 LIFE OS開発',start:'',end:'',note:'カラオケに行かずLIFE OS開発',source:'user-confirmed',recordedAt:q.completedAt||new Date().toISOString()};
+    }
+    if(day==='2026-11-21'&&/照り焼き丼/.test(q.title)){
+     q.originalPlan={title:'🍜 帰宅・そばランチ',start:'13:30',end:'14:00',minutes:30,date:day};
+     q.planHistory.push({before:q.originalPlan,after:qPlan(q,day),source:'本人の11/21実績報告',at:'2026-11-21T15:00:00+09:00'});
+     q.actual={title:'🍗 照り焼き丼を作って食べる',start:'',end:'',note:'玄米と鶏もも肉を使用',source:'user-confirmed',recordedAt:q.completedAt||new Date().toISOString()};
+    }
+   }
+   if(q.status==='done'&&!q.actual){qActualDefault(q);modified=true;}
+  }
+ }
+ if(modified)save();
+}
+
 function gcalRemoteSignature(e){return JSON.stringify([e.summary||'',e.start?.dateTime||'',e.end?.dateTime||'']);}
 function gcalImportEvent(event){
  if(event.status==='cancelled'||!event.start?.dateTime)return {added:0,updated:0};
@@ -402,15 +471,14 @@ function gcalImportEvent(event){
   if(match){oldDay=date;break;}
  }
  if(match){
+  qEnsure(match,oldDay);
   match.calendarUnavailable=false;
   if(match.editedLocally&&match.gcalSnapshot&&gcalRemoteSignature(event)!==match.gcalSnapshot){match.gcalConflict=true;return {added:0,updated:0};}
-  if(match.status==='done')return {added:0,updated:0};
   if(!match.editedLocally){
+   qPlanRevision(match,oldDay,{title,start:startClock,end:endClock,minutes,date:day},'Google Calendar');
    match.title=title;match.start=startClock;match.end=endClock;match.gcalSnapshot=gcalRemoteSignature(event);match.gcalConflict=false;
-   if(match.status!=='running'){
-    match.minutes=minutes;
-    s.questSessions[match.id]={ms:minutes*60000,at:null};
-   }
+   match.minutes=minutes;
+   if(match.status!=='running'&&match.status!=='done')s.questSessions[match.id]={ms:minutes*60000,at:null};
    if(oldDay!==day){
     s.quests[oldDay]=s.quests[oldDay].filter(q=>q.id!==match.id);
     (s.quests[day]??=[]).push(match);
@@ -421,7 +489,7 @@ function gcalImportEvent(event){
  const items=s.quests[day]??=[];
  // Respect manually created duplicates; do not take them over.
  if(items.some(q=>q.title===title&&q.start===startClock&&q.minutes===minutes))return {added:0,updated:0};
- items.push({id:'gcal-'+day+'-'+Math.random().toString(36).slice(2,10),gcalKey:key,gcalSnapshot:gcalRemoteSignature(event),title,start:startClock,end:endClock,minutes,status:'pending',completedAt:null,calendarUnavailable:false});
+ items.push({id:'gcal-'+day+'-'+Math.random().toString(36).slice(2,10),gcalKey:key,gcalSnapshot:gcalRemoteSignature(event),title,start:startClock,end:endClock,minutes,originalPlan:{title,start:startClock,end:endClock,minutes,date:day},planHistory:[],status:'pending',completedAt:null,calendarUnavailable:false});
  s.quests[day]=items;return {added:1,updated:0};
 }
 async function gcalFetchAndImport(token){
@@ -563,7 +631,9 @@ function gcalEditToday(q){
  const minutesText=prompt('所要時間（分）',String(q.minutes));if(minutesText===null)return;
  const minutes=Number(minutesText);if(!Number.isInteger(minutes)||minutes<1||minutes>600){notify('1〜600分で入力してね');return;}
  const total=Number(start.slice(0,2))*60+Number(start.slice(3))+minutes;
- q.title=name;q.start=start;q.end=String(Math.floor(total/60)%24).padStart(2,'0')+':'+String(total%60).padStart(2,'0');q.minutes=minutes;q.editedLocally=true;
+ const end=String(Math.floor(total/60)%24).padStart(2,'0')+':'+String(total%60).padStart(2,'0');
+ qPlanRevision(q,today(),{title:name,start,end,minutes},'LIFE OS');
+ q.title=name;q.start=start;q.end=end;q.minutes=minutes;q.editedLocally=true;
  if(q.status==='running')q.status='paused';
  s.questSessions[q.id]={ms:minutes*60000,at:null};save();paint();
  notify('LIFE OSで保存したよ'+(q.gcalKey?'。Googleへ反映ボタンで書き戻せるよ':''));
@@ -584,7 +654,8 @@ async function gcalWriteback(q,day){
  }catch(err){gcalStatus('Googleへの更新に失敗：'+err.message+'（LIFE OS側には保存済み）');}
 }
 document.addEventListener('click',event=>{
- const edit=event.target.closest('[data-qedit-today]'),push=event.target.closest('[data-gcal-push]');
+ const edit=event.target.closest('[data-qedit-today]'),push=event.target.closest('[data-gcal-push]'),actual=event.target.closest('[data-qactual]');
+ if(actual){const q=(s.quests[today()]||[]).find(x=>x.id===actual.dataset.qactual);if(q)qActualEdit(q);return;}
  if(edit){const q=(s.quests[today()]||[]).find(x=>x.id===edit.dataset.qeditToday);if(q)gcalEditToday(q);return;}
  if(push){const q=(s.quests[push.dataset.gcalDay]||[]).find(x=>x.id===push.dataset.gcalPush);if(q)gcalPushOne(q,push.dataset.gcalDay);}
 });
@@ -746,6 +817,7 @@ shiftNov21ChaihanaTo15();
 let questPreviewDay=today();
 const todaysQuests=()=>s.quests[today()]||[];
 
+qMigrate();
 const questClockNumber=x=>/^\d{1,2}:\d{2}$/.test(String(x||''))?Number(x.slice(0,2))*60+Number(x.slice(3)):9999;
 const questSorted=items=>[...(items||[])].sort((a,b)=>questClockNumber(a.start)-questClockNumber(b.start)||String(a.title).localeCompare(String(b.title),'ja'));
 const questFingerprint=q=>String(q.title||'').normalize('NFKC').replace(/[\s　・｜|]/g,'').replace(/^[^\p{L}\p{N}]+/u,'').toLowerCase();
@@ -810,8 +882,8 @@ function questHTML(){
  '<div class="qdetails-body">'+(duplicates?'<p class="qduplicate">⚠️ 重複候補 '+duplicates+' 件。達成記録を確認してから整理してね。</p>':'')+
  '<div class="qitems">'+qs.map(x=>'<div class="qitem '+(q&&q.id===x.id?'current ':'')+(x.status==='done'?'is-done ':x.status==='running'?'is-running ':'')+'">'+
  '<button class="qitem-main" type="button" data-qselect="'+esc(x.id)+'"><span class="qitem-title">'+(x.status==='done'?'✅':x.calendarUnavailable||questPossibleDuplicate(x,qs)?'⚠️':'◯')+' '+esc(x.title)+'</span><small>'+esc(x.start||'自由')+'–'+esc(x.end||'自由')+' · '+x.minutes+'分</small></button>'+
- '<div class="qitem-controls"><span class="qhint qitem-status '+(x.status==='done'?'qitem-badge-done':x.status==='running'?'qitem-badge-now':questPossibleDuplicate(x,qs)?'qitem-badge-warn':'qitem-badge-next')+'">'+(x.status==='done'?'✓ CLEAR':x.gcalConflict?'⚠️ 要確認':questPossibleDuplicate(x,qs)?'要確認':x.status==='running'?'● NOW':'+10 XP')+'</span>'+
- '<button type="button" data-qedit-today="'+esc(x.id)+'">✎ 編集</button>'+((x.editedLocally||x.gcalPendingCreate)&&!x.gcalConflict?'<button type="button" data-gcal-push="'+esc(x.id)+'" data-gcal-day="'+today()+'">↗ Googleへ反映</button>':'')+'<button class="qitem-delete" type="button" data-qremove="'+esc(x.id)+'" aria-label="'+esc(x.title)+'を削除">×</button></div></div>').join('')+'</div>'+
+ qLedger(x)+'<div class="qitem-controls"><span class="qhint qitem-status '+(x.status==='done'?'qitem-badge-done':x.status==='running'?'qitem-badge-now':questPossibleDuplicate(x,qs)?'qitem-badge-warn':'qitem-badge-next')+'">'+(x.status==='done'?'✓ CLEAR':x.gcalConflict?'⚠️ 要確認':questPossibleDuplicate(x,qs)?'要確認':x.status==='running'?'● NOW':'+10 XP')+'</span>'+
+ '<button type="button" data-qactual="'+esc(x.id)+'">✦ 実績'+(x.actual?'編集':'記録')+'</button><button type="button" data-qedit-today="'+esc(x.id)+'">✎ 予定編集</button>'+((x.editedLocally||x.gcalPendingCreate)&&!x.gcalConflict?'<button type="button" data-gcal-push="'+esc(x.id)+'" data-gcal-day="'+today()+'">↗ Googleへ反映</button>':'')+'<button class="qitem-delete" type="button" data-qremove="'+esc(x.id)+'" aria-label="'+esc(x.title)+'を削除">×</button></div></div>').join('')+'</div>'+
  '<div class="qadd"><input class="field" id="qtitle" maxlength="90" placeholder="新しいクエスト"><input class="field" id="qminutes" type="number" value="25" min="1" max="600" aria-label="所要時間（分）"><button type="button" data-qact="add">＋追加</button></div></div></details>'+
  '<details class="qdetails qsync" id="qsync"><summary><span>📅 予定の取り込み・同期</span><span class="qsummary-arrow">⌄</span></summary>'+
  '<div class="qdetails-body"><div class="qactions"><button type="button" data-gcal-home-sync="1">🔄 Google予定を同期</button><button type="button" data-qact="import-week">週間予定を取り込む</button><button type="button" data-qact="import-ics">.icsを取り込む</button></div>'+
@@ -863,7 +935,9 @@ document.addEventListener('click',e=>{
  const minutes=Number(minutesValue);if(!Number.isInteger(minutes)||minutes<1||minutes>600){notify('時間は1〜600分で入力してね');return;}
  const start=prompt('開始時刻（HH:MM、または「自由」）',q.start||'自由');if(start===null)return;
  if(start!=='自由'&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(start)){notify('開始時刻は HH:MM で入力してね');return;}
- q.editedLocally=true;q.title=clean;q.minutes=minutes;q.start=start;q.end=start==='自由'?'自由':(()=>{const total=Number(start.slice(0,2))*60+Number(start.slice(3))+minutes;return String(Math.floor(total/60)%24).padStart(2,'0')+':'+String(total%60).padStart(2,'0')})();
+ const end=start==='自由'?'自由':(()=>{const total=Number(start.slice(0,2))*60+Number(start.slice(3))+minutes;return String(Math.floor(total/60)%24).padStart(2,'0')+':'+String(total%60).padStart(2,'0')})();
+ qPlanRevision(q,day,{title:clean,start,end,minutes},'LIFE OS');
+ q.editedLocally=true;q.title=clean;q.minutes=minutes;q.start=start;q.end=end;
  // Editing a running task would invalidate the clock; stop it and reset its duration.
  if(q.status==='running'){q.status='paused';}
  s.questSessions[q.id]={ms:minutes*60000,at:null};
@@ -908,10 +982,10 @@ document.addEventListener('click',function(event){
  if(kind==='add'){const title=document.getElementById('qtitle').value.trim(),minutes=Number(document.getElementById('qminutes').value);if(!title||!Number.isInteger(minutes)||minutes<1||minutes>600){notify('名前と1～600分を入力してね');return;}const id='q-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);(s.quests[today()]??=[]).push({id,title,start:'自由',end:'自由',minutes,status:'pending',completedAt:null,gcalPendingCreate:true});selectedQuestId=id;localStorage.setItem('lifeos_selected_quest',id);save();paint();return;}
  const q=selectedQuest();if(!q)return;
  const z=s.questSessions[q.id]??={ms:q.minutes*60000,at:null};
- if(kind==='complete'){if(q.status==='done')return;const before=questRank();const remainingMs=remainingQuest(q)*1000;q.status='done';q.completedAt=new Date().toISOString();z.ms=remainingMs;z.at=null;save();paint();questCelebrate(q.title,questRank()>before);return;}
+ if(kind==='complete'){if(q.status==='done')return;const before=questRank();const remainingMs=remainingQuest(q)*1000;q.status='done';q.completedAt=new Date().toISOString();qActualDefault(q);z.ms=remainingMs;z.at=null;save();paint();questCelebrate(q.title,questRank()>before);return;}
  if(kind==='toggle'){if(q.status==='running'){z.ms=Math.max(0,z.ms-(Date.now()-z.at));z.at=null;q.status='paused';}else{if(remainingQuest(q)===0){notify('5分延長してね');return;}for(const other of todaysQuests()){if(other.id!==q.id&&other.status==='running'){const session=s.questSessions[other.id];if(session){session.ms=Math.max(0,session.ms-(Date.now()-session.at));session.at=null;}other.status='paused';}}z.at=Date.now();q.status='running';}save();paint();return;}
  if(kind==='extend'){z.ms=remainingQuest(q)*1000+300000;z.at=q.status==='running'?Date.now():null;save();paint();notify('5分延長したよ');return;}
- if(kind==='undo'){if(q.status!=='done')return;q.status='paused';q.completedAt=null;const session=s.questSessions[q.id];if(session){session.at=null;if(session.ms<=0)session.ms=q.minutes*60000;}save();paint();notify('完了を取り消したよ');return;}
+ if(kind==='undo'){if(q.status!=='done')return;q.status='paused';q.completedAt=null;if(q.actual?.source==='completion')delete q.actual;const session=s.questSessions[q.id];if(session){session.at=null;if(session.ms<=0)session.ms=q.minutes*60000;}save();paint();notify('完了を取り消したよ');return;}
  if(kind==='next'){const qs=todaysQuests(),i=qs.findIndex(x=>x.id===q.id);const next=qs.slice(i+1).find(x=>x.status!=='done')||qs.find(x=>x.status!=='done');if(next){selectedQuestId=next.id;localStorage.setItem('lifeos_selected_quest',next.id);}paint();}
 });
 
@@ -1082,7 +1156,7 @@ document.addEventListener('click',event=>{
  if(!next){notify('言葉を入力してね');return;}
  s.visionDraft[editor.dataset.key]=next;save();paint();notify('大切な言葉を保存したよ ✦');
 });
-function settingsHTML(){return `<h1>自分に合う道具に、<br>育てていこう。</h1><p class="lead">予定や記録はこの端末のブラウザに保存。定期的にバックアップしてね。</p><div class="card"><h2>📅 Googleカレンダー連携（読み込み・書き戻し）</h2><p class="tip">Google Cloudで作成したウェブアプリ用OAuthクライアントIDを設定すると、Googleアカウントのカレンダーから今後14日間の予定をクエストとして読み込めます。今後14日間の予定を双方向同期。日時を設定した新規クエストもGoogleへ登録できます。Google側で同じ予定が変更されていた場合は自動上書きしません。</p><label class="label" for="gcal-client-id">OAuth クライアントID</label><input class="field" id="gcal-client-id" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="123456789-xxxx.apps.googleusercontent.com" value="${esc(s.googleClientId||'')}"><div class="actionrow"><button class="button secondary" data-gcal-save="1">IDを保存</button><button class="button" data-gcal-sync="1">Googleに接続して同期</button></div><p class="tip" id="gcal-status">ステータス：${s.lastGcalSyncAt?'最終同期 '+new Date(s.lastGcalSyncAt).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}):'未同期'}。同期はボタンを押したときだけ実行します。</p><p class="tip">Google Cloud Console で「Google Calendar API」を有効化し、OAuth同意画面を設定。「承認済みJavaScript生成元」に <code>https://aomasku-commits.github.io</code> を追加してください。クライアントシークレットは入力しないでください。ブラウザに保存するのはクライアントIDだけで、アクセストークンは保存しません。</p></div><div class="card"><h2>データの管理</h2><p class="tip">別の端末やブラウザには自動同期されません。バックアップをダウンロードして移行できます。</p><div class="actionrow"><button class="button" data-export="1">記録をバックアップ</button><button class="button secondary" data-import="1">バックアップを復元</button></div></div><div class="card"><h2>リセット</h2><p class="tip">間違えてリセットしないよう、実行時に確認します。</p><button class="button danger" data-reset="1">全記録を初期化</button></div><div class="card"><h2>使い方</h2><div class="item">① 今日：最低14分の習慣をチェック</div><div class="item">② 週間：曜日別の予定を編集</div><div class="item">③ 筋トレ：保存済み履歴と身体の目標を確認<br>④ 記録：自分の言葉で事実と気持ちを書く</div><div class="item">④ 目標：年末までの方向を見失わない</div><div class="item">⑤ 設定：JSONでバックアップ</div></div><div class="tip">Google同期はボタン操作で実行される双方向同期です。バックグラウンドでの常時同期、Google予定の削除、端末間のLIFE OS記録同期は未実装です。</div>`}
+function settingsHTML(){return `<h1>自分に合う道具に、<br>育てていこう。</h1><p class="lead">予定や記録はこの端末のブラウザに保存。定期的にバックアップしてね。</p><div class="card"><h2>📅 Googleカレンダー連携（読み込み・書き戻し）</h2><p class="tip">Google Cloudで作成したウェブアプリ用OAuthクライアントIDを設定すると、Googleアカウントのカレンダーから今後14日間の予定をクエストとして読み込めます。今後14日間の「予定」を双方向同期。LIFE OSでは当初の予定・予定の変更履歴・実績を別々に保存し、実績はGoogleの予定を上書きしません。日時を設定した新規クエストもGoogleへ登録できます。Google側で同じ予定が変更されていた場合は自動上書きしません。</p><label class="label" for="gcal-client-id">OAuth クライアントID</label><input class="field" id="gcal-client-id" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="123456789-xxxx.apps.googleusercontent.com" value="${esc(s.googleClientId||'')}"><div class="actionrow"><button class="button secondary" data-gcal-save="1">IDを保存</button><button class="button" data-gcal-sync="1">Googleに接続して同期</button></div><p class="tip" id="gcal-status">ステータス：${s.lastGcalSyncAt?'最終同期 '+new Date(s.lastGcalSyncAt).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}):'未同期'}。同期はボタンを押したときだけ実行します。</p><p class="tip">Google Cloud Console で「Google Calendar API」を有効化し、OAuth同意画面を設定。「承認済みJavaScript生成元」に <code>https://aomasku-commits.github.io</code> を追加してください。クライアントシークレットは入力しないでください。ブラウザに保存するのはクライアントIDだけで、アクセストークンは保存しません。</p></div><div class="card"><h2>データの管理</h2><p class="tip">別の端末やブラウザには自動同期されません。バックアップをダウンロードして移行できます。</p><div class="actionrow"><button class="button" data-export="1">記録をバックアップ</button><button class="button secondary" data-import="1">バックアップを復元</button></div></div><div class="card"><h2>リセット</h2><p class="tip">間違えてリセットしないよう、実行時に確認します。</p><button class="button danger" data-reset="1">全記録を初期化</button></div><div class="card"><h2>使い方</h2><div class="item">① 今日：最低14分の習慣をチェック</div><div class="item">② 週間：曜日別の予定を編集</div><div class="item">③ 筋トレ：保存済み履歴と身体の目標を確認<br>④ 記録：自分の言葉で事実と気持ちを書く</div><div class="item">④ 目標：年末までの方向を見失わない</div><div class="item">⑤ 設定：JSONでバックアップ</div></div><div class="tip">Google同期はボタン操作で実行される双方向同期です。バックグラウンドでの常時同期、Google予定の削除、端末間のLIFE OS記録同期は未実装です。</div>`}
 document.addEventListener('click',e=>{const el=e.target.closest('button');if(!el)return;if(el.dataset.tab){active=el.dataset.tab;paint();scrollTo(0,0)}else if(el.dataset.go){active=el.dataset.go;paint();scrollTo(0,0)}else if(el.dataset.shift){viewDate=add(viewDate,Number(el.dataset.shift));paint()}else if(el.dataset.today){viewDate=today();paint()}else if(el.dataset.mini){s.miniMode=!s.miniMode;save();paint()}else if(el.dataset.savefocus){s.focus=document.getElementById('focus').value;save();notify('今日の一件を保存したよ')}else if(el.dataset.weekshift){weekDate=add(weekDate,Number(el.dataset.weekshift));paint()}else if(el.dataset.weekday){weekDate=el.dataset.weekday;paint()}else if(el.dataset.addplan){const t=document.getElementById('planTitle').value.trim();if(!t){notify('予定名を入力してね');return}s.plans[weekDate]??=[];s.plans[weekDate].push({id:'custom-'+Date.now(),title:t,time:document.getElementById('planTime').value||'時間未定',duration:document.getElementById('planDuration').value||'自由',category:'追加'});save();paint();notify('予定を追加したよ')}else if(el.dataset.delplan){const id=el.dataset.delplan;if(id.startsWith('custom')){s.plans[weekDate]=(s.plans[weekDate]||[]).filter(p=>p.id!==id)}else{(s.weekOverrides[weekDate]??=[]).push(id)}save();paint();notify('この日の予定から外したよ')}else if(el.dataset.savejournal){s.journal[viewDate]={fact:document.getElementById('jfact').value,feeling:document.getElementById('jfeeling').value,honest:document.getElementById('jhonest').value,next:document.getElementById('jnext').value};save();notify('日記を保存したよ')}else if(el.dataset.export){const blob=new Blob([JSON.stringify({app:'ARC_LIFE_OS',version:1,exportedAt:new Date().toISOString(),data:s},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ARC_backup_'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000)}else if(el.dataset.import){document.getElementById('importFile').click()}else if(el.dataset.reset){if(confirm('本当にすべての記録を消去しますか？ バックアップをおすすめします。')){s=blank();save();paint();notify('初期化しました')}}});document.addEventListener('change',e=>{const t=e.target;if(t.dataset.habit){s.habits[t.dataset.day]??={};s.habits[t.dataset.day][t.dataset.habit]=t.checked;save();paint();if(t.checked)notify('約束をひとつ積み上げた ✦')}if(t.id==='viewDate'||t.id==='journalDate'){viewDate=t.value||today();paint()}});document.getElementById('importFile').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{const v=JSON.parse(await f.text());if(v.app!=='ARC_LIFE_OS'||!v.data||typeof v.data!=='object')throw Error('形式が違います');if(confirm('今の記録をバックアップの内容で置き換えますか？')){s={...blank(),...v.data};save();paint();notify('復元しました')}}catch(err){alert('バックアップを読み込めませんでした：'+err.message)}e.target.value=''});
 function blankWorkout() {
   return {sessions: [], draft: null};

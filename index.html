@@ -286,6 +286,31 @@ body{background:radial-gradient(ellipse 110% 390px at 50% -110px,#2c5940 0,trans
 .lifeos-diagnostic strong,.lifeos-diagnostic span{font-size:10px}
 @media(max-width:390px){#home .qhome{padding:17px 12px 18px}#home .qhero{padding:18px 12px 14px}#home .qhome-stats>div{padding:11px 10px}#home .qitem{gap:3px}#home .qitem-status{font-size:9px;min-width:36px}}
 @media(prefers-reduced-motion:reduce){#home .qitem{transition:none}#home .qclear:active{transform:none}}
+
+/* Bloom Quest v2: calm Apple-like surfaces + gentle pop + rewarding RPG */
+#home .qhome{border-color:#74a680;background:radial-gradient(circle at 97% 4%,#b9ff9824,transparent 35%),linear-gradient(160deg,#163b32 0%,#0c2a27 66%,#0b2428);box-shadow:0 18px 48px #02090966}
+#home .qhome-hello{font-weight:850}
+#home .qhome-greeting{color:#d9ff9e}
+#home .qlevel{background:linear-gradient(125deg,#dfff9d,#a6ee94);border:1px solid #ffffff99;box-shadow:0 3px 16px #96e37f22}
+#home .qxp-next{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#b9d6c3;margin-top:17px;font-size:11px;letter-spacing:.01em}
+#home .qxp-next strong{color:#e1ffb4;font-size:12px;font-variant-numeric:tabular-nums}
+#home .qxp-track{margin:7px 0 14px;height:6px;background:#4f745648}
+#home .qxp-track .qfill{background:linear-gradient(90deg,#8acdb3,#c5f995)}
+#home .qhero{border-color:#87b995;box-shadow:0 10px 34px #0005}
+#home .qhero-spark{display:inline-grid;place-items:center;background:#dcff9c;color:#20452f;width:22px;height:22px;border-radius:8px;font-size:12px;margin-right:3px;box-shadow:0 0 0 3px #d8fc9920}
+#home .qhero-eyebrow{display:flex;align-items:center;gap:4px}
+#home .qdetails#qdetails>summary{border-bottom:1px solid #dffbc924}
+#home .qitem-status{display:inline-flex;justify-content:center;align-items:center;border:1px solid #b8eebc2b;border-radius:99px;min-width:57px;padding:6px 7px;background:#ffffff0b;font-size:10px;font-weight:800;white-space:nowrap}
+#home .qitem-badge-now{background:#c4ff9733;color:#eaffca;border-color:#bdf58b77}
+#home .qitem-badge-done{background:#92d4bc20;color:#b7dcca;border-color:#8cc3aa44}
+#home .qitem-badge-warn{background:#ffe4ab16;color:#ffe6a9;border-color:#edc77f66}
+#home .qitem-badge-next{background:#ffffff0a;color:#c3d9c8;border-color:#ffffff20}
+#home .qhero-actions button{background:#ffffff10}
+.qcelebrate{backdrop-filter:blur(5px)}
+.qcelebrate-inner{max-width:390px;background:radial-gradient(circle at 50% 0%,#3c7851,#163e30 65%,#0f2a27);border:1px solid #d0fd9a;box-shadow:0 24px 70px #0009,0 0 45px #91ff7b30;border-radius:29px}
+.qcelebrate-inner strong{color:#e2ffb2;letter-spacing:-.03em}
+.qcelebrate-inner span{display:block;color:#f4fff1;font-size:14px;margin-top:11px}
+@media(max-width:390px){#home .qitem-status{min-width:49px;padding:6px 5px;font-size:9px}#home .qxp-next strong{font-size:11px}}
 </style></head><body><main class="app"><div class="top"><div class="logo">🍏 LIFE OS <span class="logo-mini">BLOOM</span></div><div class="date" id="headerDate"></div></div><div id="lifeos-diagnostic" class="lifeos-diagnostic" role="status" aria-live="polite"><strong>🍏 LIFE OS build 2026.11.21-D2</strong><span>画面を読み込み中。予定が表示されない場合は、この表示を確認してね。</span></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="questDock" class="quest-dock" hidden aria-label="クエスト操作">
 <div class="quest-dock-main"><span class="quest-dock-name" id="questDockName"></span><span class="quest-dock-time" id="questDockTime"></span></div>
 <button type="button" id="questDockBack" aria-label="クエストに戻る">↑ 戻る</button>
@@ -548,7 +573,7 @@ function questCelebrate(name,rankUp){
  const el=document.createElement('div');el.className='qcelebrate';el.setAttribute('role','status');
  const box=document.createElement('div');box.className='qcelebrate-inner';
  const title=document.createElement('strong');title.textContent=rankUp?'🍏 LEVEL UP!':'✨ QUEST CLEAR! ✨';
- const subtitle=document.createElement('span');subtitle.textContent=rankUp?'Lv.'+questRank()+' · '+name:'＋10 QUEST XP · '+name;
+ const subtitle=document.createElement('span');subtitle.textContent=rankUp?'新しいレベルへ！ Lv.'+questRank()+' · '+name:'+10 XP · '+name;
  box.append(title,subtitle);el.appendChild(box);document.body.appendChild(el);
  if(navigator.vibrate)navigator.vibrate([60,45,90]);
  setTimeout(()=>el.remove(),1900);
@@ -560,11 +585,11 @@ function questHTML(){
  const running=q?.status==='running',completed=q?.status==='done';
  let content='<div class="qbox qhome" id="qbox"><div class="qhome-head"><span class="qhint">🍏 LIFE OS / QUEST MODE</span><span class="qlevel">LV.'+questRank()+'</span></div>'+
  '<div class="qhome-hello"><span class="qhome-greeting">GROW AT YOUR PACE</span>今日の一歩を、<br><em>楽しもう。</em></div>'+
- '<div class="qhome-stats"><div><strong>'+wins+'<small> / '+qs.length+'</small></strong><span>今日のクリア</span></div><div><strong>'+questLifetimeXP()+' <small>XP</small></strong><span>累計経験値</span></div></div>'+
+ '<div class="qhome-stats"><div><strong>'+wins+'<small> / '+qs.length+'</small></strong><span>今日のクリア</span></div><div><strong>'+questLifetimeXP()+' <small>XP</small></strong><span>累計経験値</span></div></div>'+ '<div class="qxp-next"><span>✦ 次のレベルまで</span><strong>あと '+(100-questRankXP())+' XP</strong></div><div class="qtrack qxp-track" role="progressbar" aria-label="次のレベルまでの経験値" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+questRankXP()+'"><div class="qfill" style="width:'+questRankXP()+'%"></div></div>'+
  '<div class="qtrack" role="progressbar" aria-label="今日の達成率" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+(qs.length?Math.round(wins/qs.length*100):0)+'"><div class="qfill" style="width:'+(qs.length?wins/qs.length*100:0)+'%"></div></div>';
  if(q){
   content+='<section class="qhero" aria-label="選択中のクエスト">'+
-  '<div class="qhero-eyebrow">'+(completed?'✅ QUEST CLEAR':running?'● FOCUS NOW':'NEXT QUEST')+'</div>'+
+  '<div class="qhero-eyebrow"><span class="qhero-spark">✦</span> '+(completed?'QUEST CLEAR':running?'FOCUS NOW':'NEXT QUEST')+'</div>'+
   '<h2>'+esc(q.title)+'</h2><div class="qhint">'+esc(q.start||'自由')+' – '+esc(q.end||'自由')+' · 予定 '+q.minutes+' 分</div>'+
   '<div class="qclock" id="qclock">'+showQuestTime(remaining)+'</div>'+
   '<div class="qhint qclock-status" id="qstatus">'+(completed?'よくできたね！':running?'集中中 · 残り時間':remaining===0?'予定時間になったよ。延長しても大丈夫':'スタートすると残り時間を計測するよ')+'</div>'+
@@ -581,7 +606,7 @@ function questHTML(){
  '<div class="qitems">'+qs.map(x=>'<div class="qitem '+(q&&q.id===x.id?'current ':'')+(x.status==='done'?'is-done ':x.status==='running'?'is-running ':'')+'">'+
  '<button type="button" data-qselect="'+esc(x.id)+'">'+(x.status==='done'?'✅':x.calendarUnavailable||questPossibleDuplicate(x,qs)?'⚠️':'◯')+' '+esc(x.title)+
  '<small>'+esc(x.start||'自由')+'–'+esc(x.end||'自由')+' · '+x.minutes+'分</small></button>'+
- '<span class="qhint qitem-status">'+(x.status==='done'?'CLEAR':questPossibleDuplicate(x,qs)?'重複候補':x.status==='running'?'NOW':'+10 XP')+'</span>'+
+ '<span class="qhint qitem-status '+(x.status==='done'?'qitem-badge-done':x.status==='running'?'qitem-badge-now':questPossibleDuplicate(x,qs)?'qitem-badge-warn':'qitem-badge-next')+'">'+(x.status==='done'?'✓ CLEAR':questPossibleDuplicate(x,qs)?'要確認':x.status==='running'?'● NOW':'+10 XP')+'</span>'+
  '<button type="button" data-qremove="'+esc(x.id)+'" aria-label="'+esc(x.title)+'を削除">×</button></div>').join('')+'</div>'+
  '<div class="qadd"><input class="field" id="qtitle" maxlength="90" placeholder="新しいクエスト"><input class="field" id="qminutes" type="number" value="25" min="1" max="600" aria-label="所要時間（分）"><button type="button" data-qact="add">＋追加</button></div></div></details>'+
  '<details class="qdetails qsync" id="qsync"><summary><span>📅 予定の取り込み・同期</span><span class="qsummary-arrow">⌄</span></summary>'+

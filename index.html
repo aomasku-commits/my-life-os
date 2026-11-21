@@ -537,6 +537,51 @@ function copyWeeklyPlansToQuests(){
 
 if(!s.quests['2026-11-21']){s.quests['2026-11-21']=questSeed.map((a,i)=>({id:'1121-'+i,start:a[0],end:a[1],title:a[2],minutes:(+a[1].slice(0,2)*60 + +a[1].slice(3))-(+a[0].slice(0,2)*60 + +a[0].slice(3)),status:'pending',completedAt:null}));save();}
 let selectedQuestId=localStorage.getItem('lifeos_selected_quest')||null;
+
+// 2026-11-21 plan adjustment, explicitly requested by the user.
+// Applies to saved records without clearing local data. Once-only, idempotent.
+function applyNov21ActualPlan(){
+ const day='2026-11-21';
+ if(today()!==day||localStorage.getItem('lifeos_1121_meal_revision_v1')==='yes')return;
+ const qs=s.quests[day];
+ if(!Array.isArray(qs))return;
+ let changed=false;
+ // Replace only the planned karaoke slot with the actual LIFE OS work.
+ for(const q of qs){
+  if(q.status==='done')continue;
+  const name=String(q.title||'');
+  if(q.start==='13:00'&&/カラオケ/.test(name)){
+   q.title='🍏 LIFE OS開発';
+   q.editedLocally=true;
+   q.status='done';
+   q.completedAt=new Date().toISOString();
+   if(s.questSessions[q.id])s.questSessions[q.id].at=null;
+   changed=true;
+  }
+ }
+ // Replace only the originally planned soba slot, not an unrelated meal.
+ let meal=qs.find(q=>q.status!=='done'&&q.start==='13:30'&&/そば|ランチ/.test(String(q.title||'')));
+ if(meal){
+  meal.title='🍗 照り焼き丼を作って食べる';
+  meal.start='14:00';meal.end='14:45';meal.minutes=45;
+  meal.status='pending';meal.editedLocally=true;
+  s.questSessions[meal.id]={ms:45*60000,at:null};
+  changed=true;
+ }else if(!qs.some(q=>/照り焼き丼/.test(String(q.title||'')))){
+  // Some users have deleted the old soba entry; add without replacing other tasks.
+  meal={id:'1121-teriyaki-meal',title:'🍗 照り焼き丼を作って食べる',start:'14:00',end:'14:45',minutes:45,status:'pending',completedAt:null,editedLocally:true};
+  qs.push(meal);changed=true;
+ }
+ if(meal&&meal.status!=='done'){
+  // Select the meal; never silently start a timer in the background.
+  selectedQuestId=meal.id;
+  localStorage.setItem('lifeos_selected_quest',meal.id);
+ }
+ if(changed)save();
+ localStorage.setItem('lifeos_1121_meal_revision_v1','yes');
+}
+applyNov21ActualPlan();
+
 // Keep the future planner date defined before the first paint().
 let questPreviewDay=today();
 const todaysQuests=()=>s.quests[today()]||[];

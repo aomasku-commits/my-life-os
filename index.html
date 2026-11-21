@@ -419,6 +419,10 @@ button.bloom-pressed,.tab.bloom-pressed{animation:bloom-press .26s cubic-bezier(
 button.bloom-saved{box-shadow:0 0 0 3px #d5ff9766,0 0 25px #b2ff7550}
 @media(hover:hover) and (pointer:fine){button:not(:disabled):hover{filter:brightness(1.12);transform:translateY(-1px)}}
 @media(prefers-reduced-motion:reduce){button,.tab,[role="button"]{transition:none!important}button.bloom-pressed,.tab.bloom-pressed,.bloom-ripple,.bloom-success{animation:none!important}.bloom-ripple,.bloom-success{display:none!important}}
+
+#home .qdedupe-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 12px}
+#home .qdedupe-tools button{min-height:40px;background:#285540;border:1px solid #87b98a;border-radius:10px;color:#dcffbc;font-size:12px;font-weight:850;padding:9px 12px}
+#home .qdedupe-tools span{font-size:11px;color:#a9c6b2;line-height:1.4}
 </style></head><body><main class="app"><div class="top"><div class="logo">🍏 LIFE OS <span class="logo-mini">BLOOM</span></div><div class="date" id="headerDate"></div></div><div id="lifeos-diagnostic" class="lifeos-diagnostic" role="status" aria-live="polite"><strong>🍏 LIFE OS build 2026.11.21-D2</strong><span>画面を読み込み中。予定が表示されない場合は、この表示を確認してね。</span></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="questDock" class="quest-dock" hidden aria-label="クエスト操作">
 <div class="quest-dock-main"><span class="quest-dock-name" id="questDockName"></span><span class="quest-dock-time" id="questDockTime"></span></div>
 <button type="button" id="questDockBack" aria-label="クエストに戻る">↑ 戻る</button>
@@ -1131,7 +1135,7 @@ function questHTML(){
  }
  if(allDone)content+='<p class="qallclear">🏆 今日のクエストをすべてクリア！</p>';
  content+='<details class="qdetails" id="qdetails" open><summary><span>📅 今日の予定・クエスト <small>'+qs.length+'件</small></span><span class="qsummary-arrow">⌄</span></summary>'+
- '<div class="qdetails-body">'+(duplicates?'<p class="qduplicate">⚠️ 重複候補 '+duplicates+' 件。達成記録を確認してから整理してね。</p>':'')+
+ '<div class="qdetails-body"><div class="qdedupe-tools"><button type="button" data-qact="dedupe">↻ 重複を再チェック</button><span>同じ予定の記録をまとめて整理します</span></div>'+(duplicates?'<p class="qduplicate">⚠️ 重複候補 '+duplicates+' 件。達成記録を確認してから整理してね。</p>':'')+
  '<div class="qitems">'+qs.map(x=>'<div class="qitem '+(q&&q.id===x.id?'current ':'')+(x.status==='done'?'is-done ':x.status==='running'?'is-running ':'')+'">'+
  '<button class="qitem-main" type="button" data-coach-open="'+esc(x.id)+'" data-coach-day="'+today()+'"><span class="qitem-title">'+(x.status==='done'?'✅':x.calendarUnavailable||questPossibleDuplicate(x,qs)?'⚠️':'◯')+' '+esc(x.title)+'</span><small>'+esc(x.start||'自由')+'–'+esc(x.end||'自由')+' · '+x.minutes+'分</small></button>'+
  qLedger(x)+'<div class="qitem-controls"><span class="qhint qitem-status '+(x.status==='done'?'qitem-badge-done':x.status==='running'?'qitem-badge-now':questPossibleDuplicate(x,qs)?'qitem-badge-warn':'qitem-badge-next')+'">'+(x.status==='done'?'✓ CLEAR':x.gcalConflict?'⚠️ 要確認':questPossibleDuplicate(x,qs)?'要確認':x.status==='running'?'● NOW':'+10 XP')+'</span>'+
@@ -1234,6 +1238,7 @@ document.addEventListener('click',function(event){
  if(select){selectedQuestId=select.dataset.qselect;localStorage.setItem('lifeos_selected_quest',selectedQuestId);paint();return;}
  if(remove){const id=remove.dataset.qremove;if(!confirm('このクエストを削除しますか？'))return;s.quests[today()]=todaysQuests().filter(q=>q.id!==id);delete s.questSessions[id];if(selectedQuestId===id)selectedQuestId=null;save();paint();return;}
  const kind=action.dataset.qact;
+ if(kind==='dedupe'){const merged=qDeduplicate();paint();notify(merged?merged+'件の重複を整理したよ':'明確な重複は見つからなかったよ。まだ同じ予定があればスクショを送ってね');return;}
  if(kind==='import-ics'){document.getElementById('quest-ics-input')?.click();return;}
  if(kind==='import-week'){copyWeeklyPlansToQuests();return;}
  if(kind==='add'){const title=document.getElementById('qtitle').value.trim(),minutes=Number(document.getElementById('qminutes').value);if(!title||!Number.isInteger(minutes)||minutes<1||minutes>600){notify('名前と1～600分を入力してね');return;}const id='q-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);(s.quests[today()]??=[]).push({id,title,start:'自由',end:'自由',minutes,status:'pending',completedAt:null,gcalPendingCreate:true});selectedQuestId=id;localStorage.setItem('lifeos_selected_quest',id);save();paint();return;}

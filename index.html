@@ -390,6 +390,19 @@ body.coach-active{overflow:hidden}
 .coach-chat-bridge label{display:flex;flex-direction:column;gap:7px;color:#e1f5dc;font-weight:700;font-size:12px}
 .coach-chat-bridge textarea{display:block;width:100%;min-height:95px;margin-top:4px;padding:11px;background:#082a20;border:1px solid #78a783;color:#f2fff1;border-radius:10px;font:14px/1.6 inherit;resize:vertical}
 .coach-chat-bridge textarea[hidden]{display:none}
+
+.coaching-sheet,.coaching-scroll,.coaching-schedule,.coaching-times,.coaching-times label{min-width:0;box-sizing:border-box}
+.coaching-sheet *, .coaching-sheet *::before,.coaching-sheet *::after{box-sizing:border-box}
+.coaching-schedule input[type="date"],.coaching-schedule input[type="time"]{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;padding:10px 8px;overflow:hidden;font-size:16px}
+.coaching-times{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;width:100%}
+.coaching-times>label{min-width:0}
+.coaching-quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:13px}
+.coaching-quick button{min-height:44px;padding:7px 5px;background:#2c5c46;color:#ebffe4;border:1px solid #82ae82;border-radius:10px;font-size:12px;font-weight:800}
+.coaching-quick button:first-child{background:#c8fd94;color:#143421;border:0}
+.coaching-timehint{font-size:11px;color:#b1cbb6;line-height:1.6;margin:8px 0}
+#coaching-inline-status{display:none;padding:9px 10px;background:#d0ff981e;border:1px solid #a2d289;border-radius:9px;color:#e5ffc6;font-size:12px;line-height:1.5;margin:8px 0}
+#home .qitem-controls .qitem-undo{background:#3c4732;color:#fae7b0;border-color:#bcaa78;font-weight:850}
+@media(max-width:375px){.coaching-times{grid-template-columns:minmax(0,1fr);gap:3px}.coaching-quick button{font-size:11px}}
 </style></head><body><main class="app"><div class="top"><div class="logo">🍏 LIFE OS <span class="logo-mini">BLOOM</span></div><div class="date" id="headerDate"></div></div><div id="lifeos-diagnostic" class="lifeos-diagnostic" role="status" aria-live="polite"><strong>🍏 LIFE OS build 2026.11.21-D2</strong><span>画面を読み込み中。予定が表示されない場合は、この表示を確認してね。</span></div><section id="home"></section><section id="week" class="hidden"></section><section id="workout" class="hidden"></section><section id="nutrition" class="hidden"></section><section id="journal" class="hidden"></section><section id="vision" class="hidden"></section><section id="settings" class="hidden"></section><div class="footer">昨日の自分を責めず、今日の行動で信頼を育てる。<br>データはこのブラウザ内に保存されます。</div></main><nav class="tabs"><div class="navwrap"><button class="tab active" data-tab="home"><span>✦</span>今日</button><button class="tab" data-tab="week"><span>▦</span>週間</button><button class="tab" data-tab="workout"><span aria-hidden="true">💪</span>筋トレ</button><button class="tab" data-tab="nutrition"><span>🍽</span>PFC</button><button class="tab" data-tab="journal"><span>♡</span>記録</button><button class="tab" data-tab="vision"><span>◈</span>目標</button><button class="tab" data-tab="settings"><span>⚙</span>設定</button></div></nav><div id="questDock" class="quest-dock" hidden aria-label="クエスト操作">
 <div class="quest-dock-main"><span class="quest-dock-name" id="questDockName"></span><span class="quest-dock-time" id="questDockTime"></span></div>
 <button type="button" id="questDockBack" aria-label="クエストに戻る">↑ 戻る</button>
@@ -524,8 +537,8 @@ function coachClose(){document.getElementById('coach-modal')?.remove();document.
 function coachOpen(id,day){
  const q=(s.quests?.[day]||[]).find(x=>x.id===id);if(!q)return;
  coachClose();const root=document.createElement('div');root.id='coach-modal';root.className='coaching-overlay';
- const valid=x=>/^([01]\\d|2[0-3]):[0-5]\\d$/.test(x||'')?x:'';
- root.innerHTML='<div class="coaching-sheet"><header><div><small>🍏 QUEST COACHING</small><h2>この予定で最高の結果へ</h2><p>'+esc(q.title)+'</p></div><button type="button" data-coach-close aria-label="閉じる">×</button></header><div class="coaching-scroll"><div class="coaching-schedule"><h3>📅 予定を編集</h3><label>予定名<input id="coach-name" maxlength="90" value="'+esc(q.title)+'"></label><label>日付<input id="coach-day" type="date" value="'+esc(day)+'"></label><div class="coaching-times"><label>開始<input id="coach-start" type="time" value="'+esc(valid(q.start))+'"></label><label>終了<input id="coach-end" type="time" value="'+esc(valid(q.end))+'"></label></div></div><section class="coach-chat-bridge"><div class="coach-chat-header">✨ あおいと対話型コーチング <small>ChatGPT連携</small></div><p>この予定の情報を引き継いで、あおいが1問ずつ深掘りするよ。</p><button type="button" id="coach-chat-start">ChatGPTでコーチング開始 ↗</button><p>依頼文がコピーされるので、ChatGPTに貼り付けて送ってね。会話は自動的にはアプリに戻らないよ。</p><textarea id="coach-handoff-text" hidden readonly aria-label="コピー用の依頼文"></textarea><label>対話後のまとめ<textarea id="coach-chat-summary" rows="4" placeholder="ChatGPTでのまとめを貼り付ける">'+esc(q.aiCoachingSummary||'')+'</textarea></label><button type="button" id="coach-chat-store">対話のまとめを一時保存</button><p>Googleへ反映する場合は、このまとめも説明欄に保存されるよ。共有カレンダーでは閲覧範囲に注意してね。</p></section><h3>🌱 自分へのコーチング</h3><p class="coaching-note">GROWをベースに、理想から逆算。書きたいところだけでいいよ。</p>'+
+ const valid=x=>/^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(x||'')?x:'';
+ root.innerHTML='<div class="coaching-sheet"><header><div><small>🍏 QUEST COACHING</small><h2>この予定で最高の結果へ</h2><p>'+esc(q.title)+'</p></div><button type="button" data-coach-close aria-label="閉じる">×</button></header><div class="coaching-scroll"><div class="coaching-schedule"><h3>📅 予定を編集</h3><label>予定名<input id="coach-name" maxlength="90" value="'+esc(q.title)+'"></label><label>日付<input id="coach-day" type="date" value="'+esc(day)+'"></label><div class="coaching-times"><label>開始<input id="coach-start" type="time" value="'+esc(valid(q.start))+'"></label><label>終了<input id="coach-end" type="time" value="'+esc(valid(q.end))+'"></label></div><div class="coaching-quick"><button type="button" data-coach-shift="now">⏱ 今から</button><button type="button" data-coach-shift="15">＋15分後</button><button type="button" data-coach-shift="30">＋30分後</button></div><p class="coaching-timehint">時間をずらしたら「保存」で確定。元の予定は履歴に残るよ。</p><div id="coaching-inline-status" role="status" aria-live="polite"></div></div><section class="coach-chat-bridge"><div class="coach-chat-header">✨ あおいと対話型コーチング <small>ChatGPT連携</small></div><p>この予定の情報を引き継いで、あおいが1問ずつ深掘りするよ。</p><button type="button" id="coach-chat-start">ChatGPTでコーチング開始 ↗</button><p>依頼文がコピーされるので、ChatGPTに貼り付けて送ってね。会話は自動的にはアプリに戻らないよ。</p><textarea id="coach-handoff-text" hidden readonly aria-label="コピー用の依頼文"></textarea><label>対話後のまとめ<textarea id="coach-chat-summary" rows="4" placeholder="ChatGPTでのまとめを貼り付ける">'+esc(q.aiCoachingSummary||'')+'</textarea></label><button type="button" id="coach-chat-store">対話のまとめを一時保存</button><p>Googleへ反映する場合は、このまとめも説明欄に保存されるよ。共有カレンダーでは閲覧範囲に注意してね。</p></section><h3>🌱 自分へのコーチング</h3><p class="coaching-note">GROWをベースに、理想から逆算。書きたいところだけでいいよ。</p>'+
  CQUEST.map(([key,label,hint])=>'<label class="coaching-question"><b>'+label+'</b><span>'+hint+'</span><textarea data-coach-field="'+key+'" rows="3" maxlength="1600">'+esc(q.coaching?.[key]||'')+'</textarea></label>').join('')+
  '<p class="coaching-note">Googleへ反映すると、回答はGoogleカレンダーの説明欄に保存されます。共有カレンダーでは他の人も閲覧できる可能性があります。</p></div><footer><button type="button" data-coach-save="local">LIFE OSに保存</button><button type="button" data-coach-save="google">保存してGoogleへ反映</button></footer></div>';
  document.body.appendChild(root);document.body.classList.add('coach-active');
@@ -533,15 +546,25 @@ function coachOpen(id,day){
  root.querySelectorAll('[data-coach-save]').forEach(b=>b.onclick=()=>coachSave(q,day,b.dataset.coachSave==='google'));
  root.querySelector('#coach-chat-start').onclick=()=>coachChatStart(q,day);
  root.querySelector('#coach-chat-store').onclick=()=>coachChatStore(q);
+ root.querySelectorAll('[data-coach-shift]').forEach(button=>{button.onclick=()=>coachQuickShift(root,button.dataset.coachShift,q)});
+}
+function coachMsg(message){const el=document.getElementById('coaching-inline-status');if(el){el.textContent=message;el.style.display='block';}notify(message);}
+function coachQuickShift(root,choice,q){
+ const when=new Date();if(choice!=='now')when.setMinutes(when.getMinutes()+Number(choice));when.setSeconds(0,0);
+ const date=iso(when),finish=new Date(when.getTime()+Math.max(1,Number(q.minutes)||25)*60000);
+ if(iso(finish)!==date){coachMsg('日付をまたぐ予定は手動で調整してね');return;}
+ const fmtTime=d=>new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(d);
+ root.querySelector('#coach-day').value=date;root.querySelector('#coach-start').value=fmtTime(when);root.querySelector('#coach-end').value=fmtTime(finish);
+ coachMsg(fmtTime(when)+'〜'+fmtTime(finish)+' に変更したよ。下の保存ボタンで確定してね');
 }
 async function coachSave(q,day,push){
  const modal=document.getElementById('coach-modal');if(!modal)return;
  const v=id=>modal.querySelector('#'+id)?.value||'';
  const title=v('coach-name').trim().slice(0,90),newDay=v('coach-day'),start=v('coach-start'),end=v('coach-end');
- if(!title||!/^\\d{4}-\\d{2}-\\d{2}$/.test(newDay)){notify('予定名と日付を確認してね');return;}
- if(Boolean(start)!==Boolean(end)){notify('開始と終了を両方設定してね');return;}
+ if(!title||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(newDay)){coachMsg('予定名と日付を確認してね');return;}
+ if(Boolean(start)!==Boolean(end)){coachMsg('開始と終了を両方設定してね');return;}
  let minutes=q.minutes||25;
- if(start){minutes=Math.round((new Date(newDay+'T'+end+':00+09:00')-new Date(newDay+'T'+start+':00+09:00'))/60000);if(!Number.isFinite(minutes)||minutes<1||minutes>600){notify('終了時刻は開始時刻より後、600分以内にしてね');return;}}
+ if(start){minutes=Math.round((new Date(newDay+'T'+end+':00+09:00')-new Date(newDay+'T'+start+':00+09:00'))/60000);if(!Number.isFinite(minutes)||minutes<1||minutes>600){coachMsg('終了時刻は開始時刻より後、600分以内にしてね');return;}}
  const next={title,start:start||'自由',end:end||'自由',minutes,date:newDay};
  if(Object.entries(next).some(([k,val])=>String(k==='date'?day:q[k])!==String(val))){
   qPlanRevision(q,day,next,'LIFE OS coaching');q.title=title;q.start=next.start;q.end=next.end;q.minutes=minutes;q.editedLocally=true;
@@ -992,7 +1015,7 @@ function questHTML(){
  '<div class="qitems">'+qs.map(x=>'<div class="qitem '+(q&&q.id===x.id?'current ':'')+(x.status==='done'?'is-done ':x.status==='running'?'is-running ':'')+'">'+
  '<button class="qitem-main" type="button" data-coach-open="'+esc(x.id)+'" data-coach-day="'+today()+'"><span class="qitem-title">'+(x.status==='done'?'✅':x.calendarUnavailable||questPossibleDuplicate(x,qs)?'⚠️':'◯')+' '+esc(x.title)+'</span><small>'+esc(x.start||'自由')+'–'+esc(x.end||'自由')+' · '+x.minutes+'分</small></button>'+
  qLedger(x)+'<div class="qitem-controls"><span class="qhint qitem-status '+(x.status==='done'?'qitem-badge-done':x.status==='running'?'qitem-badge-now':questPossibleDuplicate(x,qs)?'qitem-badge-warn':'qitem-badge-next')+'">'+(x.status==='done'?'✓ CLEAR':x.gcalConflict?'⚠️ 要確認':questPossibleDuplicate(x,qs)?'要確認':x.status==='running'?'● NOW':'+10 XP')+'</span>'+
- '<button type="button" data-qselect="'+esc(x.id)+'">▶ 選択</button><button type="button" data-qactual="'+esc(x.id)+'">✦ 実績'+(x.actual?'編集':'記録')+'</button><button type="button" data-coach-open="'+esc(x.id)+'" data-coach-day="'+today()+'">✎ 予定・コーチング</button>'+((x.editedLocally||x.coachDirty||x.gcalPendingCreate)&&!x.gcalConflict?'<button type="button" data-gcal-push="'+esc(x.id)+'" data-gcal-day="'+today()+'">↗ Googleへ反映</button>':'')+'<button class="qitem-delete" type="button" data-qremove="'+esc(x.id)+'" aria-label="'+esc(x.title)+'を削除">×</button></div></div>').join('')+'</div>'+
+ '<button type="button" data-qselect="'+esc(x.id)+'">▶ 選択</button>'+(x.status==='done'?'<button type="button" class="qitem-undo" data-qundo="'+esc(x.id)+'">↶ 完了取消</button>':'')+'<button type="button" data-qactual="'+esc(x.id)+'">✦ 実績'+(x.actual?'編集':'記録')+'</button><button type="button" data-coach-open="'+esc(x.id)+'" data-coach-day="'+today()+'">✎ 予定・コーチング</button>'+((x.editedLocally||x.coachDirty||x.gcalPendingCreate)&&!x.gcalConflict?'<button type="button" data-gcal-push="'+esc(x.id)+'" data-gcal-day="'+today()+'">↗ Googleへ反映</button>':'')+'<button class="qitem-delete" type="button" data-qremove="'+esc(x.id)+'" aria-label="'+esc(x.title)+'を削除">×</button></div></div>').join('')+'</div>'+
  '<div class="qadd"><input class="field" id="qtitle" maxlength="90" placeholder="新しいクエスト"><input class="field" id="qminutes" type="number" value="25" min="1" max="600" aria-label="所要時間（分）"><button type="button" data-qact="add">＋追加</button></div></div></details>'+
  '<details class="qdetails qsync" id="qsync"><summary><span>📅 予定の取り込み・同期</span><span class="qsummary-arrow">⌄</span></summary>'+
  '<div class="qdetails-body"><div class="qactions"><button type="button" data-gcal-home-sync="1">🔄 Google予定を同期</button><button type="button" data-qact="import-week">週間予定を取り込む</button><button type="button" data-qact="import-ics">.icsを取り込む</button></div>'+
@@ -1080,8 +1103,13 @@ document.getElementById('questDockBack').addEventListener('click',()=>{
 function questClockRefresh(){if(active!=='home')return;const q=selectedQuest(),e=document.getElementById('qclock');if(!q||!e)return;const left=remainingQuest(q);e.textContent=showQuestTime(left);const fill=document.getElementById('qfill');if(fill)fill.style.width=Math.min(100,left/(q.minutes*60)*100)+'%';const label=document.getElementById('qstatus');if(label&&q.status==='running')label.textContent=left===0?'時間になったよ。延長してもOK':'集中タイム';const barTime=document.getElementById('questDockTime');if(barTime&&!document.getElementById('questDock').hidden)barTime.textContent=showQuestTime(left);}
 setInterval(questClockRefresh,1000);document.addEventListener('visibilitychange',questClockRefresh);
 document.addEventListener('click',function(event){
- const select=event.target.closest('[data-qselect]'),remove=event.target.closest('[data-qremove]'),action=event.target.closest('[data-qact]');
- if(!select&&!remove&&!action)return;
+ const select=event.target.closest('[data-qselect]'),remove=event.target.closest('[data-qremove]'),action=event.target.closest('[data-qact]'),undo=event.target.closest('[data-qundo]');
+ if(!select&&!remove&&!action&&!undo)return;
+ if(undo){const q=todaysQuests().find(x=>x.id===undo.dataset.qundo);if(!q||q.status!=='done')return;
+  q.status='paused';q.completedAt=null;if(q.actual?.source==='completion')delete q.actual;
+  const z=s.questSessions[q.id];if(z){z.at=null;if(z.ms<=0)z.ms=q.minutes*60000;}
+  save();paint();notify('完了を取り消したよ。XPも元に戻ったよ');return;
+ }
  event.preventDefault();
  if(select){selectedQuestId=select.dataset.qselect;localStorage.setItem('lifeos_selected_quest',selectedQuestId);paint();return;}
  if(remove){const id=remove.dataset.qremove;if(!confirm('このクエストを削除しますか？'))return;s.quests[today()]=todaysQuests().filter(q=>q.id!==id);delete s.questSessions[id];if(selectedQuestId===id)selectedQuestId=null;save();paint();return;}
